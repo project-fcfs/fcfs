@@ -1,0 +1,21 @@
+services:
+  user-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - ./user-service/db:/var/lib/mysql
+  
+  product-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - ./product-service/db:/var/lib/mysql
+
+  order-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - ./order-service/db:/var/lib/mysql
