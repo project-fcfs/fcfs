@@ -20,8 +20,6 @@ import org.springframework.stereotype.Component;
 public class JwtProcess {
 
     private final SecretKey secretKey;
-    private final Long ACCESS_EXPIRATION_TIME;
-    private final Long REFRESH_EXPIRATION_TIME;
 
     public String getEmail(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
@@ -44,13 +42,9 @@ public class JwtProcess {
     }
 
     public JwtProcess(@Value("${jwt.secret-key}") String secret,
-                      @Value("${jwt.algorithm}") String jwtAlgorithm,
-                      @Value("${jwt.access-time}") Long accessExpirationTime,
-                      @Value("${jwt.refresh-time}") Long refreshExpirationTime) {
+                      @Value("${jwt.algorithm}") String jwtAlgorithm){
 
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), jwtAlgorithm);
-        ACCESS_EXPIRATION_TIME = accessExpirationTime;
-        REFRESH_EXPIRATION_TIME = refreshExpirationTime;
     }
 
     public String createAccessToken(String email, String role, String UUID, Long expireTime) {
