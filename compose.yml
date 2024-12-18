@@ -5,6 +5,8 @@ services:
       MYSQL_ROOT_PASSWORD: admin
     volumes:
       - ./user-service/db:/var/lib/mysql
+    ports:
+      - 3307:3306
   
   product-db:
     image: mysql
@@ -12,6 +14,8 @@ services:
       MYSQL_ROOT_PASSWORD: admin
     volumes:
       - ./product-service/db:/var/lib/mysql
+    ports:
+      - 3307:3306
 
   order-db:
     image: mysql
@@ -19,3 +23,5 @@ services:
       MYSQL_ROOT_PASSWORD: admin
     volumes:
       - ./order-service/db:/var/lib/mysql
+    ports:
+      - 3307:3306
