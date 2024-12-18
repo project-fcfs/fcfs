@@ -28,9 +28,13 @@ public class UserService {
     @Transactional
     public void create(String name, String password, String email) {
         String encodePassword = personalDataEncryptor.encodePassword(password);
-        User user = User.normalCreate(name, encodePassword, email, uuidRandomHolder.getRandomUUID(),
+        String encodedName = personalDataEncryptor.encodeData(name);
+        String encodedEmail = personalDataEncryptor.encodeData(email);
+
+        User user = User.normalCreate(encodedName, encodePassword, encodedEmail, uuidRandomHolder.getRandomUUID(),
                 localDateTimeHolder.getCurrentDate());
 
         userRepository.save(user);
     }
+
 }

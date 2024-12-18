@@ -20,8 +20,8 @@ public class SystemPersonalDataEncryptor implements PersonalDataEncryptor {
 
     private final PasswordEncoder passwordEncoder;
 
-    public SystemPersonalDataEncryptor(@Value("${my.custom.algorithm") String algorithm,
-                                       @Value("${my.custom.secret_key")String secretKey,
+    public SystemPersonalDataEncryptor(@Value("${my.custom.algorithm}") String algorithm,
+                                       @Value("${my.custom.secret-key}")String secretKey,
                                        PasswordEncoder passwordEncoder) {
         this.algorithm = algorithm;
         this.secretKey = secretKey.getBytes();
