@@ -1,5 +1,7 @@
 package hanghae.user_service.service.security.jwt;
 
+import static hanghae.user_service.service.security.jwt.JwtVO.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.user_service.controller.req.UserLoginReqDto;
 import hanghae.user_service.service.security.model.LoginUser;
@@ -52,9 +54,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         LoginUser loginUser = principal.getLoginUser();
 
         String accessToken = jwtProcess.createAccessToken(loginUser.email(),
-                loginUser.userRole().name(), loginUser.UUID());
+                loginUser.userRole().name(), loginUser.UUID(), ACCESS_EXPIRATION_TIME);
 
-        response.addHeader(JwtVO.HEADER, JwtVO.TOKEN_PREFIX + accessToken);
+        response.addHeader(HEADER, TOKEN_PREFIX + accessToken);
     }
 
     @Override

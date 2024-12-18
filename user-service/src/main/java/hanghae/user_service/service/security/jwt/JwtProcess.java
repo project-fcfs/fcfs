@@ -53,7 +53,7 @@ public class JwtProcess {
         REFRESH_EXPIRATION_TIME = refreshExpirationTime;
     }
 
-    public String createAccessToken(String email, String role, String UUID) {
+    public String createAccessToken(String email, String role, String UUID, Long expireTime) {
         return Jwts.builder()
                 .subject(SUBJECT)
                 .claim(CATEGORY_NAME, CATEGORY_ACCESS)
@@ -61,17 +61,17 @@ public class JwtProcess {
                 .claim(PAYLOAD_ROLE, role)
                 .claim(PAYLOAD_UUID, UUID)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRATION_TIME))
+                .expiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(secretKey)
                 .compact();
     }
 
-    public String createRefreshToken() {
+    public String createRefreshToken(Long expireTime) {
         return Jwts.builder()
                 .subject(SUBJECT)
                 .claim(CATEGORY_NAME, CATEGORY_REFRESH)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME))
+                .expiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(secretKey)
                 .compact();
     }
