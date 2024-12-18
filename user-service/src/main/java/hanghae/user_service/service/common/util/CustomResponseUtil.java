@@ -12,6 +12,19 @@ public class CustomResponseUtil {
 
     private static final Logger log = LoggerFactory.getLogger(CustomResponseUtil.class);
 
+    public static void success(HttpServletResponse response, String message) {
+        try{
+            ObjectMapper om = new ObjectMapper();
+            ResponseDto<?> responseDto = new ResponseDto<>(1, message,null);
+            String responseBody = om.writeValueAsString(responseDto);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpStatus.OK.value());
+            response.getWriter().write(responseBody);
+        } catch (Exception e) {
+            log.error("서버 파싱 에러 {}",e.getMessage());
+        }
+    }
+
     public static void fail(HttpServletResponse response, String message, HttpStatus status) {
         try {
             ObjectMapper om = new ObjectMapper();

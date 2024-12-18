@@ -14,11 +14,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class FormUserDetailService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final PersonalDataEncryptor personalDataEncryptor;
 
-    public FormUserDetailService(UserRepository userRepository, PersonalDataEncryptor personalDataEncryptor) {
+    public FormUserDetailService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.personalDataEncryptor = personalDataEncryptor;
     }
 
     @Override

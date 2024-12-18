@@ -14,7 +14,6 @@ public class JwtVO {
     public static final String PAYLOAD_ROLE = "role";
     public static final String PAYLOAD_UUID = "uuid";
 
-    public static final Long ACCESS_EXPIRATION_TIME = Long.parseLong(System.getProperty("jwt.access-time"));
-    public static final Long REFRESH_EXPIRATION_TIME = Long.parseLong(System.getProperty("jwt.refresh-time"));
-
+    public static final Long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60L;
+    public static final Long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7L;
 }

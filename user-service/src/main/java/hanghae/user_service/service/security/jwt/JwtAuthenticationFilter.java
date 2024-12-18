@@ -1,12 +1,13 @@
 package hanghae.user_service.service.security.jwt;
 
-import static hanghae.user_service.service.security.jwt.JwtVO.*;
+import static hanghae.user_service.service.security.jwt.JwtVO.HEADER;
+import static hanghae.user_service.service.security.jwt.JwtVO.TOKEN_PREFIX;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.user_service.controller.req.UserLoginReqDto;
+import hanghae.user_service.service.common.util.CustomResponseUtil;
 import hanghae.user_service.service.security.model.LoginUser;
 import hanghae.user_service.service.security.model.PrincipalDetails;
-import hanghae.user_service.service.common.util.CustomResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,13 +15,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+    private static final String LOGIN_SUCCESS = "로그인 성공";
+    private static final String LOGIN_FAIL = "로그인 실패";
+
+
     private final AuthenticationManager authenticationManager;
     private final JwtProcess jwtProcess;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -43,7 +48,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return authenticationManager.authenticate(authToken);
 
         } catch (Exception e) {
-            throw new InternalAuthenticationServiceException(e.getMessage());
+            throw new AuthenticationServiceException(LOGIN_FAIL, e);
         }
     }
 
@@ -54,14 +59,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         LoginUser loginUser = principal.getLoginUser();
 
         String accessToken = jwtProcess.createAccessToken(loginUser.email(),
-                loginUser.userRole().name(), loginUser.UUID(), ACCESS_EXPIRATION_TIME);
+                loginUser.userRole().name(), loginUser.UUID(), JwtVO.ACCESS_TOKEN_EXPIRATION);
 
         response.addHeader(HEADER, TOKEN_PREFIX + accessToken);
+        CustomResponseUtil.success(response, LOGIN_SUCCESS);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException failed) throws IOException, ServletException {
-        CustomResponseUtil.fail(response,"로그인 실패", HttpStatus.UNAUTHORIZED);
+        CustomResponseUtil.fail(response, LOGIN_FAIL, HttpStatus.UNAUTHORIZED);
     }
 }
