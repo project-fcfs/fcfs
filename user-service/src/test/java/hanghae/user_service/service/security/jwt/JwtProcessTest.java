@@ -8,8 +8,12 @@ import hanghae.user_service.IntegrationInfraTestSupport;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class JwtProcessTest extends IntegrationInfraTestSupport {
+
+    @Autowired
+    protected JwtProcess jwtProcess;
 
     @Test
     @DisplayName("올바른 값을 입력하면 JWT 토큰을 생성할 수 있다")
