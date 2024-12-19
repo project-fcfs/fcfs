@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +41,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (MalformedJwtException e) {
-                throw new BadCredentialsException(INVALID_JWT_TOKEN.getMessage(), e);
+                throw new AccessDeniedException(INVALID_JWT_TOKEN.getMessage(), e);
             }
 
         }

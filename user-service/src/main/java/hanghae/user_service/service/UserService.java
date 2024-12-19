@@ -1,10 +1,13 @@
 package hanghae.user_service.service;
 
 import hanghae.user_service.domain.user.User;
+import hanghae.user_service.service.common.exception.CustomApiException;
+import hanghae.user_service.service.common.util.ErrorMessage;
 import hanghae.user_service.service.port.LocalDateTimeHolder;
 import hanghae.user_service.service.port.PersonalDataEncryptor;
 import hanghae.user_service.service.port.UUIDRandomHolder;
 import hanghae.user_service.service.port.UserRepository;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +39,14 @@ public class UserService {
                encodedAddress, localDateTimeHolder.getCurrentDate());
 
         userRepository.save(user);
+    }
+
+    public void checkDuplicateEmail(String email) {
+        String encodeEmail = personalDataEncryptor.encodeData(email);
+        Optional<User> _user = userRepository.findByEmail(encodeEmail);
+        if(_user.isPresent()) {
+            throw new CustomApiException(ErrorMessage.DUPLICATE_EMAIL_ERROR.getMessage());
+        }
     }
 
 }

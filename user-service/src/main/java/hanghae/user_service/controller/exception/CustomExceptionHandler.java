@@ -1,4 +1,4 @@
-package hanghae.user_service.controller;
+package hanghae.user_service.controller.exception;
 
 import static hanghae.user_service.service.common.util.ErrorMessage.INVALID_DATA_BINDING;
 

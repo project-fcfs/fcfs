@@ -4,7 +4,7 @@ public record UserCreateReqDto(
         String email,
         String name,
         String password,
-        String address
-
+        String address,
+        String authCode
 ) {
 }
