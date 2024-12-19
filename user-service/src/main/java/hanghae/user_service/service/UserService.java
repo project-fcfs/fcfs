@@ -30,6 +30,7 @@ public class UserService {
 
     @Transactional
     public void create(String name, String password, String address, String email) {
+        checkDuplicateEmail(email);
         String encodePassword = personalDataEncryptor.encodePassword(password);
         String encodedName = personalDataEncryptor.encodeData(name);
         String encodedEmail = personalDataEncryptor.encodeData(email);

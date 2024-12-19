@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthenticationService {
-    private static final Long AUTH_CODE_EXPIRATION = 1000 * 5L;
+    private static final Long AUTH_CODE_EXPIRATION = 1000 * 60 * 5L;
     private final AuthCodeHolder authCodeHolder;
     private final AuthenticationRepository authenticationRepository;
     private final MailSenderHolder mailSenderHolder;
