@@ -23,7 +23,7 @@ public class SystemMailSender implements MailSenderHolder {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setSubject(AUTH_CODE_SUBJECT);
         message.setTo(email);
-        message.setTo(AUTH_CODE_HEADER + authCode + FOOTER);
+        message.setText(AUTH_CODE_HEADER + authCode + FOOTER);
         mailSender.send(message);
     }
 }

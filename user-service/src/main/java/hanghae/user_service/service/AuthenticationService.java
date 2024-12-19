@@ -1,10 +1,9 @@
 package hanghae.user_service.service;
 
-import static hanghae.user_service.service.common.util.UserConstant.*;
+import static hanghae.user_service.service.common.util.UserConstant.AUTH_PREFIX;
 
 import hanghae.user_service.service.common.exception.CustomApiException;
 import hanghae.user_service.service.common.util.ErrorMessage;
-import hanghae.user_service.service.common.util.UserConstant;
 import hanghae.user_service.service.port.AuthCodeHolder;
 import hanghae.user_service.service.port.AuthenticationRepository;
 import hanghae.user_service.service.port.MailSenderHolder;
@@ -28,7 +27,7 @@ public class AuthenticationService {
         String authCode = authCodeHolder.AuthSixCode();
         String key = generateKey(email);
         authenticationRepository.save(key, authCode, AUTH_CODE_EXPIRATION);
-        mailSenderHolder.sendAuthCode(email,authCode);
+        mailSenderHolder.sendAuthCode(email, authCode);
     }
 
     public void verifyCode(String email, String authCode) {
