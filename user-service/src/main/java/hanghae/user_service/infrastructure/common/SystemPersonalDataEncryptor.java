@@ -1,31 +1,24 @@
 package hanghae.user_service.infrastructure.common;
 
 import hanghae.user_service.service.port.PersonalDataEncryptor;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SystemPersonalDataEncryptor implements PersonalDataEncryptor {
 
-
-    private final String algorithm;
-    private final byte[] secretKey;
-
+    private static final Charset ENCODING_TYPE = StandardCharsets.UTF_8;
     private final PasswordEncoder passwordEncoder;
+    private final AesBytesEncryptor encryptor;
 
-    public SystemPersonalDataEncryptor(@Value("${my.custom.algorithm}") String algorithm,
-                                       @Value("${my.custom.secret-key}")String secretKey,
-                                       PasswordEncoder passwordEncoder) {
-        this.algorithm = algorithm;
-        this.secretKey = secretKey.getBytes();
+    public SystemPersonalDataEncryptor(PasswordEncoder passwordEncoder,
+                                       AesBytesEncryptor encryptor) {
         this.passwordEncoder = passwordEncoder;
+        this.encryptor = encryptor;
     }
 
     @Override
@@ -40,31 +33,14 @@ public class SystemPersonalDataEncryptor implements PersonalDataEncryptor {
 
     @Override
     public String encodeData(String data) {
-        try {
-            SecretKeySpec keySpec = new SecretKeySpec(secretKey, algorithm);
-            Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-            byte[] encrypted = cipher.doFinal(data.getBytes());
-            return Base64.getEncoder().encodeToString(encrypted);
-        } catch (Exception e) {
-            // todo 에러반환
-            throw new IllegalStateException("invalid data", e);
-        }
-
+        byte[] encrypt = encryptor.encrypt(data.getBytes(ENCODING_TYPE));
+        return Base64.getEncoder().encodeToString(encrypt);
     }
 
     @Override
     public String decodeData(String data) {
-        try {
-            SecretKeySpec keySpec = new SecretKeySpec(secretKey, algorithm);
-            Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.DECRYPT_MODE, keySpec);
-            byte[] decoded = Base64.getDecoder().decode(data);
-            return new String(cipher.doFinal(decoded));
-        } catch (Exception e) {
-            // 에러 반환
-            throw new IllegalStateException("invalid data", e);
-        }
-
+        byte[] decode = Base64.getDecoder().decode(data);
+        byte[] decrypt = encryptor.decrypt(decode);
+        return new String(decrypt, ENCODING_TYPE);
     }
 }
