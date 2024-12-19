@@ -1,4 +1,4 @@
-package hanghae.user_service.infrastructure.common;
+package hanghae.user_service.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

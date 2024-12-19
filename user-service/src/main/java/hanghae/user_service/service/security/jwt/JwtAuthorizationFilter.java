@@ -1,9 +1,7 @@
 package hanghae.user_service.service.security.jwt;
 
-import static hanghae.user_service.service.common.util.ErrorMessage.*;
+import static hanghae.user_service.service.common.util.ErrorMessage.INVALID_JWT_TOKEN;
 
-import hanghae.user_service.service.common.exception.CustomApiException;
-import hanghae.user_service.service.common.util.ErrorMessage;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

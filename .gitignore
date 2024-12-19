@@ -2,6 +2,6 @@
 appli*.yml
 appli*.properties
 *.yml
-**/config/
+/redis/
 .env
 /redis/
