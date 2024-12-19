@@ -1,5 +1,10 @@
 package hanghae.user_service.service.security.jwt;
 
+import static hanghae.user_service.service.common.util.ErrorMessage.*;
+
+import hanghae.user_service.service.common.exception.CustomApiException;
+import hanghae.user_service.service.common.util.ErrorMessage;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,15 +32,20 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             throws IOException, ServletException {
         if (isHeaderVerify(request)) {
             String token = request.getHeader(JwtVO.HEADER).replace(JwtVO.TOKEN_PREFIX, "");
-            if (!jwtProcess.isExpired(token)) {
-                String email = jwtProcess.getEmail(token);
-                String role = jwtProcess.getRole(token);
+            try {
+                if (!jwtProcess.isExpired(token)) {
+                    String email = jwtProcess.getEmail(token);
+                    String role = jwtProcess.getRole(token);
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, null,
-                        List.of(new SimpleGrantedAuthority(role)));
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, null,
+                            List.of(new SimpleGrantedAuthority(role)));
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } catch (MalformedJwtException e) {
+                throw new BadCredentialsException(INVALID_JWT_TOKEN.getMessage(), e);
             }
+
         }
         chain.doFilter(request, response);
     }

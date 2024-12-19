@@ -14,6 +14,8 @@ public class FormEntryPointHandler implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-        CustomResponseUtil.fail(response, ErrorMessage.MUST_LOGIN_REQUIRED.getMessage(), HttpStatus.UNAUTHORIZED);
+        String message = ErrorMessage.MUST_LOGIN_REQUIRED.getMessage();
+
+        CustomResponseUtil.fail(response, message, HttpStatus.UNAUTHORIZED);
     }
 }
