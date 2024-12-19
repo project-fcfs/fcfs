@@ -1,3 +1,7 @@
 **/db/
 appli*.yml
 appli*.properties
+*.yml
+**/config/
+.env
+/redis/

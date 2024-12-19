@@ -22,6 +22,7 @@ public class FakeUserRepository implements UserRepository {
                     user.email(),
                     user.role(),
                     user.UUID(),
+                    user.address(),
                     user.createdAt(),
                     user.updatedAt());
             data.add(newUser);

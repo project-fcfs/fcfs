@@ -1,7 +1,7 @@
 package hanghae.user_service.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import hanghae.user_service.domain.user.User;
 import hanghae.user_service.domain.user.UserRole;
@@ -10,7 +10,6 @@ import hanghae.user_service.mock.FakePersonalDataEncryptor;
 import hanghae.user_service.mock.FakeUUIDRandomHolder;
 import hanghae.user_service.mock.FakeUserRepository;
 import hanghae.user_service.service.port.LocalDateTimeHolder;
-import hanghae.user_service.service.port.UUIDRandomHolder;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,11 +22,12 @@ class UserServiceTest {
     private FakePersonalDataEncryptor encryptor;
     private FakeUUIDRandomHolder uuidRandomHolder;
     private LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 18, 13, 34, 56);
+    private String encrypt = "fake_";
 
     @BeforeEach
     void setUp() {
         userRepository = new FakeUserRepository();
-        encryptor = new FakePersonalDataEncryptor();
+        encryptor = new FakePersonalDataEncryptor(encrypt);
         uuidRandomHolder = new FakeUUIDRandomHolder("random");
         LocalDateTimeHolder localDateTimeHolder = new FakeLocalDateTimeHolder(localDateTime);
         userService = new UserService(userRepository, uuidRandomHolder, localDateTimeHolder, encryptor);
@@ -40,20 +40,22 @@ class UserServiceTest {
         String name = "홍길동";
         String password = "password";
         String email = "email@email.com";
+        String address = "address";
         String uuid = "random2";
         uuidRandomHolder.setValue(uuid);
 
         // when
-        userService.create(name,password,email);
+        userService.create(name, password, address, email);
         User result = userRepository.findById(1L).get();
 
         // then
         assertAll(() -> {
-            assertThat(result.name()).isEqualTo(encryptor.decodeData(result.name()));
+            assertThat(result.name()).isEqualTo(encrypt+name);
             assertThat(encryptor.matchesPassword(password, result.password())).isTrue();
-            assertThat(result.email()).isEqualTo(encryptor.decodeData(result.email()));
+            assertThat(result.email()).isEqualTo(encrypt + email);
             assertThat(result.role()).isEqualByComparingTo(UserRole.ROLE_USER);
             assertThat(result.UUID()).isEqualTo(uuid);
+            assertThat(result.email()).isEqualTo(encrypt + email);
             assertThat(result.createdAt()).isEqualTo(localDateTime);
         });
     }

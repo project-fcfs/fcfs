@@ -43,8 +43,7 @@ public class SecurityConfig {
     public RoleHierarchy roleHierarchy(){
         return RoleHierarchyImpl.fromHierarchy(
                 """
-                ROLE_ADMIN > ROLE_MANAGER
-                ROLE_MANAGER > ROLE_USER
+                ROLE_ADMIN > ROLE_USER
                 """);
     }
 
@@ -54,7 +53,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers("/manager/**").hasRole("MANAGER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())
 
