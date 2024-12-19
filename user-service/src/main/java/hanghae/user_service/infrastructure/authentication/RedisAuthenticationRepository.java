@@ -1,6 +1,7 @@
 package hanghae.user_service.infrastructure.authentication;
 
 import hanghae.user_service.service.port.AuthenticationRepository;
+import java.time.Duration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +15,7 @@ public class RedisAuthenticationRepository implements AuthenticationRepository {
 
     @Override
     public void save(String key, String value, Long expiredMs) {
-        redisTemplate.opsForValue().set(key, value, expiredMs);
+        redisTemplate.opsForValue().set(key, value, Duration.ofMillis(expiredMs));
     }
 
     @Override
