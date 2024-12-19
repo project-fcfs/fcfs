@@ -4,4 +4,3 @@ appli*.properties
 *.yml
 /redis/
 .env
-/redis/
