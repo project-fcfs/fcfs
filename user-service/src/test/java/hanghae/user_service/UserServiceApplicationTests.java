@@ -1,10 +1,10 @@
 package hanghae.user_service;
 
+import hanghae.user_service.testSupport.IntegrationInfraTestSupport;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 
-class UserServiceApplicationTests extends IntegrationInfraTestSupport{
+class UserServiceApplicationTests extends IntegrationInfraTestSupport {
 
 	@Test
 	void contextLoads() {

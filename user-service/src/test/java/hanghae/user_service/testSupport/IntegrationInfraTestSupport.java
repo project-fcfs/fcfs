@@ -1,4 +1,4 @@
-package hanghae.user_service;
+package hanghae.user_service.testSupport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.user_service.service.port.UserRepository;

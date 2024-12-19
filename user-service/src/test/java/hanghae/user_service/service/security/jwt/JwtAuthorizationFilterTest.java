@@ -4,11 +4,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import hanghae.user_service.IntegrationInfraTestSupport;
-import hanghae.user_service.domain.user.User;
+import hanghae.user_service.testSupport.IntegrationInfraTestSupport;
 import hanghae.user_service.domain.user.UserRole;
-import java.time.LocalDateTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

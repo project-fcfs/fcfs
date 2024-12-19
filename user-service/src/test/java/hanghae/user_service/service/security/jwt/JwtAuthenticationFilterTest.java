@@ -2,7 +2,7 @@ package hanghae.user_service.service.security.jwt;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import hanghae.user_service.IntegrationInfraTestSupport;
+import hanghae.user_service.testSupport.IntegrationInfraTestSupport;
 import hanghae.user_service.controller.req.UserLoginReqDto;
 import hanghae.user_service.domain.user.User;
 import java.time.LocalDateTime;
