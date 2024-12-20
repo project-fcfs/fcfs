@@ -2,6 +2,7 @@ package hanghae.product_service.service;
 
 import hanghae.product_service.controller.req.FileInfo;
 import hanghae.product_service.domain.product.Product;
+import hanghae.product_service.domain.product.ProductStatus;
 import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.util.ErrorMessage;
 import hanghae.product_service.service.port.ProductRepository;

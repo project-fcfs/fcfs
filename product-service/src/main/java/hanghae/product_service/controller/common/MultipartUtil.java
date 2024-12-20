@@ -7,7 +7,7 @@ public class MultipartUtil {
 
     private static final String INVALID_FILE_IMAGE = "유효하지 않은 파일 확장자입니다.";
 
-    private static final Set<String> ALLOWED_IMAGE_FORMATS = Set.of("jpg", "jpeg", "png", "gif");
+    private static final Set<String> ALLOWED_IMAGE_FORMATS = Set.of("jpg", "jpeg", "png", "gif", "webp");
 
     public static void validateImageFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {

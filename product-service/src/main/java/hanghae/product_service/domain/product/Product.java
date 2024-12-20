@@ -11,6 +11,6 @@ public record Product(
 
     public static Product create(String name, int price, int quantity, String UUID) {
         return new Product(null, name, price, quantity, UUID,
-                hanghae.product_service.domain.product.ProductStatus.ACTIVE);
+                ProductStatus.ACTIVE);
     }
 }
