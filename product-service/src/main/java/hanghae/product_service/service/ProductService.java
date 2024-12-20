@@ -1,7 +1,6 @@
 package hanghae.product_service.service;
 
 import hanghae.product_service.controller.req.FileInfo;
-import hanghae.product_service.controller.req.ProductCreateReqDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.util.ErrorMessage;
@@ -26,15 +25,14 @@ public class ProductService {
     }
 
     @Transactional
-    public void create(ProductCreateReqDto reqDto, FileInfo fileInfo) {
-        Product product = Product.create(reqDto.name(), reqDto.price(),
-                reqDto.quantity(), uuidRandomHolder.getRandomUUID());
+    public void create(String name, int price, int quantity, FileInfo fileInfo) {
+        Product product = Product.create(name, price, quantity, uuidRandomHolder.getRandomUUID());
 
         Product savedProduct = productRepository.save(product);
         imageFileService.upload(savedProduct, fileInfo);
     }
 
-    public Product getProduct(String productUid) {
+    public Product getProductByUid(String productUid) {
         return productRepository.fetchByUid(productUid).orElseThrow(() ->
             new CustomApiException(ErrorMessage.NOT_FOUND_PRODUCT.getMessage()));
     }

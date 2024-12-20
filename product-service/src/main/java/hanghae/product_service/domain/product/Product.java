@@ -6,7 +6,7 @@ public record Product(
         int price,
         int quantity,
         String UUID,
-        ProductStatus ProductStatus
+        ProductStatus productStatus
 ) {
 
     public static Product create(String name, int price, int quantity, String UUID) {

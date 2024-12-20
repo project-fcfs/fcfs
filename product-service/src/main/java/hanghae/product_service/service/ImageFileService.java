@@ -5,6 +5,7 @@ import hanghae.product_service.domain.imagefile.ImageFile;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.port.ImageFileRepository;
 import hanghae.product_service.service.port.UUIDRandomHolder;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,6 @@ public class ImageFileService {
         String storeFileName = storeFileName();
         ImageFile imageFile = makeImageFile(savedProduct, storeFileName, fileInfo.originalName());
         imageFileRepository.save(imageFile);
-
     }
 
     private String storeFileName() {
@@ -39,5 +39,10 @@ public class ImageFileService {
 
     private ImageFile makeImageFile(Product product, String storeFileName, String originalFileName) {
         return ImageFile.create(originalFileName, storeFileName, product);
+    }
+
+    public ImageFile getImageFile(Long productId){
+        Optional<ImageFile> imageFile = imageFileRepository.fetchByProductId(productId);
+        return imageFile.orElse(null);
     }
 }

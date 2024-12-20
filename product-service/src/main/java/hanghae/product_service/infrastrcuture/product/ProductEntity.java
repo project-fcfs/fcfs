@@ -50,7 +50,7 @@ public class ProductEntity {
 
     public static ProductEntity fromModel(Product product) {
         return new ProductEntity(product.id(), product.name(), product.price(),
-                product.quantity(), product.UUID(), product.ProductStatus());
+                product.quantity(), product.UUID(), product.productStatus());
     }
 
     public Product toModel() {
