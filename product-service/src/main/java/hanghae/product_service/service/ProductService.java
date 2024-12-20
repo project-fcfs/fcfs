@@ -34,7 +34,17 @@ public class ProductService {
     }
 
     public Product getProductByUid(String productUid) {
-        return productRepository.fetchByUid(productUid).orElseThrow(() ->
-            new CustomApiException(ErrorMessage.NOT_FOUND_PRODUCT.getMessage()));
+        return retrieveProductByUid(productUid);
     }
+    
+    public void order(String productUid, Integer count) {
+        Product product = retrieveProductByUid(productUid);
+        product.removeStock(count);
+    }
+
+    private Product retrieveProductByUid(String productUid) {
+        return productRepository.fetchByUid(productUid).orElseThrow(() ->
+                new CustomApiException(ErrorMessage.NOT_FOUND_PRODUCT.getMessage()));
+    }
+    
 }

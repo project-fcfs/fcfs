@@ -30,8 +30,8 @@ public class ProductController {
     }
 
     @PostMapping("/product/create")
-    public ResponseEntity<?> createProduct(@RequestPart ProductCreateReqDto reqDto,
-                                           @RequestPart MultipartFile file) throws IOException {
+    public ResponseEntity<?> createProduct(@RequestPart("createReqDto") ProductCreateReqDto reqDto,
+                                           @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
         MultipartUtil.validateImageFile(file);
         FileInfo fileInfo = toFileInfo(file);
         productService.create(reqDto.name(),reqDto.price(), reqDto.quantity(), fileInfo);
@@ -43,7 +43,7 @@ public class ProductController {
     public ResponseEntity<?> getProduct(@PathVariable("id") String id) {
         Product product = productService.getProductByUid(id);
         ImageFile imageFile = imageFileService.getImageFile(product.id());
-        return new ResponseEntity<>(ProductRespDto.of(product, imageFile.storeFileName()), HttpStatus.OK);
+        return new ResponseEntity<>(ProductRespDto.of(product, imageFile), HttpStatus.OK);
     }
 
     private FileInfo toFileInfo(MultipartFile file) throws IOException {

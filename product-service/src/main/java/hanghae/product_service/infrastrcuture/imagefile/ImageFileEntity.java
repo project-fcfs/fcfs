@@ -28,7 +28,6 @@ public class ImageFileEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ImageFileStatus status;
-    @Column(nullable = false)
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
