@@ -8,7 +8,7 @@ import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeCartRepository;
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.exception.ErrorMessage;
+import hanghae.order_service.service.common.util.ErrorMessage;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

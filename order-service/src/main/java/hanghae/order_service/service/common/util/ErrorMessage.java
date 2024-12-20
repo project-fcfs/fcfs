@@ -1,4 +1,4 @@
-package hanghae.order_service.service.common.exception;
+package hanghae.order_service.service.common.util;
 
 public enum ErrorMessage {
 

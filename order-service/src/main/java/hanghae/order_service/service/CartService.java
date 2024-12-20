@@ -3,7 +3,7 @@ package hanghae.order_service.service;
 import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.exception.ErrorMessage;
+import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.CartRepository;
 import org.springframework.stereotype.Service;
