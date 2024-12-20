@@ -6,6 +6,7 @@ import static hanghae.user_service.service.security.jwt.JwtVO.TOKEN_PREFIX;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.user_service.controller.req.UserLoginReqDto;
 import hanghae.user_service.service.common.util.CustomResponseUtil;
+import hanghae.user_service.service.port.PersonalDataEncryptor;
 import hanghae.user_service.service.security.model.LoginUser;
 import hanghae.user_service.service.security.model.PrincipalDetails;
 import jakarta.servlet.FilterChain;
@@ -25,15 +26,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private static final String LOGIN_SUCCESS = "로그인 성공";
     private static final String LOGIN_FAIL = "로그인 실패";
 
-
     private final AuthenticationManager authenticationManager;
     private final JwtProcess jwtProcess;
+    private final PersonalDataEncryptor encryptor;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtProcess jwtProcess) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtProcess jwtProcess,
+                                   PersonalDataEncryptor encryptor) {
         super(authenticationManager);
         this.authenticationManager = authenticationManager;
         this.jwtProcess = jwtProcess;
+        this.encryptor = encryptor;
         setFilterProcessesUrl("/api/login");
     }
 
@@ -42,8 +45,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             throws AuthenticationException {
         try {
             UserLoginReqDto loginDto = objectMapper.readValue(request.getInputStream(), UserLoginReqDto.class);
+            String encodedEmail = encryptor.encodeData(loginDto.email());
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    loginDto.email(), loginDto.password()
+                    encodedEmail, loginDto.password()
             );
             return authenticationManager.authenticate(authToken);
 

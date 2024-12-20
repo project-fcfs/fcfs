@@ -1,5 +1,6 @@
 package hanghae.user_service.service.security;
 
+import hanghae.user_service.service.port.PersonalDataEncryptor;
 import hanghae.user_service.service.security.handler.FormAccessDeniedHandler;
 import hanghae.user_service.service.security.handler.FormEntryPointHandler;
 import hanghae.user_service.service.security.jwt.JwtAuthenticationFilter;
@@ -28,10 +29,13 @@ public class SecurityConfig {
 
     private final JwtProcess jwtProcess;
     private final AuthenticationConfiguration configuration;
+    private final PersonalDataEncryptor encryptor;
 
-    public SecurityConfig(JwtProcess jwtProcess, AuthenticationConfiguration configuration) {
+    public SecurityConfig(JwtProcess jwtProcess, AuthenticationConfiguration configuration,
+                          PersonalDataEncryptor encryptor) {
         this.jwtProcess = jwtProcess;
         this.configuration = configuration;
+        this.encryptor = encryptor;
     }
 
     @Bean
@@ -60,7 +64,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterAt(new JwtAuthenticationFilter(authenticationManager(configuration), jwtProcess),
+                .addFilterAt(new JwtAuthenticationFilter(authenticationManager(configuration), jwtProcess, encryptor),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(configuration), jwtProcess), JwtAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception

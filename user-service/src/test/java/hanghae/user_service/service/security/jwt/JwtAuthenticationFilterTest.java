@@ -2,12 +2,14 @@ package hanghae.user_service.service.security.jwt;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import hanghae.user_service.testSupport.IntegrationInfraTestSupport;
 import hanghae.user_service.controller.req.UserLoginReqDto;
 import hanghae.user_service.domain.user.User;
+import hanghae.user_service.service.port.PersonalDataEncryptor;
+import hanghae.user_service.testSupport.IntegrationInfraTestSupport;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -15,13 +17,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 class JwtAuthenticationFilterTest extends IntegrationInfraTestSupport {
 
+    @Autowired
+    private PersonalDataEncryptor encryptor;
+
     @Test
     @DisplayName("DB에 있는 유저와 로그인의 정보가 같으면 JWT를 발급해준다")
     void successfulAuthentication_test() throws Exception {
         // given
         String email = "123@naver.com";
         String password = "패스워드";
-        userRepository.save(createUser(email, "{noop}" + password));
+        String encodeEmail = encryptor.encodeData(email);
+        userRepository.save(createUser(encodeEmail, "{noop}" + password));
         UserLoginReqDto request = new UserLoginReqDto(email, password);
 
         // when
