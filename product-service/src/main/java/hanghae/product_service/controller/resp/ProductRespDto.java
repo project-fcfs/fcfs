@@ -8,12 +8,14 @@ public record ProductRespDto(
         String name,
         int price,
         int quantity,
+        String uid,
         ProductStatus status,
         String imageUrl
 ) {
     public static ProductRespDto of(Product product, ImageFile imageFile){
         return new ProductRespDto(
-                product.name(), product.price(), product.quantity(),product.productStatus(),
+                product.name(), product.price(), product.quantity(),
+                product.UUID(),product.productStatus(),
                 imageFile == null ? null : imageFile.storeFileName()
         );
     }
