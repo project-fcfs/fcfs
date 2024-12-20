@@ -33,7 +33,7 @@ public class ProductEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ProductStatus ProductStatus;
+    private ProductStatus productStatus;
 
     protected ProductEntity() {
     }
@@ -45,15 +45,15 @@ public class ProductEntity {
         this.price = price;
         this.quantity = quantity;
         this.UUID = UUID;
-        ProductStatus = productStatus;
+        this.productStatus = productStatus;
     }
 
-    public static ProductEntity fromModel(Product product){
+    public static ProductEntity fromModel(Product product) {
         return new ProductEntity(product.id(), product.name(), product.price(),
                 product.quantity(), product.UUID(), product.ProductStatus());
     }
 
-    public Product toModel(){
-        return new Product(id, name, price, quantity, UUID, ProductStatus);
+    public Product toModel() {
+        return new Product(id, name, price, quantity, UUID, productStatus);
     }
 }

@@ -11,9 +11,9 @@ public record User(
         String UUID,
         String address,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime deletedAt
 ) {
     public static User normalCreate(String name,String password, String email, String UUID, String address,LocalDateTime currentDate) {
-        return new User(null, name, password, email, UserRole.ROLE_USER, UUID, address, currentDate, currentDate);
+        return new User(null, name, password, email, UserRole.ROLE_USER, UUID, address, currentDate, null);
     }
 }

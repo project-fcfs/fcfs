@@ -7,8 +7,12 @@ public record ImageFile(
         String originalName,
         String storeFileName,
         ImageFileStatus status,
-        PhotoType photoType,
         Product product
 ) {
+
+    public static ImageFile create(String originalName, String storeFileName, Product product) {
+        return new ImageFile(null, originalName, storeFileName,
+                ImageFileStatus.ACTIVE, product);
+    }
 
 }

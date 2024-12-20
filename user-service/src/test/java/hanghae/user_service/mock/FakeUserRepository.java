@@ -24,7 +24,7 @@ public class FakeUserRepository implements UserRepository {
                     user.UUID(),
                     user.address(),
                     user.createdAt(),
-                    user.updatedAt());
+                    user.deletedAt());
             data.add(newUser);
         }else{
             data.removeIf(i -> Objects.equals(i.id(), user.id()));

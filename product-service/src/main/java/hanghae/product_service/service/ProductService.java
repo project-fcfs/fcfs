@@ -1,12 +1,12 @@
-package hanghae.product_service.service.product;
+package hanghae.product_service.service;
 
 import hanghae.product_service.controller.req.FileInfo;
 import hanghae.product_service.controller.req.ProductCreateReqDto;
-import hanghae.product_service.domain.imagefile.ImageFileCreateEvent;
 import hanghae.product_service.domain.product.Product;
+import hanghae.product_service.service.common.exception.CustomApiException;
+import hanghae.product_service.service.common.util.ErrorMessage;
 import hanghae.product_service.service.port.ProductRepository;
 import hanghae.product_service.service.port.UUIDRandomHolder;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,14 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ApplicationEventPublisher publisher;
     private final UUIDRandomHolder uuidRandomHolder;
+    private final ImageFileService imageFileService;
 
-    public ProductService(ProductRepository productRepository, ApplicationEventPublisher publisher,
-                          UUIDRandomHolder uuidRandomHolder) {
+    public ProductService(ProductRepository productRepository,
+                          UUIDRandomHolder uuidRandomHolder, ImageFileService imageFileService) {
         this.productRepository = productRepository;
-        this.publisher = publisher;
         this.uuidRandomHolder = uuidRandomHolder;
+        this.imageFileService = imageFileService;
     }
 
     @Transactional
@@ -31,7 +31,11 @@ public class ProductService {
                 reqDto.quantity(), uuidRandomHolder.getRandomUUID());
 
         Product savedProduct = productRepository.save(product);
+        imageFileService.upload(savedProduct, fileInfo);
+    }
 
-        publisher.publishEvent(new ImageFileCreateEvent(fileInfo, savedProduct));
+    public Product getProduct(String productUid) {
+        return productRepository.fetchByUid(productUid).orElseThrow(() ->
+            new CustomApiException(ErrorMessage.NOT_FOUND_PRODUCT.getMessage()));
     }
 }

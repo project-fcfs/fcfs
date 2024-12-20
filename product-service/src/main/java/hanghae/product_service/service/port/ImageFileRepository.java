@@ -1,7 +1,9 @@
 package hanghae.product_service.service.port;
 
-import java.awt.Image;
+import hanghae.product_service.domain.imagefile.ImageFile;
+import java.util.Optional;
 
 public interface ImageFileRepository {
-    void save(Image image);
+    void save(ImageFile imageFile);
+    Optional<ImageFile> fetchByProductId(Long productId);
 }
