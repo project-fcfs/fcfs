@@ -2,6 +2,7 @@ package hanghae.order_service.domain.order;
 
 public enum DeliveryStatus {
     PREPARING("배달 준비중"),
+    DELIVERING ("배달중"),
     COMPLETED("배달 완료"),
     CANCELED("배달 취소");
 

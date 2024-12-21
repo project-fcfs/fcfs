@@ -15,4 +15,8 @@ public record OrderProduct(
         return new OrderProduct(null, orderPrice, orderCount, productId, createdAt, null);
     }
 
+    public int getTotalPrice() {
+        return orderPrice * orderCount;
+    }
+
 }

@@ -18,14 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final DeliveryRepository deliveryRepository;
     private final LocalDateTimeHolder localDateTimeHolder;
     private final UuidRandomHolder uuidRandomHolder;
 
-    public OrderService(OrderRepository orderRepository, DeliveryRepository deliveryRepository,
+    public OrderService(OrderRepository orderRepository,
                         LocalDateTimeHolder localDateTimeHolder, UuidRandomHolder uuidRandomHolder) {
         this.orderRepository = orderRepository;
-        this.deliveryRepository = deliveryRepository;
         this.localDateTimeHolder = localDateTimeHolder;
         this.uuidRandomHolder = uuidRandomHolder;
     }
@@ -42,14 +40,13 @@ public class OrderService {
                     localDateTimeHolder.getCurrentDate());
             orderProducts.add(orderProduct);
         }
-        Order order = Order.create(userId, orderId, orderProducts, currentDate);
+        Delivery delivery = Delivery.create(address, currentDate);
+        Order order = Order.create(userId, orderId, orderProducts, delivery, currentDate);
         Order savedOrder = orderRepository.save(order);
-        addDelivery(address, savedOrder);
+
+        // todo product-service에서 재고 여부 확인하고 확정 및 취소하기
     }
 
-    private void addDelivery(String address, Order savedOrder) {
-        LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
-        Delivery delivery = Delivery.create(address, savedOrder, currentDate);
-        deliveryRepository.save(delivery);
-    }
+
+
 }
