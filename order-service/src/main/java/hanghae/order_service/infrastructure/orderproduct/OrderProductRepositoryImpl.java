@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class OrderProductRepositoryImpl implements OrderProductRepository {
+
     private final OrderProductJpaRepository jpaRepository;
 
     public OrderProductRepositoryImpl(OrderProductJpaRepository jpaRepository) {

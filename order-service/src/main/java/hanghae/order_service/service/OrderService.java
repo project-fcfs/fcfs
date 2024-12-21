@@ -4,7 +4,6 @@ import hanghae.order_service.controller.req.OrderCreateReqDto;
 import hanghae.order_service.domain.order.Delivery;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderProduct;
-import hanghae.order_service.service.port.DeliveryRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
 import hanghae.order_service.service.port.OrderRepository;
 import hanghae.order_service.service.port.UuidRandomHolder;
@@ -47,6 +46,17 @@ public class OrderService {
         // todo product-service에서 재고 여부 확인하고 확정 및 취소하기
     }
 
+    @Transactional
+    public void cancel(String userId, String orderId) {
+        // todo 주문취소 가능한지 확인하고 주문 취소하기
+
+    }
+
+    @Transactional
+    public void refund(String userId, String orderId) {
+        // todo 환불요청이 가능한지 확인하고 환불하기
+
+    }
 
 
 }
