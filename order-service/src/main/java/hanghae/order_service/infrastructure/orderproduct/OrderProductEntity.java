@@ -1,8 +1,8 @@
-package hanghae.order_service.infrastructure.order;
+package hanghae.order_service.infrastructure.orderproduct;
 
 import java.time.LocalDateTime;
 
-public class ProductOrderEntity {
+public class OrderProductEntity {
 
     private Long id;
     private int orderPrice;
