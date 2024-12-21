@@ -26,7 +26,7 @@ public record Delivery(
     }
 
     public Delivery refundIfEligible(LocalDateTime currentDate) {
-        if (status.equals(DeliveryStatus.COMPLETED) && updatedAt.plusDays(canReturnDay).isBefore(currentDate)) {
+        if (status.equals(DeliveryStatus.COMPLETED) && currentDate.isBefore(updatedAt.plusDays(canReturnDay))) {
             return new Delivery(id, address, DeliveryStatus.CANCELED, createdAt, currentDate);
         }
         throw new CustomApiException(ErrorMessage.ERROR_CANNOT_RETURN_SHIPPED.getMessage());
