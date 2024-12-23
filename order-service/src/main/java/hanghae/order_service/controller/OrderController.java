@@ -5,6 +5,7 @@ import hanghae.order_service.service.OrderService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,10 +35,20 @@ public class OrderController {
     /**
      * 주문을 취소한다
      */
-    @PostMapping("/cancel")
+    @PostMapping("/cancel/{orderId}")
     public ResponseEntity<?> cancelOrder(@RequestHeader("userId") String userId,
-                                         @RequestParam("orderId") String orderId) {
+                                         @PathVariable("orderId") String orderId) {
         orderService.cancel(userId,orderId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 환불을 요청한다
+     */
+    @PostMapping("/refund/{orderId}")
+    public ResponseEntity<?> prefundOrder(@RequestHeader("userId") String userId,
+                                         @PathVariable("orderId") String orderId) {
+        orderService.processRefund(userId,orderId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -44,7 +44,18 @@ public record Delivery(
         throw new CustomApiException(ErrorMessage.ERROR_CANNOT_RETURN_SHIPPED.getMessage());
     }
 
+    /**
+     * 재고부족으로 인한 취소 또는 그냥 취소
+     */
     public Delivery cancelOutOfStock(LocalDateTime currentDate){
         return new Delivery(id, address, DeliveryStatus.CANCELED, createdAt, currentDate);
+    }
+
+    public Delivery processDelivery(LocalDateTime currentDate){
+        return new Delivery(id, address, DeliveryStatus.DELIVERING, createdAt, currentDate);
+    }
+
+    public Delivery completeDelivery(LocalDateTime currentDate){
+        return new Delivery(id, address, DeliveryStatus.COMPLETED, createdAt, currentDate);
     }
 }

@@ -11,4 +11,9 @@ public class ProductClientImpl implements ProductClient {
     public List<OrderItem> getOrderItems(List<String> productIds) {
         return List.of();
     }
+
+    @Override
+    public void addProductStock(List<ItemRefund> itemRefunds) {
+
+    }
 }
