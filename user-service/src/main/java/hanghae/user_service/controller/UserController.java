@@ -43,7 +43,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/mypage")
+    @GetMapping("/user/mypage")
     public ResponseEntity<?> getMyPage(@AuthenticationPrincipal PrincipalDetails principal){
         User user = userService.getUser(principal.getUsername());
         return new ResponseEntity<>(UserInfoRespDto.of(user), HttpStatus.OK);

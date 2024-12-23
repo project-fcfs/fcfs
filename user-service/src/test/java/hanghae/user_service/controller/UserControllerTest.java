@@ -2,13 +2,18 @@ package hanghae.user_service.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import hanghae.user_service.controller.req.UserAuthCodeReqDto;
 import hanghae.user_service.controller.req.UserCreateReqDto;
+import hanghae.user_service.domain.user.User;
+import hanghae.user_service.domain.user.UserRole;
 import hanghae.user_service.service.AuthenticationService;
 import hanghae.user_service.service.port.MailSenderHolder;
 import hanghae.user_service.testSupport.IntegrationInfraTestSupport;
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,6 +27,13 @@ class UserControllerTest extends IntegrationInfraTestSupport {
     MailSenderHolder senderHolder;
     @MockitoBean
     AuthenticationService authenticationService;
+
+    @BeforeEach
+    void setUp() {
+        User user = new User(null, "name", "{noop}password", "email@naver.com", UserRole.ROLE_USER, "userId",
+                "address", LocalDateTime.now(), LocalDateTime.now());
+        userRepository.save(user);
+    }
 
     @Test
     @DisplayName("인증코드를 요청하면 인증번호를 받을 수 있다")
@@ -51,7 +63,8 @@ class UserControllerTest extends IntegrationInfraTestSupport {
                 .andDo(print());
 
         // then
-        resultActions.andExpect(status().isCreated());
+        resultActions.andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("내이름은"));
     }
 
     @Nested
