@@ -29,8 +29,9 @@ public record Order(
      * 재고가 없거나, 배송준비 중일때 주문을 취소할 수 있다
      */
     public Order cancelOrder(LocalDateTime currentDate) {
+        Delivery canceledDelivery = delivery.cancelOutOfStock(currentDate);
         if (orderStatus.equals(OrderStatus.PENDING) || orderStatus.equals(OrderStatus.COMPLETED)) {
-            return new Order(id, OrderStatus.CANCELLED, userId, orderId, orderProducts, delivery, createdAt, currentDate);
+            return new Order(id, OrderStatus.CANCELLED, userId, orderId, orderProducts, canceledDelivery, createdAt, currentDate);
         }
         throw new CustomApiException(ErrorMessage.ERROR_CANNOT_CANCEL_SHIPPING.getMessage());
     }
@@ -39,9 +40,10 @@ public record Order(
      * 환불 요청을 한다 주문완료상태와 배달완료가 되고 환불기한 내라면 환불요청이 가능하다
      */
     public Order requestRefund(LocalDateTime currentDate) {
+        Delivery refundedDelivery = delivery.refundIfEligible(currentDate);
         if (orderStatus.equals(OrderStatus.COMPLETED)) {
             return new Order(id, OrderStatus.RETURN_REQUESTED, userId, orderId,
-                    orderProducts, delivery, createdAt, currentDate);
+                    orderProducts, refundedDelivery, createdAt, currentDate);
         }
         throw new CustomApiException(ErrorMessage.ERROR_REQUEST_REFUND.getMessage());
     }
