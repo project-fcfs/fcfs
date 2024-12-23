@@ -12,15 +12,17 @@ public class FakeImageFileRepository implements ImageFileRepository {
     private AtomicLong counter = new AtomicLong();
 
     @Override
-    public void save(ImageFile imageFile) {
+    public ImageFile save(ImageFile imageFile) {
         if (imageFile.id() == null || imageFile.id() == 0L) {
             ImageFile newImageFile = new ImageFile(counter.incrementAndGet(),
                     imageFile.originalName(), imageFile.storeFileName(), imageFile.status(),
                     imageFile.product());
             data.add(newImageFile);
+            return newImageFile;
         } else {
             data.removeIf(i -> i.id().equals(imageFile.id()));
             data.add(imageFile);
+            return imageFile;
         }
     }
 

@@ -19,7 +19,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Optional<Product> fetchByUid(String uid) {
-        return jpaRepository.findByUUID(uid).map(ProductEntity::toModel);
+    public Optional<Product> fetchByUid(String productId) {
+        return jpaRepository.findByProductId(productId).map(ProductEntity::toModel);
     }
 }

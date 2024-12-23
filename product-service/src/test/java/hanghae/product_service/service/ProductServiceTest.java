@@ -3,6 +3,7 @@ package hanghae.product_service.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.mock.FakeImageFileRepository;
 import hanghae.product_service.mock.FakeProductRepository;
@@ -46,7 +47,7 @@ class ProductServiceTest {
             assertThat(result.name()).isEqualTo(name);
             assertThat(result.price()).isEqualTo(price);
             assertThat(result.quantity()).isEqualTo(quantity);
-            assertThat(result.UUID()).isEqualTo(uid);
+            assertThat(result.productId()).isEqualTo(uid);
         });
     }
 
@@ -54,18 +55,18 @@ class ProductServiceTest {
     @DisplayName("저장한 상품을 조회할 수 있다")
     void canFindProduct() throws Exception {
         // given
-        String uid = "find";
-        uuidRandomHolder.setValue(uid);
+        String productId = "find";
+        uuidRandomHolder.setValue(productId);
         productService.create("product",1000,1000,null);
 
         // when
-        Product result = productService.getProductByUid(uid);
+        ProductRespDto result = productService.getProduct(productId);
 
         // then
         assertAll(() -> {
             assertThat(result).isNotNull();
             assertThat(result.name()).isEqualTo("product");
-            assertThat(result.UUID()).isEqualTo(uid);
+            assertThat(result.productId()).isEqualTo(productId);
         });
     }
 }

@@ -8,12 +8,12 @@ public record Product(
         String name,
         int price,
         int quantity,
-        String UUID,
+        String productId,
         ProductStatus productStatus
 ) {
 
-    public static Product create(String name, int price, int quantity, String UUID) {
-        return new Product(null, name, price, quantity, UUID,
+    public static Product create(String name, int price, int quantity, String productId) {
+        return new Product(null, name, price, quantity, productId,
                 ProductStatus.ACTIVE);
     }
 
@@ -27,6 +27,6 @@ public record Product(
     }
 
     private Product withUpdatedStock(int remainingQuantity, ProductStatus status) {
-        return new Product(this.id, this.name, this.price, remainingQuantity, this.UUID, status);
+        return new Product(this.id, this.name, this.price, remainingQuantity, this.productId, status);
     }
 }

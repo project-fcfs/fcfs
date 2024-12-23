@@ -29,7 +29,7 @@ public class ProductEntity {
     private int quantity;
 
     @Column(nullable = false)
-    private String UUID;
+    private String productId;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -38,22 +38,22 @@ public class ProductEntity {
     protected ProductEntity() {
     }
 
-    public ProductEntity(Long id, String name, int price, int quantity, String UUID,
+    public ProductEntity(Long id, String name, int price, int quantity, String productId,
                          ProductStatus productStatus) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-        this.UUID = UUID;
+        this.productId = productId;
         this.productStatus = productStatus;
     }
 
     public static ProductEntity fromModel(Product product) {
         return new ProductEntity(product.id(), product.name(), product.price(),
-                product.quantity(), product.UUID(), product.productStatus());
+                product.quantity(), product.productId(), product.productStatus());
     }
 
     public Product toModel() {
-        return new Product(id, name, price, quantity, UUID, productStatus);
+        return new Product(id, name, price, quantity, productId, productStatus);
     }
 }

@@ -1,8 +1,9 @@
 package hanghae.product_service.service;
 
 import hanghae.product_service.controller.req.FileInfo;
+import hanghae.product_service.controller.resp.ProductRespDto;
+import hanghae.product_service.domain.imagefile.ImageFile;
 import hanghae.product_service.domain.product.Product;
-import hanghae.product_service.domain.product.ProductStatus;
 import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.util.ErrorMessage;
 import hanghae.product_service.service.port.ProductRepository;
@@ -26,17 +27,21 @@ public class ProductService {
     }
 
     @Transactional
-    public void create(String name, int price, int quantity, FileInfo fileInfo) {
+    public ProductRespDto create(String name, int price, int quantity, FileInfo fileInfo) {
         Product product = Product.create(name, price, quantity, uuidRandomHolder.getRandomUUID());
 
         Product savedProduct = productRepository.save(product);
-        imageFileService.upload(savedProduct, fileInfo);
+        ImageFile imageFile = imageFileService.upload(savedProduct, fileInfo);
+        return ProductRespDto.of(savedProduct, imageFile);
     }
 
-    public Product getProductByUid(String productUid) {
-        return retrieveProductByUid(productUid);
+    public ProductRespDto getProduct(String productUid) {
+        Product product = retrieveProductByUid(productUid);
+        ImageFile imageFile = imageFileService.getImageFile(product.id());
+        return ProductRespDto.of(product, imageFile);
     }
-    
+
+    @Transactional
     public void order(String productUid, Integer count) {
         Product product = retrieveProductByUid(productUid);
         product.removeStock(count);

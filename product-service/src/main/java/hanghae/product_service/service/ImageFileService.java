@@ -23,13 +23,13 @@ public class ImageFileService {
     }
 
     @Transactional
-    public void upload(Product savedProduct, FileInfo fileInfo) {
+    public ImageFile upload(Product savedProduct, FileInfo fileInfo) {
         if (fileInfo == null) {
-            return;
+            return null;
         }
         String storeFileName = storeFileName();
         ImageFile imageFile = makeImageFile(savedProduct, storeFileName, fileInfo.originalName());
-        imageFileRepository.save(imageFile);
+        return imageFileRepository.save(imageFile);
     }
 
     private String storeFileName() {

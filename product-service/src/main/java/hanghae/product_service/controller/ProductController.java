@@ -34,16 +34,16 @@ public class ProductController {
                                            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
         MultipartUtil.validateImageFile(file);
         FileInfo fileInfo = toFileInfo(file);
-        productService.create(reqDto.name(),reqDto.price(), reqDto.quantity(), fileInfo);
+        ProductRespDto productRespDto = productService.create(reqDto.name(), reqDto.price(), reqDto.quantity(),
+                fileInfo);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(productRespDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/product/{id}")
-    public ResponseEntity<?> getProduct(@PathVariable("id") String id) {
-        Product product = productService.getProductByUid(id);
-        ImageFile imageFile = imageFileService.getImageFile(product.id());
-        return new ResponseEntity<>(ProductRespDto.of(product, imageFile), HttpStatus.OK);
+    public ResponseEntity<?> getProduct(@PathVariable("id") String productId) {
+        ProductRespDto productRespDto = productService.getProduct(productId);
+        return new ResponseEntity<>(productRespDto, HttpStatus.OK);
     }
 
     private FileInfo toFileInfo(MultipartFile file) throws IOException {
