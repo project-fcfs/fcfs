@@ -33,4 +33,9 @@ public class CartProductRepositoryImpl implements CartProductRepository {
     public void removeCartItem(CartProduct cartProduct) {
 
     }
+
+    @Override
+    public List<CartProduct> findByUserSelectedCart(String userId, List<String> productIds) {
+        return List.of();
+    }
 }

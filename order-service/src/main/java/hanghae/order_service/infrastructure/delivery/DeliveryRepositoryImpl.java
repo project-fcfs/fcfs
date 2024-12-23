@@ -13,7 +13,7 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
     }
 
     @Override
-    public void save(Delivery delivery) {
-
+    public Delivery save(Delivery delivery) {
+        return jpaRepository.save(DeliveryEntity.fromModel(delivery)).toModel();
     }
 }

@@ -39,4 +39,11 @@ public class FakeCartProductRepository implements CartProductRepository {
     public void removeCartItem(CartProduct cartProduct) {
         data.removeIf(i -> i.id().equals(cartProduct.id()));
     }
+
+    @Override
+    public List<CartProduct> findByUserSelectedCart(String userId, List<String> productIds) {
+        return data.stream().filter(i -> i.cart().userId().equals(userId))
+                .filter(i -> productIds.contains(i.productId()))
+                .toList();
+    }
 }

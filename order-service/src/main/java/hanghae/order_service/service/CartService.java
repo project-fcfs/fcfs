@@ -23,12 +23,20 @@ public class CartService {
         this.cartProductRepository = cartProductRepository;
     }
 
+    /**
+     * 장바구니에 담는다
+     * 장바구니에 담을 때는 상품ID만 담고 수량을 1로 체크한다
+     */
     @Transactional
     public void add(String userId, String productId) {
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> cartRepository.save(Cart.create(userId)));
         cartProductRepository.save(CartProduct.create(productId, cart));
     }
 
+    /**
+     * 장바구니 상품의 수량을 특정한 수량만큼 더하거나 뺄 수 있다
+     * 하지만 수량이 0이 될 순 없다
+     */
     @Transactional
     public void updateQuantity(String userId, String productId, int count) {
         CartProduct cartProduct = getCartProducts(userId, productId);
@@ -36,17 +44,26 @@ public class CartService {
         cartProductRepository.save(updatedCartProduct);
     }
 
+    /**
+     * 장바구니 속 상품을 지운다
+     */
     @Transactional
     public void deleteProduct(String userId, String productId) {
         CartProduct cartProduct = getCartProducts(userId, productId);
         cartProductRepository.removeCartItem(cartProduct);
     }
 
+    /**
+     * 장바구니 속 상품을 가져온다
+     */
     private CartProduct getCartProducts(String userId, String productId) {
         return cartProductRepository.findCartProduct(productId, userId)
                 .orElseThrow(() -> new CustomApiException(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage()));
     }
 
+    /**
+     * 장바구니의 정보로 Product-service에서 정보를 가져와 유저에게 반환한다
+     */
     public List<CartProductRespDto> getCartProducts(String userId) {
         List<CartProduct> cartProducts = cartProductRepository.findAllByUserId(userId);
         // todo Product-service에서 상품정보 가져와서 반환하기

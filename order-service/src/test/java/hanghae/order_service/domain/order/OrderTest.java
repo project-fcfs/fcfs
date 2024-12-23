@@ -103,7 +103,7 @@ class OrderTest {
         LocalDateTime currentDate = LocalDateTime.of(2024, 12, 21, 13, 41);
 
         // when
-        Order result = order.handlerOutOfStock(currentDate);
+        Order result = order.cancelOrder(currentDate);
 
         // then
         assertAll(() -> {

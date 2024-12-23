@@ -6,6 +6,7 @@ import hanghae.order_service.service.CartService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +33,7 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{productId}")
+    @DeleteMapping("/{productId}")
     public ResponseEntity<?> deleteCartProduct(@PathVariable("productId") String productId,
                                             @RequestHeader("userId") String userId) {
         cartService.deleteProduct(userId,productId);

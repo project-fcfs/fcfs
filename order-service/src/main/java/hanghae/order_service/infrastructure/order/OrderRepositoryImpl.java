@@ -2,6 +2,7 @@ package hanghae.order_service.infrastructure.order;
 
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.service.port.OrderRepository;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -14,11 +15,11 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public Order save(Order order) {
-        return null;
+        return jpaRepository.save(OrderEntity.fromModel(order)).toModel();
     }
 
     @Override
-    public Order findByUuid(String orderUid) {
-        return null;
+    public Optional<Order> findByUserOrderByOrderId(String userId, String orderId) {
+        return jpaRepository.findByUserOrderByOrderId(userId, orderId).map(OrderEntity::toModel);
     }
 }

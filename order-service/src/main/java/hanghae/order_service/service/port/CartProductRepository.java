@@ -10,4 +10,6 @@ public interface CartProductRepository {
     List<CartProduct> findAllByUserId(String userId);
 
     void removeCartItem(CartProduct cartProduct);
+
+    List<CartProduct> findByUserSelectedCart(String userId, List<String> productIds);
 }
