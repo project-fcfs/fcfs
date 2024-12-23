@@ -13,7 +13,7 @@ public class FakeUserRepository implements UserRepository {
     private AtomicLong counter = new AtomicLong();
 
     @Override
-    public void save(User user) {
+    public User save(User user) {
         if (user.id() == null || user.id() == 0L) {
             User newUser = new User(
                     counter.incrementAndGet(),
@@ -21,14 +21,16 @@ public class FakeUserRepository implements UserRepository {
                     user.password(),
                     user.email(),
                     user.role(),
-                    user.UUID(),
+                    user.userId(),
                     user.address(),
                     user.createdAt(),
                     user.deletedAt());
             data.add(newUser);
+            return newUser;
         }else{
             data.removeIf(i -> Objects.equals(i.id(), user.id()));
             data.add(user);
+            return user;
         }
 
     }
@@ -40,5 +42,10 @@ public class FakeUserRepository implements UserRepository {
 
     public Optional<User> findById(Long id) {
         return data.stream().filter(i -> i.id().equals(id)).findFirst();
+    }
+
+    @Override
+    public Optional<User> findByUserId(String userId) {
+        return data.stream().filter(i -> i.userId().equals(userId)).findFirst();
     }
 }

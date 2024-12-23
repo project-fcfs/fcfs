@@ -1,5 +1,6 @@
 package hanghae.user_service.service.security.jwt;
 
+import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import hanghae.user_service.controller.req.UserLoginReqDto;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -35,7 +37,7 @@ class JwtAuthenticationFilterTest extends IntegrationInfraTestSupport {
                         .content(om.writeValueAsString(request)).contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print());
 
-        String token = resultActions.andReturn().getResponse().getHeader(JwtVO.HEADER);
+        String token = resultActions.andReturn().getResponse().getHeader(AUTHORIZATION);
         System.out.println("token = " + token);
 
         // then

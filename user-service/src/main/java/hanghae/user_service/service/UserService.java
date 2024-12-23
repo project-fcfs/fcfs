@@ -29,7 +29,7 @@ public class UserService {
     }
 
     @Transactional
-    public void create(String name, String password, String address, String email) {
+    public User create(String name, String password, String address, String email) {
         checkDuplicateEmail(email);
         String encodePassword = personalDataEncryptor.encodePassword(password);
         String encodedName = personalDataEncryptor.encodeData(name);
@@ -37,17 +37,30 @@ public class UserService {
         String encodedAddress = personalDataEncryptor.encodeData(address);
 
         User user = User.normalCreate(encodedName, encodePassword, encodedEmail, uuidRandomHolder.getRandomUUID(),
-               encodedAddress, localDateTimeHolder.getCurrentDate());
+                encodedAddress, localDateTimeHolder.getCurrentDate());
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return decodeUserInfo(savedUser);
     }
 
     public void checkDuplicateEmail(String email) {
         String encodeEmail = personalDataEncryptor.encodeData(email);
         Optional<User> _user = userRepository.findByEmail(encodeEmail);
-        if(_user.isPresent()) {
+        if (_user.isPresent()) {
             throw new CustomApiException(ErrorMessage.DUPLICATE_EMAIL_ERROR.getMessage());
         }
     }
 
+    private User decodeUserInfo(User user) {
+        String decodedAddress = personalDataEncryptor.decodeData(user.address());
+        String decodedName = personalDataEncryptor.decodeData(user.name());
+        String decodedEmail = personalDataEncryptor.decodeData(user.email());
+        return user.decodeData(decodedName, decodedEmail, decodedAddress);
+    }
+
+    public User getUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomApiException(ErrorMessage.NOT_FOUND_USER.getMessage()));
+        return decodeUserInfo(user);
+    }
 }

@@ -1,9 +1,10 @@
-package hanghae.user_service.controller.exception;
+package hanghae.user_service.controller;
 
 import static hanghae.user_service.service.common.util.ErrorMessage.INVALID_DATA_BINDING;
 
 import hanghae.user_service.controller.resp.ResponseDto;
 import hanghae.user_service.service.common.exception.CustomApiException;
+import io.jsonwebtoken.MalformedJwtException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +39,9 @@ public class CustomExceptionHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
-    /*@ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e) {
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<?> handleException(MalformedJwtException e) {
         log.error(e.getMessage());
         return new ResponseEntity<>(new ResponseDto<>(-1, e.getMessage(), null), HttpStatus.BAD_REQUEST);
-    }*/
+    }
 }

@@ -8,12 +8,16 @@ public record User(
         String password,
         String email,
         UserRole role,
-        String UUID,
+        String userId,
         String address,
         LocalDateTime createdAt,
         LocalDateTime deletedAt
 ) {
-    public static User normalCreate(String name,String password, String email, String UUID, String address,LocalDateTime currentDate) {
-        return new User(null, name, password, email, UserRole.ROLE_USER, UUID, address, currentDate, null);
+    public static User normalCreate(String name,String password, String email, String userId, String address,LocalDateTime currentDate) {
+        return new User(null, name, password, email, UserRole.ROLE_USER, userId, address, currentDate, null);
+    }
+
+    public User decodeData(String decodedName, String decodedEmail,String decodedAddress) {
+        return new User(id, decodedName, password, decodedEmail, role, userId, decodedAddress, createdAt, deletedAt);
     }
 }

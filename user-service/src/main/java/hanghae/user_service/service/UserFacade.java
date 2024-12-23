@@ -1,6 +1,7 @@
 package hanghae.user_service.service;
 
 import hanghae.user_service.controller.req.UserCreateReqDto;
+import hanghae.user_service.domain.user.User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,8 +15,8 @@ public class UserFacade {
         this.authenticationService = authenticationService;
     }
 
-    public void register(UserCreateReqDto reqDto) {
+    public User register(UserCreateReqDto reqDto) {
         authenticationService.verifyCode(reqDto.email(), reqDto.authCode());
-        userService.create(reqDto.name(), reqDto.password(), reqDto.address(), reqDto.email());
+        return userService.create(reqDto.name(), reqDto.password(), reqDto.address(), reqDto.email());
     }
 }

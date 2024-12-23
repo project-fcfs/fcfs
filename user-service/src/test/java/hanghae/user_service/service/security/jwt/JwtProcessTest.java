@@ -19,7 +19,7 @@ class JwtProcessTest extends IntegrationInfraTestSupport {
         String role = "ROLE_USER";
 
         // when
-        String result = jwtProcess.createAccessToken(email, role, "random", 100L);
+        String result = jwtProcess.createAccessToken("userId", 100L);
 
         // then
         assertThat(result).isNotNull();
@@ -29,7 +29,7 @@ class JwtProcessTest extends IntegrationInfraTestSupport {
     @DisplayName("토큰의 유효기간을 넘으면 에러를 반환한다")
     void verifyToken() throws Exception {
         // given
-        String result = jwtProcess.createAccessToken("hi@naver.com", "ROLE_USER", "random", 0L);
+        String result = jwtProcess.createAccessToken("userId", 0L);
 
         // then
         assertThatThrownBy(() -> jwtProcess.isExpired(result))
@@ -40,22 +40,16 @@ class JwtProcessTest extends IntegrationInfraTestSupport {
     @DisplayName("생성한 토큰에 올바른 값을 빼낼 수 있다")
     void canExtractToken() throws Exception {
         // given
-        String inputEmail = "email@email.com";
-        String inputRole = "ROLE_USER";
-        String inputUuid = "random";
+        String userId = "random";
 
-        String token = jwtProcess.createAccessToken(inputEmail, inputRole, inputUuid, 1000L);
+        String token = jwtProcess.createAccessToken(userId, 1000L);
 
         // when
-        String role = jwtProcess.getRole(token);
-        String email = jwtProcess.getEmail(token);
-        String uuid = jwtProcess.getUuid(token);
+        String uuid = jwtProcess.getUserId(token);
 
         // then
         assertAll(() -> {
-            assertThat(role).isEqualTo(inputRole);
-            assertThat(email).isEqualTo(inputEmail);
-            assertThat(uuid).isEqualTo(inputUuid);
+            assertThat(uuid).isEqualTo(userId);
         });
     }
 

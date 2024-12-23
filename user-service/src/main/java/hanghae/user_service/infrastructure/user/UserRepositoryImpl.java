@@ -15,13 +15,18 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void save(User user) {
-        jpaRepository.save(UserEntity.fromModel(user));
+    public User save(User user) {
+        return jpaRepository.save(UserEntity.fromModel(user)).toModel();
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
         return jpaRepository.findByEmail(email)
                 .map(UserEntity::toModel);
+    }
+
+    @Override
+    public Optional<User> findByUserId(String userId) {
+        return jpaRepository.findByUserId(userId).map(UserEntity::toModel);
     }
 }

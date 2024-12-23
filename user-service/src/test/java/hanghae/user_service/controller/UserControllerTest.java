@@ -12,7 +12,6 @@ import hanghae.user_service.testSupport.IntegrationInfraTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
@@ -52,12 +51,12 @@ class UserControllerTest extends IntegrationInfraTestSupport {
                 .andDo(print());
 
         // then
-        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(status().isCreated());
     }
 
     @Nested
     @DisplayName("유효성 검사")
-    class InvalidBinding{
+    class InvalidBinding {
 
         @Test
         @DisplayName("")

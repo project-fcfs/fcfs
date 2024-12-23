@@ -57,7 +57,7 @@ class UserServiceTest {
             assertThat(encryptor.matchesPassword(password, result.password())).isTrue();
             assertThat(result.email()).isEqualTo(encrypt + email);
             assertThat(result.role()).isEqualByComparingTo(UserRole.ROLE_USER);
-            assertThat(result.UUID()).isEqualTo(uuid);
+            assertThat(result.userId()).isEqualTo(uuid);
             assertThat(result.email()).isEqualTo(encrypt + email);
             assertThat(result.createdAt()).isEqualTo(localDateTime);
         });

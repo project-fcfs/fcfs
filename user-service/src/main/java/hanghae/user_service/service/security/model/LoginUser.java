@@ -9,13 +9,13 @@ public record LoginUser(
         String password,
         String email,
         UserRole userRole,
-        String UUID
+        String userId
 ) {
 
     public static LoginUser create(User user) {
         return new LoginUser(
                 user.id(), user.name(), user.password(),
-                user.email(), user.role(), user.UUID()
+                user.email(), user.role(), user.userId()
         );
     }
 

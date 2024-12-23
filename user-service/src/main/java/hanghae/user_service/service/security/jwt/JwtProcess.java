@@ -1,12 +1,8 @@
 package hanghae.user_service.service.security.jwt;
 
 import static hanghae.user_service.service.security.jwt.JwtVO.CATEGORY_ACCESS;
-import static hanghae.user_service.service.security.jwt.JwtVO.CATEGORY_NAME;
 import static hanghae.user_service.service.security.jwt.JwtVO.CATEGORY_REFRESH;
-import static hanghae.user_service.service.security.jwt.JwtVO.PAYLOAD_EMAIL;
-import static hanghae.user_service.service.security.jwt.JwtVO.PAYLOAD_ROLE;
-import static hanghae.user_service.service.security.jwt.JwtVO.PAYLOAD_UUID;
-import static hanghae.user_service.service.security.jwt.JwtVO.SUBJECT;
+import static hanghae.user_service.service.security.jwt.JwtVO.PAYLOAD_USER_ID;
 
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
@@ -21,19 +17,16 @@ public class JwtProcess {
 
     private final SecretKey secretKey;
 
-    public String getEmail(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-                .getPayload().get(PAYLOAD_EMAIL, String.class);
+
+    public JwtProcess(@Value("${jwt.secret-key}") String secret,
+                      @Value("${jwt.algorithm}") String jwtAlgorithm) {
+
+        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), jwtAlgorithm);
     }
 
-    public String getRole(String token) {
+    public String getUserId(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-                .getPayload().get(PAYLOAD_ROLE, String.class);
-    }
-
-    public String getUuid(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-                .getPayload().get(PAYLOAD_UUID, String.class);
+                .getPayload().get(PAYLOAD_USER_ID, String.class);
     }
 
     public boolean isExpired(String token) {
@@ -41,29 +34,20 @@ public class JwtProcess {
                 .getPayload().getExpiration().before(new Date());
     }
 
-    public JwtProcess(@Value("${jwt.secret-key}") String secret,
-                      @Value("${jwt.algorithm}") String jwtAlgorithm){
-
-        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), jwtAlgorithm);
-    }
-
-    public String createAccessToken(String email, String role, String UUID, Long expireTime) {
+    public String createAccessToken(String userId, Long expireTime) {
         return Jwts.builder()
-                .subject(SUBJECT)
-                .claim(CATEGORY_NAME, CATEGORY_ACCESS)
-                .claim(PAYLOAD_EMAIL, email)
-                .claim(PAYLOAD_ROLE, role)
-                .claim(PAYLOAD_UUID, UUID)
+                .subject(CATEGORY_ACCESS)
+                .claim(PAYLOAD_USER_ID, userId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(secretKey)
                 .compact();
     }
 
-    public String createRefreshToken(Long expireTime) {
+    public String createRefreshToken(String userId, Long expireTime) {
         return Jwts.builder()
-                .subject(SUBJECT)
-                .claim(CATEGORY_NAME, CATEGORY_REFRESH)
+                .subject(CATEGORY_REFRESH)
+                .claim(PAYLOAD_USER_ID, CATEGORY_REFRESH)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(secretKey)

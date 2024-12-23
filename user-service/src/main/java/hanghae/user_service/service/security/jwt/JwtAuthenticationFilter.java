@@ -1,7 +1,7 @@
 package hanghae.user_service.service.security.jwt;
 
-import static hanghae.user_service.service.security.jwt.JwtVO.HEADER;
 import static hanghae.user_service.service.security.jwt.JwtVO.TOKEN_PREFIX;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.user_service.controller.req.UserLoginReqDto;
@@ -62,10 +62,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         PrincipalDetails principal = (PrincipalDetails) authResult.getPrincipal();
         LoginUser loginUser = principal.getLoginUser();
 
-        String accessToken = jwtProcess.createAccessToken(loginUser.email(),
-                loginUser.userRole().name(), loginUser.UUID(), JwtVO.ACCESS_TOKEN_EXPIRATION);
+        String accessToken = jwtProcess.createAccessToken(loginUser.userId(), JwtVO.ACCESS_TOKEN_EXPIRATION);
 
-        response.addHeader(HEADER, TOKEN_PREFIX + accessToken);
+        response.addHeader(AUTHORIZATION, TOKEN_PREFIX + accessToken);
         CustomResponseUtil.success(response, LOGIN_SUCCESS);
     }
 

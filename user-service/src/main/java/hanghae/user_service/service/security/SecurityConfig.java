@@ -1,15 +1,13 @@
 package hanghae.user_service.service.security;
 
 import hanghae.user_service.service.port.PersonalDataEncryptor;
+import hanghae.user_service.service.port.UserRepository;
 import hanghae.user_service.service.security.handler.FormAccessDeniedHandler;
 import hanghae.user_service.service.security.handler.FormEntryPointHandler;
 import hanghae.user_service.service.security.jwt.JwtAuthenticationFilter;
 import hanghae.user_service.service.security.jwt.JwtAuthorizationFilter;
 import hanghae.user_service.service.security.jwt.JwtProcess;
-import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
-import org.springframework.boot.autoconfigure.security.servlet.StaticResourceRequest;
-import org.springframework.boot.autoconfigure.security.servlet.StaticResourceRequest.StaticResourceRequestMatcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -30,12 +28,14 @@ public class SecurityConfig {
     private final JwtProcess jwtProcess;
     private final AuthenticationConfiguration configuration;
     private final PersonalDataEncryptor encryptor;
+    private final UserRepository userRepository;
 
     public SecurityConfig(JwtProcess jwtProcess, AuthenticationConfiguration configuration,
-                          PersonalDataEncryptor encryptor) {
+                          PersonalDataEncryptor encryptor, UserRepository userRepository) {
         this.jwtProcess = jwtProcess;
         this.configuration = configuration;
         this.encryptor = encryptor;
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -66,7 +66,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterAt(new JwtAuthenticationFilter(authenticationManager(configuration), jwtProcess, encryptor),
                         UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(configuration), jwtProcess), JwtAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(configuration), jwtProcess,userRepository),
+                        JwtAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new FormEntryPointHandler())
                         .accessDeniedHandler(new FormAccessDeniedHandler()))

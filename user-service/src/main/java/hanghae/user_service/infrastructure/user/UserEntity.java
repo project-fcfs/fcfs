@@ -27,7 +27,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String address;
     @Column(nullable = false)
-    private String UUID;
+    private String userId;
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
@@ -36,7 +36,7 @@ public class UserEntity {
     protected UserEntity() {
     }
 
-    public UserEntity(Long id, String name, String password, String email, UserRole role, String address, String UUID,
+    public UserEntity(Long id, String name, String password, String email, UserRole role, String address, String userId,
                       LocalDateTime createdAt, LocalDateTime deletedAt) {
         this.id = id;
         this.name = name;
@@ -44,17 +44,17 @@ public class UserEntity {
         this.email = email;
         this.role = role;
         this.address = address;
-        this.UUID = UUID;
+        this.userId = userId;
         this.createdAt = createdAt;
         this.deletedAt = deletedAt;
     }
 
     public static UserEntity fromModel(User user) {
         return new UserEntity(user.id(), user.name(), user.password(), user.email(), user.role(),
-                user.address(), user.UUID(), user.createdAt(), user.deletedAt());
+                user.address(), user.userId(), user.createdAt(), user.deletedAt());
     }
 
     public User toModel() {
-        return new User(id, name, password, email, role, UUID, address, createdAt, deletedAt);
+        return new User(id, name, password, email, role, userId, address, createdAt, deletedAt);
     }
 }
