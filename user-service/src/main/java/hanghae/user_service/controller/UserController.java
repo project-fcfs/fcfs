@@ -8,6 +8,7 @@ import hanghae.user_service.domain.user.User;
 import hanghae.user_service.service.AuthenticationService;
 import hanghae.user_service.service.UserFacade;
 import hanghae.user_service.service.UserService;
+import hanghae.user_service.service.security.model.LoginUser;
 import hanghae.user_service.service.security.model.PrincipalDetails;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,8 @@ public class UserController {
 
     @GetMapping("/user/mypage")
     public ResponseEntity<?> getMyPage(@AuthenticationPrincipal PrincipalDetails principal){
-        User user = userService.getUser(principal.getUsername());
+        LoginUser loginUser = principal.getLoginUser();
+        User user = userService.getUser(loginUser.id());
         return new ResponseEntity<>(UserInfoRespDto.of(user), HttpStatus.OK);
     }
 }

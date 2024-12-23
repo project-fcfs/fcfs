@@ -29,13 +29,16 @@ public class SecurityConfig {
     private final AuthenticationConfiguration configuration;
     private final PersonalDataEncryptor encryptor;
     private final UserRepository userRepository;
+    private final FormUserDetailService userDetailService;
 
     public SecurityConfig(JwtProcess jwtProcess, AuthenticationConfiguration configuration,
-                          PersonalDataEncryptor encryptor, UserRepository userRepository) {
+                          PersonalDataEncryptor encryptor, UserRepository userRepository,
+                          FormUserDetailService userDetailService) {
         this.jwtProcess = jwtProcess;
         this.configuration = configuration;
         this.encryptor = encryptor;
         this.userRepository = userRepository;
+        this.userDetailService = userDetailService;
     }
 
     @Bean
@@ -64,6 +67,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .userDetailsService(userDetailService)
                 .addFilterAt(new JwtAuthenticationFilter(authenticationManager(configuration), jwtProcess, encryptor),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(configuration), jwtProcess,userRepository),

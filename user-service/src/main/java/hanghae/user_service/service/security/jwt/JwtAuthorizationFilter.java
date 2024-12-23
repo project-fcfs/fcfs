@@ -6,6 +6,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import hanghae.user_service.domain.user.User;
 import hanghae.user_service.service.common.exception.InvalidJwtTokenException;
 import hanghae.user_service.service.port.UserRepository;
+import hanghae.user_service.service.security.model.LoginUser;
+import hanghae.user_service.service.security.model.PrincipalDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -44,11 +46,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     User user = userRepository.findByUserId(userId)
                             .orElseThrow(() -> new AccessDeniedException(INVALID_JWT_TOKEN.getMessage()));
 
+                    PrincipalDetails principalDetails = new PrincipalDetails(LoginUser.create(user));
+
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            user.email(), null,
+                            principalDetails, null,
                             List.of(new SimpleGrantedAuthority(user.role().name())));
 
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContextHolderStrategy().getContext().setAuthentication(authToken);
                 }
             } catch (MalformedJwtException | ExpiredJwtException e) {
                 throw new InvalidJwtTokenException(INVALID_JWT_TOKEN.getMessage(), e);

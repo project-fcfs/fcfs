@@ -58,8 +58,8 @@ public class UserService {
         return user.decodeData(decodedName, decodedEmail, decodedAddress);
     }
 
-    public User getUser(String email) {
-        User user = userRepository.findByEmail(email)
+    public User getUser(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomApiException(ErrorMessage.NOT_FOUND_USER.getMessage()));
         return decodeUserInfo(user);
     }
