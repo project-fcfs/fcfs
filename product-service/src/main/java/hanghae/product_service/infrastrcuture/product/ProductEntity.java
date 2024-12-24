@@ -28,7 +28,7 @@ public class ProductEntity {
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String productId;
 
     @Column(nullable = false)
