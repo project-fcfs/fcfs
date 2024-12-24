@@ -31,4 +31,8 @@ public class FakeImageFileRepository implements ImageFileRepository {
         return data.stream().filter(i -> i.product().id().equals(productId)).findFirst();
     }
 
+    @Override
+    public List<ImageFile> findAllInProductId(List<Long> productIds) {
+        return data.stream().filter(i -> productIds.contains(i.product().id())).toList();
+    }
 }

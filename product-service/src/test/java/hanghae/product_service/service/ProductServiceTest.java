@@ -39,7 +39,7 @@ class ProductServiceTest {
 
         // when
         productService.create(name,price,quantity,null);
-        Product result = productRepository.fetchByUid(uid).get();
+        Product result = productRepository.findProductById(uid).get();
 
         // then
         assertAll(() -> {

@@ -19,7 +19,7 @@ public class FakeProductRepository implements ProductRepository {
                     product.productId(), product.productStatus());
             data.add(newProduct);
             return newProduct;
-        }else{
+        } else {
             data.removeIf(i -> i.id().equals(product.id()));
             data.add(product);
             return product;
@@ -27,7 +27,12 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
-    public Optional<Product> fetchByUid(String uid) {
+    public Optional<Product> findProductById(String uid) {
         return data.stream().filter(i -> i.productId().equals(uid)).findFirst();
+    }
+
+    @Override
+    public List<Product> findAll() {
+        return data;
     }
 }

@@ -5,6 +5,7 @@ import hanghae.product_service.domain.imagefile.ImageFile;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.port.ImageFileRepository;
 import hanghae.product_service.service.port.UUIDRandomHolder;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,5 +45,9 @@ public class ImageFileService {
     public ImageFile getImageFile(Long productId){
         Optional<ImageFile> imageFile = imageFileRepository.fetchByProductId(productId);
         return imageFile.orElse(null);
+    }
+
+    public List<ImageFile> getAllInProductId(List<Long> productIds) {
+        return imageFileRepository.findAllInProductId(productIds);
     }
 }

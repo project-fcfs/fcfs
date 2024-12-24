@@ -9,16 +9,19 @@ import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.ImageFileService;
 import hanghae.product_service.service.ProductService;
 import java.io.IOException;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
+@RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -29,7 +32,7 @@ public class ProductController {
         this.imageFileService = imageFileService;
     }
 
-    @PostMapping("/product/create")
+    @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestPart("createReqDto") ProductCreateReqDto reqDto,
                                            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
         MultipartUtil.validateImageFile(file);
@@ -40,7 +43,7 @@ public class ProductController {
         return new ResponseEntity<>(productRespDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/product/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getProduct(@PathVariable("id") String productId) {
         ProductRespDto productRespDto = productService.getProduct(productId);
         return new ResponseEntity<>(productRespDto, HttpStatus.OK);
@@ -49,5 +52,11 @@ public class ProductController {
     private FileInfo toFileInfo(MultipartFile file) throws IOException {
         if(file == null) return null;
         return FileInfo.create(file);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getProducts() {
+        List<ProductRespDto> dtos = productService.getAllProducts();
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 }

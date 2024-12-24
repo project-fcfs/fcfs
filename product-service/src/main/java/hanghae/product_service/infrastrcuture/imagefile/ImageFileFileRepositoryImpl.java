@@ -2,6 +2,7 @@ package hanghae.product_service.infrastrcuture.imagefile;
 
 import hanghae.product_service.domain.imagefile.ImageFile;
 import hanghae.product_service.service.port.ImageFileRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -21,5 +22,10 @@ public class ImageFileFileRepositoryImpl implements ImageFileRepository {
     @Override
     public Optional<ImageFile> fetchByProductId(Long productId) {
         return jpaRepository.fetchByProductId(productId).map(ImageFileEntity::toModel);
+    }
+
+    @Override
+    public List<ImageFile> findAllInProductId(List<Long> productIds) {
+        return jpaRepository.findAllInProductId(productIds);
     }
 }
