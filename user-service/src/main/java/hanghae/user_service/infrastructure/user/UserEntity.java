@@ -20,13 +20,13 @@ public class UserEntity {
     private String name;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
     private UserRole role;
     @Column(nullable = false)
     private String address;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String userId;
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
