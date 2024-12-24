@@ -6,6 +6,7 @@ import hanghae.order_service.service.port.DeliveryRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeDeliveryRepository implements DeliveryRepository {
@@ -36,6 +37,10 @@ public class FakeDeliveryRepository implements DeliveryRepository {
 
     @Override
     public void saveAll(List<Delivery> results) {
-        data.addAll(results);
+        results.forEach(this::save);
+    }
+
+    public Optional<Delivery> findById(Long id) {
+        return data.stream().filter(i -> i.id().equals(id)).findFirst();
     }
 }

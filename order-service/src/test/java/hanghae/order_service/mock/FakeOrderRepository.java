@@ -42,7 +42,7 @@ public class FakeOrderRepository implements OrderRepository {
 
     @Override
     public void saveAll(List<Order> orders) {
-        data.addAll(orders);
+        orders.forEach(this::save);
     }
 
     public Optional<Order> findById(Long id){
