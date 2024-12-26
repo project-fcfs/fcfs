@@ -15,7 +15,7 @@ import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeDeliveryRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
 import hanghae.order_service.mock.FakeOrderRepository;
-import hanghae.order_service.mock.FakeProductClient;
+import hanghae.order_service.mock.FakeOrderProductClient;
 import hanghae.order_service.mock.FakeUuidRandomHolder;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,14 +29,14 @@ class OrderServiceTest {
     private OrderService orderService;
     private FakeLocalDateTimeHolder localDateTimeHolder;
     private FakeUuidRandomHolder uuidRandomHolder;
-    private FakeProductClient productClient;
+    private FakeOrderProductClient productClient;
     private FakeCartProductRepository cartProductRepository;
     private FakeOrderRepository orderRepository;
 
     @BeforeEach
     void setUp() {
         FakeDeliveryRepository deliveryRepository = new FakeDeliveryRepository();
-        productClient = new FakeProductClient(List.of());
+        productClient = new FakeOrderProductClient(List.of());
         orderRepository = new FakeOrderRepository();
         cartProductRepository = new FakeCartProductRepository();
         localDateTimeHolder = new FakeLocalDateTimeHolder(LocalDateTime.now());

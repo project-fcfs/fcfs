@@ -1,13 +1,16 @@
 package hanghae.order_service.service;
 
 import hanghae.order_service.controller.resp.CartProductRespDto;
+import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.port.ProductClient;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.CartRepository;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +20,13 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final CartProductRepository cartProductRepository;
+    private final ProductClient productClient;
 
-    public CartService(CartRepository cartRepository, CartProductRepository cartProductRepository) {
+    public CartService(CartRepository cartRepository, CartProductRepository cartProductRepository,
+                       ProductClient productClient) {
         this.cartRepository = cartRepository;
         this.cartProductRepository = cartProductRepository;
+        this.productClient = productClient;
     }
 
     /**
@@ -29,8 +35,13 @@ public class CartService {
      */
     @Transactional
     public void add(String userId, String productId) {
-        Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> cartRepository.save(Cart.create(userId)));
-        cartProductRepository.save(CartProduct.create(productId, cart));
+        ResponseEntity<ResponseDto<?>> product = productClient.isValidProduct(productId);
+        if(product.getStatusCode().is4xxClientError() || product.getBody().code() == -1){
+            Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> cartRepository.save(Cart.create(userId)));
+            cartProductRepository.save(CartProduct.create(productId, cart));
+        } else{
+            throw new CustomApiException(ErrorMessage.INVALID_PRODUCT.getMessage());
+        }
     }
 
     /**

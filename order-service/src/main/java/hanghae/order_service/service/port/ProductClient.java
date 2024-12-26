@@ -1,11 +1,10 @@
 package hanghae.order_service.service.port;
 
-import hanghae.order_service.domain.product.OrderItem;
-import hanghae.order_service.infrastructure.product.ItemRefund;
-import java.util.List;
+import hanghae.order_service.controller.resp.ResponseDto;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 public interface ProductClient {
 
-    List<OrderItem> getOrderItems(List<String> productIds);
-    void addProductStock(List<ItemRefund> itemRefunds);
+    ResponseEntity<ResponseDto<?>> isValidProduct(@PathVariable("id") String productId);
 }

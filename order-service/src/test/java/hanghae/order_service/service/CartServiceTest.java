@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import hanghae.order_service.domain.cart.CartProduct;
+import hanghae.order_service.mock.FakeProductClient;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeCartRepository;
 import hanghae.order_service.service.common.exception.CustomApiException;
@@ -22,9 +23,10 @@ class CartServiceTest {
 
     @BeforeEach
     void setUp() {
+        FakeProductClient cartProductClient = new FakeProductClient();
         cartProductRepository = new FakeCartProductRepository();
         FakeCartRepository cartRepository = new FakeCartRepository();
-        cartService = new CartService(cartRepository, cartProductRepository);
+        cartService = new CartService(cartRepository, cartProductRepository, cartProductClient);
     }
 
     @Test

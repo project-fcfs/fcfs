@@ -11,7 +11,7 @@ import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.DeliveryRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
 import hanghae.order_service.service.port.OrderRepository;
-import hanghae.order_service.service.port.ProductClient;
+import hanghae.order_service.service.port.OrderProductClient;
 import hanghae.order_service.service.port.UuidRandomHolder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,17 +28,17 @@ public class OrderService {
     private final CartProductRepository cartProductRepository;
     private final LocalDateTimeHolder localDateTimeHolder;
     private final UuidRandomHolder uuidRandomHolder;
-    private final ProductClient productClient;
+    private final OrderProductClient orderProductClient;
     private final DeliveryRepository deliveryRepository;
 
     public OrderService(OrderRepository orderRepository, CartProductRepository cartProductRepository,
                         LocalDateTimeHolder localDateTimeHolder, UuidRandomHolder uuidRandomHolder,
-                        ProductClient productClient, DeliveryRepository deliveryRepository) {
+                        OrderProductClient orderProductClient, DeliveryRepository deliveryRepository) {
         this.orderRepository = orderRepository;
         this.cartProductRepository = cartProductRepository;
         this.localDateTimeHolder = localDateTimeHolder;
         this.uuidRandomHolder = uuidRandomHolder;
-        this.productClient = productClient;
+        this.orderProductClient = orderProductClient;
         this.deliveryRepository = deliveryRepository;
     }
 
@@ -77,7 +77,7 @@ public class OrderService {
         Map<String, Integer> cartProductQuantity = cartProductRepository.findByUserSelectedCart(userId, productIds)
                 .stream().collect(Collectors.toMap(CartProduct::productId, CartProduct::quantity));
 
-        return productClient.getOrderItems(productIds).stream()
+        return orderProductClient.getOrderItems(productIds).stream()
                 .map(orderItem -> {
                     Integer count = cartProductQuantity.get(orderItem.productId());
                     return orderItem.convertToCartCount(count);

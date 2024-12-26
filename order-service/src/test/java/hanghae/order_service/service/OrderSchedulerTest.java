@@ -12,7 +12,7 @@ import hanghae.order_service.domain.product.OrderItem;
 import hanghae.order_service.mock.FakeDeliveryRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
 import hanghae.order_service.mock.FakeOrderRepository;
-import hanghae.order_service.mock.FakeProductClient;
+import hanghae.order_service.mock.FakeOrderProductClient;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.groups.Tuple;
@@ -26,14 +26,14 @@ class OrderSchedulerTest {
     private FakeLocalDateTimeHolder localDateTimeHolder;
     private FakeDeliveryRepository deliveryRepository;
     private FakeOrderRepository orderRepository;
-    private FakeProductClient productClient;
+    private FakeOrderProductClient productClient;
 
     @BeforeEach
     void setUp() {
         orderRepository = new FakeOrderRepository();
         localDateTimeHolder = new FakeLocalDateTimeHolder(LocalDateTime.now());
         deliveryRepository = new FakeDeliveryRepository();
-        productClient = new FakeProductClient(List.of());
+        productClient = new FakeOrderProductClient(List.of());
         orderScheduler = new OrderScheduler(deliveryRepository, orderRepository, localDateTimeHolder, productClient);
     }
 

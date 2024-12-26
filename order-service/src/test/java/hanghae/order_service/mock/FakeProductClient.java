@@ -1,39 +1,12 @@
 package hanghae.order_service.mock;
 
-import hanghae.order_service.domain.product.OrderItem;
-import hanghae.order_service.infrastructure.product.ItemRefund;
+import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.service.port.ProductClient;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import org.springframework.http.ResponseEntity;
 
 public class FakeProductClient implements ProductClient {
-
-    private List<OrderItem> orderItems;
-
-    public FakeProductClient(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
-    }
-
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
-    }
-
     @Override
-    public List<OrderItem> getOrderItems(List<String> productIds) {
-        return orderItems.stream().filter(i -> productIds.contains(i.productId())).toList();
-    }
-
-    @Override
-    public void addProductStock(List<ItemRefund> itemRefunds) {
-        Map<String, Integer> map = itemRefunds.stream()
-                .collect(Collectors.toMap(k -> k.productId(), v -> v.count()));
-
-        orderItems = orderItems.stream()
-                .map(i -> {
-                    Integer quantity = map.get(i.productId());
-                    int i1 = i.orderCount() + quantity;
-                    return new OrderItem(i.productId(), i.orderPrice(), i1);
-                }).toList();
+    public ResponseEntity<ResponseDto<?>> isValidProduct(String productId) {
+        return null;
     }
 }

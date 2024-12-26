@@ -8,7 +8,7 @@ import hanghae.order_service.infrastructure.product.ItemRefund;
 import hanghae.order_service.service.port.DeliveryRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
 import hanghae.order_service.service.port.OrderRepository;
-import hanghae.order_service.service.port.ProductClient;
+import hanghae.order_service.service.port.OrderProductClient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +21,15 @@ public class OrderScheduler {
     private final DeliveryRepository deliveryRepository;
     private final OrderRepository orderRepository;
     private final LocalDateTimeHolder localDateTimeHolder;
-    private final ProductClient productClient;
+    private final OrderProductClient orderProductClient;
 
     public OrderScheduler(DeliveryRepository deliveryRepository, OrderRepository orderRepository,
                           LocalDateTimeHolder localDateTimeHolder,
-                          ProductClient productClient) {
+                          OrderProductClient orderProductClient) {
         this.deliveryRepository = deliveryRepository;
         this.orderRepository = orderRepository;
         this.localDateTimeHolder = localDateTimeHolder;
-        this.productClient = productClient;
+        this.orderProductClient = orderProductClient;
     }
 
     /**
@@ -89,8 +89,9 @@ public class OrderScheduler {
             );
         }
 
-        // 완료된 주문 저장 및 재고 업데이트
-        productClient.addProductStock(itemRefunds);
+        // 완료된 주문 저장 및 재고 업데이트 카프카 이용
+        // openfeign은 데이터 소실 위험성이 있음
+        orderProductClient.addProductStock(itemRefunds);
         orderRepository.saveAll(orderResults);
     }
 }
