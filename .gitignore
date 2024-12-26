@@ -4,3 +4,5 @@ appli*.properties
 *.yml
 /redis/
 .env
+
+/db/
