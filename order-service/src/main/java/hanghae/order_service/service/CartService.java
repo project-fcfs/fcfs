@@ -36,7 +36,7 @@ public class CartService {
     @Transactional
     public void add(String userId, String productId) {
         ResponseEntity<ResponseDto<?>> product = productClient.isValidProduct(productId);
-        if(product.getStatusCode().is4xxClientError() || product.getBody().code() == -1){
+        if(product.getStatusCode().is2xxSuccessful()){
             Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> cartRepository.save(Cart.create(userId)));
             cartProductRepository.save(CartProduct.create(productId, cart));
         } else{
