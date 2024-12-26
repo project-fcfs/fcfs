@@ -2,8 +2,8 @@ package hanghae.order_service.controller.resp;
 
 public record ProductRespDto(
         String name,
-        int price,
-        int quantity,
+        Integer price,
+        Integer quantity,
         String productId,
         ProductStatus status,
         String imageUrl
@@ -16,5 +16,9 @@ public record ProductRespDto(
         ProductStatus(String description) {
             this.description = description;
         }
+    }
+
+    public ProductRespDto convertCart(int quantity){
+        return new ProductRespDto(name, price, quantity, productId, status, imageUrl);
     }
 }

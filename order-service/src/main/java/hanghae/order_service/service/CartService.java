@@ -1,7 +1,6 @@
 package hanghae.order_service.service;
 
-import hanghae.order_service.controller.resp.CartProductRespDto;
-import hanghae.order_service.controller.resp.ResponseDto;
+import hanghae.order_service.controller.resp.ProductRespDto;
 import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.service.common.exception.CustomApiException;
@@ -10,6 +9,8 @@ import hanghae.order_service.service.port.ProductClient;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.CartRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,9 +76,22 @@ public class CartService {
     /**
      * 장바구니의 정보로 Product-service에서 정보를 가져와 유저에게 반환한다
      */
-    public List<CartProductRespDto> getCartProducts(String userId) {
+    public List<ProductRespDto> getCartProducts(String userId) {
         List<CartProduct> cartProducts = cartProductRepository.findAllByUserId(userId);
-        // todo Product-service에서 상품정보 가져와서 반환하기
-        return null;
+        List<String> productIds = cartProducts.stream()
+                .map(CartProduct::productId)
+                .toList();
+        ResponseEntity<List<ProductRespDto>> products = productClient.getProducts(productIds);
+
+        List<ProductRespDto> productDtos = products.getBody();
+
+        Map<String, ProductRespDto> map = productDtos.stream()
+                .collect(Collectors.toMap(ProductRespDto::productId, v -> v));
+
+        return cartProducts.stream()
+                .map(i -> {
+                    ProductRespDto productRespDto = map.get(i.productId());
+                    return productRespDto.convertCart(i.quantity());
+                }).toList();
     }
 }
