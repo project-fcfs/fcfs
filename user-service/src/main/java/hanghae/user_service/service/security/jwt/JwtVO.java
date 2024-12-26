@@ -1,7 +1,5 @@
 package hanghae.user_service.service.security.jwt;
 
-import org.springframework.beans.factory.annotation.Value;
-
 public class JwtVO {
     public static final String TOKEN_PREFIX = "Bearer ";
 

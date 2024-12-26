@@ -47,7 +47,7 @@ public class JwtProcess {
     public String createRefreshToken(String userId, Long expireTime) {
         return Jwts.builder()
                 .subject(CATEGORY_REFRESH)
-                .claim(PAYLOAD_USER_ID, CATEGORY_REFRESH)
+                .claim(PAYLOAD_USER_ID, userId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(secretKey)
