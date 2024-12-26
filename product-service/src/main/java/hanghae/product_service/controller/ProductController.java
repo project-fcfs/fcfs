@@ -26,11 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductController {
 
     private final ProductService productService;
-    private final ImageFileService imageFileService;
 
-    public ProductController(ProductService productService, ImageFileService imageFileService) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
-        this.imageFileService = imageFileService;
     }
 
     @PostMapping("/create")
