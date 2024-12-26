@@ -55,8 +55,17 @@ public class ProductService {
                 new CustomApiException(ErrorMessage.NOT_FOUND_PRODUCT.getMessage()));
     }
 
-    public List<ProductRespDto>  getAllProducts() {
+    public List<ProductRespDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
+        return assembleProductAndImage(products);
+    }
+
+    public List<ProductRespDto> getProductByIds(List<String> ids) {
+        List<Product> products = productRepository.findAllByProductIds(ids);
+        return assembleProductAndImage(products);
+    }
+
+    private List<ProductRespDto> assembleProductAndImage(List<Product> products) {
         List<Long> productIds = products.stream().map(Product::id).toList();
         List<ImageFile> imageFiles = imageFileService.getAllInProductId(productIds);
 

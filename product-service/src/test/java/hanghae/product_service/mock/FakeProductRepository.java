@@ -35,4 +35,9 @@ public class FakeProductRepository implements ProductRepository {
     public List<Product> findAll() {
         return data;
     }
+
+    @Override
+    public List<Product> findAllByProductIds(List<String> ids) {
+        return data.stream().filter(i -> ids.contains(i.id())).toList();
+    }
 }

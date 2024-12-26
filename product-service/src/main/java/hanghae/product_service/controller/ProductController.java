@@ -58,4 +58,10 @@ public class ProductController {
         List<ProductRespDto> dtos = productService.getAllProducts();
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
+
+    @GetMapping("/{ids}")
+    public ResponseEntity<?> fetchCartProducts(@PathVariable("ids") List<String> ids) {
+        List<ProductRespDto> dtos = productService.getProductByIds(ids);
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
 }

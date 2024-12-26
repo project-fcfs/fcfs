@@ -10,4 +10,6 @@ public interface ProductRepository {
     Optional<Product> findProductById(String uid);
 
     List<Product> findAll();
+
+    List<Product> findAllByProductIds(List<String> ids);
 }
