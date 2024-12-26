@@ -21,6 +21,6 @@ public class CartRepositoryImpl implements CartRepository {
 
     @Override
     public Optional<Cart> findByUserId(String userId) {
-        return Optional.empty();
+        return jpaRepository.findByUserId(userId).map(CartEntity::toModel);
     }
 }

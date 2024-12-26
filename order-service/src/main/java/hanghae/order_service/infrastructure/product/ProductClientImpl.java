@@ -17,6 +17,6 @@ public interface ProductClientImpl extends ProductClient {
     ResponseEntity<ResponseDto<?>> isValidProduct(@PathVariable("id") String productId);
 
     @Override
-    @GetMapping("/products/{ids}")
+    @GetMapping("/products/cart/{ids}")
     ResponseEntity<List<ProductRespDto>> getProducts(@PathVariable("ids") List<String> productIds);
 }
