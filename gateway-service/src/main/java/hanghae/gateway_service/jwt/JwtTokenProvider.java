@@ -38,7 +38,7 @@ public class JwtTokenProvider {
     public boolean isAccessToken(String token) {
         String subject = Jwts.parser().verifyWith(secretKey).build()
                 .parseSignedClaims(token).getPayload().getSubject();
-        return !subject.equals(CATEGORY_ACCESS);
+        return subject.equals(CATEGORY_ACCESS);
     }
 
     // 토큰 유효성 검사

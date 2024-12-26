@@ -49,6 +49,6 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
 
     private boolean validateToken(String token) {
-        return token == null || provider.isExpired(token) || !provider.isAccessToken(token);
+        return provider.isExpired(token) || !provider.isAccessToken(token);
     }
 }
