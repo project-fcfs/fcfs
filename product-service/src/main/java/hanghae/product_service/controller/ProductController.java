@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,8 +60,8 @@ public class ProductController {
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
-    @GetMapping("/cart/{ids}")
-    public ResponseEntity<?> fetchCartProducts(@PathVariable("ids") List<String> ids) {
+    @GetMapping("/cart")
+    public ResponseEntity<?> fetchCartProducts(@RequestParam("ids") List<String> ids) {
         List<ProductRespDto> dtos = productService.getProductByIds(ids);
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }

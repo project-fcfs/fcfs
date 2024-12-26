@@ -9,6 +9,6 @@ import org.springframework.data.repository.query.Param;
 public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long> {
     Optional<ProductEntity> findByProductId(String productId);
 
-    @Query("select p from ProductEntity p where p.productId in :ids")
+    @Query("select p from ProductEntity p where p.productId in :productIds")
     List<ProductEntity> findAllByProductIds(@Param("productIds") List<String> productIds);
 }
