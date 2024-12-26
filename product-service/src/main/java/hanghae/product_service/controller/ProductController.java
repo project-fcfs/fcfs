@@ -4,6 +4,7 @@ import hanghae.product_service.controller.common.MultipartUtil;
 import hanghae.product_service.controller.req.FileInfo;
 import hanghae.product_service.controller.req.ProductCreateReqDto;
 import hanghae.product_service.controller.resp.ProductRespDto;
+import hanghae.product_service.controller.resp.ResponseDto;
 import hanghae.product_service.domain.imagefile.ImageFile;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.ImageFileService;
@@ -46,7 +47,7 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getProduct(@PathVariable("id") String productId) {
         ProductRespDto productRespDto = productService.getProduct(productId);
-        return new ResponseEntity<>(productRespDto, HttpStatus.OK);
+        return new ResponseEntity<>(ResponseDto.success(productRespDto), HttpStatus.OK);
     }
 
     private FileInfo toFileInfo(MultipartFile file) throws IOException {
