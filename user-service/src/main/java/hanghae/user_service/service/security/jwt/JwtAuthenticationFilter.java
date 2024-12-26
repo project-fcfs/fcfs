@@ -23,8 +23,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private static final String LOGIN_SUCCESS = "로그인 성공";
-    private static final String LOGIN_FAIL = "로그인 실패";
+    private static final String LOGIN_SUCCESS = "Login Success";
+    private static final String LOGIN_FAIL = "Login Fail";
 
     private final AuthenticationManager authenticationManager;
     private final JwtProcess jwtProcess;
