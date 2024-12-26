@@ -1,6 +1,8 @@
 package hanghae.gateway_service.filter;
 
 import hanghae.gateway_service.jwt.JwtTokenProvider;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -27,19 +29,24 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
         return ((exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
 
-            String token = provider.resolveToken(request);
+            try{
+                String token = provider.resolveToken(request);
 
-            if (token != null && !validateToken(token)) {
-                String userId = provider.getUserIdFromToken(token);
-                log.info("user Id -> {} ", userId);
+                if (token != null && !validateToken(token)) {
+                    String userId = provider.getUserIdFromToken(token);
+                    log.info("user Id -> {} ", userId);
 
-                // 3. Request Header에 userId 추가
-                ServerHttpRequest modifiedRequest = request.mutate()
-                        .header("userId", userId)
-                        .build();
+                    // 3. Request Header에 userId 추가
+                    ServerHttpRequest modifiedRequest = request.mutate()
+                            .header("userId", userId)
+                            .build();
 
-                return chain.filter(exchange.mutate().request(modifiedRequest).build());
+                    return chain.filter(exchange.mutate().request(modifiedRequest).build());
+                }
+            } catch (JwtException e) {
+                log.info("JwtException : {}", e.getMessage());
             }
+
             // 토큰이 없거나 유효하지 않으면 에러 처리
             log.info("JWT Token is invalid or missing");
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
