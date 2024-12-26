@@ -8,6 +8,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "product-service")
 public interface ProductClientImpl extends ProductClient {
@@ -17,6 +18,6 @@ public interface ProductClientImpl extends ProductClient {
     ResponseEntity<ResponseDto<?>> isValidProduct(@PathVariable("id") String productId);
 
     @Override
-    @GetMapping("/products/cart/{ids}")
-    ResponseEntity<List<ProductRespDto>> getProducts(@PathVariable("ids") List<String> productIds);
+    @GetMapping("/products/cart")
+    ResponseEntity<List<ProductRespDto>> getProducts(@RequestParam("ids") List<String> productIds);
 }
