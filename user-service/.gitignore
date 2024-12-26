@@ -38,4 +38,5 @@ out/
 
 appli*.yml
 appli*.properties
+boot*.yml
 /db/

@@ -2,5 +2,5 @@
 appli*.yml
 appli*.properties
 .env
-
+**/bootst*.yml
 /db/
