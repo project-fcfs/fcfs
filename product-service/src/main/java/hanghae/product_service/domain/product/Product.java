@@ -26,6 +26,15 @@ public record Product(
         return withUpdatedStock(remainingQuantity, status);
     }
 
+    public Product addStock(int count) {
+        int remainingQuantity = quantity + count;
+        ProductStatus status = this.productStatus;
+        if (quantity == 0) {
+            status = ProductStatus.ACTIVE;
+        }
+        return withUpdatedStock(remainingQuantity, status);
+    }
+
     private Product withUpdatedStock(int remainingQuantity, ProductStatus status) {
         return new Product(this.id, this.name, this.price, remainingQuantity, this.productId, status);
     }

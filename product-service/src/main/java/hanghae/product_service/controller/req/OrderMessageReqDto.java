@@ -1,7 +1,8 @@
 package hanghae.product_service.controller.req;
 
-public record ProductOrderReqDto(
+public record OrderMessageReqDto(
         String productId,
-        int orderCount
+        int orderCount,
+        String orderId
 ) {
 }
