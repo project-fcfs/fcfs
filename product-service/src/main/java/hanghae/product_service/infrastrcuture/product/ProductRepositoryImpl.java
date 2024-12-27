@@ -33,4 +33,10 @@ public class ProductRepositoryImpl implements ProductRepository {
     public List<Product> findAllByProductIds(List<String> ids) {
         return jpaRepository.findAllByProductIds(ids).stream().map(ProductEntity::toModel).toList();
     }
+
+    @Override
+    public void saveAll(List<Product> products) {
+        List<ProductEntity> entities = products.stream().map(ProductEntity::fromModel).toList();
+        jpaRepository.saveAll(entities);
+    }
 }

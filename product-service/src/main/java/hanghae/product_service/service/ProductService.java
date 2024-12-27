@@ -44,12 +44,6 @@ public class ProductService {
         return ProductRespDto.of(product, imageFile);
     }
 
-    @Transactional
-    public void processOrder(String productId, Integer count) {
-        Product product = fetchProductById(productId);
-        product.removeStock(count);
-    }
-
     private Product fetchProductById(String productId) {
         return productRepository.findProductById(productId).orElseThrow(() ->
                 new CustomApiException(ErrorMessage.NOT_FOUND_PRODUCT.getMessage()));
