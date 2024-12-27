@@ -12,10 +12,10 @@ public record ProductRespDto(
         ProductStatus status,
         String imageUrl
 ) {
-    public static ProductRespDto of(Product product, ImageFile imageFile){
+    public static ProductRespDto of(Product product, ImageFile imageFile) {
         return new ProductRespDto(
                 product.name(), product.price(), product.quantity(),
-                product.productId(),product.productStatus(),
+                product.productId(), product.productStatus(),
                 imageFile == null ? null : imageFile.storeFileName()
         );
     }

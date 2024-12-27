@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public interface ImageFileRepository {
     ImageFile save(ImageFile imageFile);
+
     Optional<ImageFile> fetchByProductId(Long productId);
 
     List<ImageFile> findAllInProductId(List<Long> productIds);

@@ -6,7 +6,7 @@ public record ResponseDto<T>(
         T data
 ) {
 
-    public static<T> ResponseDto<?> success(T data){
+    public static <T> ResponseDto<?> success(T data) {
         return new ResponseDto<>(1, "success", data);
     }
 }

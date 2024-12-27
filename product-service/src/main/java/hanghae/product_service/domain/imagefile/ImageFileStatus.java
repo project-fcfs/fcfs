@@ -7,4 +7,5 @@ public enum ImageFileStatus {
 
     ImageFileStatus(String description) {
         this.description = description;
-    }}
+    }
+}

@@ -19,7 +19,7 @@ public record Product(
 
     public Product removeStock(int count) {
         int remainingQuantity = quantity - count;
-        if(remainingQuantity < 0) {
+        if (remainingQuantity < 0) {
             throw new CustomApiException(ErrorMessage.OUT_OF_STOCK.getMessage());
         }
         ProductStatus status = (remainingQuantity == 0) ? ProductStatus.SOLD_OUT : ProductStatus.ACTIVE;

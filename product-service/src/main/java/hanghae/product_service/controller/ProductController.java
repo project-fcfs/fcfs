@@ -5,9 +5,6 @@ import hanghae.product_service.controller.req.FileInfo;
 import hanghae.product_service.controller.req.ProductCreateReqDto;
 import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.controller.resp.ResponseDto;
-import hanghae.product_service.domain.imagefile.ImageFile;
-import hanghae.product_service.domain.product.Product;
-import hanghae.product_service.service.ImageFileService;
 import hanghae.product_service.service.ProductService;
 import java.io.IOException;
 import java.util.List;
@@ -34,7 +31,8 @@ public class ProductController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestPart("createReqDto") ProductCreateReqDto reqDto,
-                                           @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+                                           @RequestPart(value = "file", required = false) MultipartFile file)
+            throws IOException {
         MultipartUtil.validateImageFile(file);
         FileInfo fileInfo = toFileInfo(file);
         ProductRespDto productRespDto = productService.create(reqDto.name(), reqDto.price(), reqDto.quantity(),
@@ -50,7 +48,9 @@ public class ProductController {
     }
 
     private FileInfo toFileInfo(MultipartFile file) throws IOException {
-        if(file == null) return null;
+        if (file == null) {
+            return null;
+        }
         return FileInfo.create(file);
     }
 
