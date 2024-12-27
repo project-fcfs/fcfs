@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class FakeCartRepository implements CartRepository {
     private List<Cart> data = new ArrayList<>();
     private AtomicLong counter = new AtomicLong();
+
     @Override
     public Cart save(Cart cart) {
         if (cart.id() == null || cart.id() == 0L) {
@@ -17,7 +18,7 @@ public class FakeCartRepository implements CartRepository {
                     cart.userId());
             data.add(newCart);
             return newCart;
-        }else{
+        } else {
             data.removeIf(i -> i.id().equals(cart.id()));
             data.add(cart);
             return cart;

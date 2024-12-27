@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
+import hanghae.order_service.domain.product.Product;
+import hanghae.order_service.domain.product.Product.ProductStatus;
 import hanghae.order_service.mock.FakeProductClient;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeCartRepository;
@@ -20,10 +23,11 @@ class CartServiceTest {
 
     private CartService cartService;
     private FakeCartProductRepository cartProductRepository;
+    private FakeProductClient cartProductClient;
 
     @BeforeEach
     void setUp() {
-        FakeProductClient cartProductClient = new FakeProductClient();
+        cartProductClient = new FakeProductClient();
         cartProductRepository = new FakeCartProductRepository();
         FakeCartRepository cartRepository = new FakeCartRepository();
         cartService = new CartService(cartRepository, cartProductRepository, cartProductClient);
@@ -35,6 +39,7 @@ class CartServiceTest {
         // given
         String productId = "product";
         String userId = "user";
+        cartProductClient.addData(createProduct(productId));
 
         // when
         cartService.add(userId, productId);
@@ -48,6 +53,15 @@ class CartServiceTest {
         });
     }
 
+    @Test
+    @DisplayName("유효하지 않은 상품을 장바구니에 담으려고 할 경우 예외가 발생한다")
+    void putInvalidProduct() throws Exception {
+        // then
+        assertThatThrownBy(() -> cartService.add("userId", "invalidProduct"))
+                .isInstanceOf(CustomApiException.class)
+                .hasMessage(ErrorMessage.INVALID_PRODUCT.getMessage());
+    }
+
     @Nested
     @DisplayName("장바구니에 있는 상품의 수량을 업데이트할 수 있다")
     class cartQuantityUpdate{
@@ -59,7 +73,7 @@ class CartServiceTest {
             String productId = "product";
             String userId = "user";
             int count = 5;
-            cartService.add(userId, productId);
+            cartProductRepository.save(CartProduct.create(productId, Cart.create(userId)));
 
             // when
             cartService.updateQuantity(userId,productId,count);
@@ -80,7 +94,7 @@ class CartServiceTest {
             String productId = "product";
             String userId = "user";
             int count = -5;
-            cartService.add(userId, productId);
+            cartProductRepository.save(CartProduct.create(productId, Cart.create(userId)));
 
             // then
             assertThatThrownBy(() -> cartService.updateQuantity(userId, productId, count))
@@ -99,7 +113,7 @@ class CartServiceTest {
             // given
             String productId = "product";
             String userId = "user";
-            cartService.add(userId, productId);
+            cartProductRepository.save(CartProduct.create(productId, Cart.create(userId)));
 
             // when
             cartService.deleteProduct(userId,productId);
@@ -121,6 +135,10 @@ class CartServiceTest {
                     .isInstanceOf(CustomApiException.class)
                     .hasMessage(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage());
         }
+    }
+
+    private Product createProduct(String productId){
+        return new Product("name",100,10,productId, ProductStatus.ACTIVE, null);
     }
 
 }

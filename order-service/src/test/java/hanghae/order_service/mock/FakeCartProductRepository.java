@@ -18,7 +18,7 @@ public class FakeCartProductRepository implements CartProductRepository {
                     cartProduct.quantity(), cartProduct.productId(),
                     cartProduct.cart());
             data.add(newCartProduct);
-        }else{
+        } else {
             data.removeIf(i -> i.id().equals(cartProduct.id()));
             data.add(cartProduct);
         }

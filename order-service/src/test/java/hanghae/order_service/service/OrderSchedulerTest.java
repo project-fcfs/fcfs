@@ -10,8 +10,9 @@ import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.domain.order.OrderStatus;
 import hanghae.order_service.mock.FakeDeliveryRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
-import hanghae.order_service.mock.FakeOrderRepository;
 import hanghae.order_service.mock.FakeOrderProductMessage;
+import hanghae.order_service.mock.FakeOrderRepository;
+import hanghae.order_service.mock.FakeProduct;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,15 +25,16 @@ class OrderSchedulerTest {
     private FakeLocalDateTimeHolder localDateTimeHolder;
     private FakeDeliveryRepository deliveryRepository;
     private FakeOrderRepository orderRepository;
-    private FakeOrderProductMessage productClient;
+    private FakeOrderProductMessage orderProductMessage;
 
     @BeforeEach
     void setUp() {
         orderRepository = new FakeOrderRepository();
         localDateTimeHolder = new FakeLocalDateTimeHolder(LocalDateTime.now());
         deliveryRepository = new FakeDeliveryRepository();
-        productClient = new FakeOrderProductMessage();
-        orderScheduler = new OrderScheduler(deliveryRepository, orderRepository, localDateTimeHolder, productClient);
+        orderProductMessage = new FakeOrderProductMessage();
+        orderScheduler = new OrderScheduler(deliveryRepository, orderRepository, localDateTimeHolder,
+                orderProductMessage);
     }
 
     @Test
@@ -82,7 +84,8 @@ class OrderSchedulerTest {
         String productId = "productId";
         int quantity = 15;
         int orderCount = 12;
-        setProductClient(productId, quantity);
+        orderProductMessage.addProduct(FakeProduct.create("name", 100, quantity, productId));
+
         LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 24, 9, 17, 37);
         saveOrder(localDateTime, OrderStatus.RETURN_REQUESTED, orderCount, productId);
         LocalDateTime plusDays = localDateTime.plusDays(1);
@@ -91,25 +94,19 @@ class OrderSchedulerTest {
         // when
         orderScheduler.completeRefund();
         Order result = orderRepository.findById(1L).get();
-        /*List<OrderItem> orderItems = productClient.getOrderItems(List.of(productId));
 
         // then
+        FakeProduct product = orderProductMessage.getProductById(productId);
         assertAll(() -> {
             assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.RETURN_COMPLETED);
             assertThat(result.updatedAt()).isEqualTo(plusDays);
-            assertThat(orderItems).hasSize(1)
-                    .extracting(OrderItem::orderCount, OrderItem::productId)
-                    .containsExactlyInAnyOrder(Tuple.tuple(quantity + orderCount, productId));
-        });*/
+            assertThat(product.getQuantity()).isEqualTo(quantity + orderCount);
+        });
     }
 
     private Delivery saveDelivery(LocalDateTime updatedAt, DeliveryStatus deliveryStatus) {
         Delivery delivery = new Delivery(null, "address", deliveryStatus, LocalDateTime.now(), updatedAt);
         return deliveryRepository.save(delivery);
-    }
-
-    private void setProductClient(String productId, int quantity){
-        productClient.setOrderItems(List.of(new OrderItem(productId,100, quantity)));
     }
 
     private void saveOrder(LocalDateTime updatedAt, OrderStatus orderStatus, int orderCount, String productId) {
