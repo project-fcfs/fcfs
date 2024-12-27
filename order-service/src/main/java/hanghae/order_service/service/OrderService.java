@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,13 +85,13 @@ public class OrderService {
      * 재고 여부에 따라 주문 성공, 실패가 된다
      */
     @Transactional
-    public void decideOrder(OrderDecideReqDto dto){
-        Order order = orderRepository.findOrderById(dto.orderId())
+    public void decideOrder(ResponseEntity<?> response, String orderId){
+        Order order = orderRepository.findOrderById(orderId)
                 .orElseThrow(() -> new CustomApiException(ErrorMessage.NOT_FOUND_ORDER.getMessage()));
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
         Order updatedOrder;
 
-        if (dto.product().getStatusCode().is2xxSuccessful()) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             updatedOrder = order.completeOrder(currentDate);
         } else{
             updatedOrder = order.cancelOrder(currentDate);
