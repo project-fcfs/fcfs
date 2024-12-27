@@ -20,6 +20,7 @@ public class DeliveryEntity {
     private Long id;
     @Column(nullable = false)
     private String address;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
     @Column(nullable = false)

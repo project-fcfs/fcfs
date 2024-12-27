@@ -1,11 +1,11 @@
 package hanghae.order_service.mock;
 
 import hanghae.order_service.domain.order.OrderProduct;
-import hanghae.order_service.service.port.OrderProductMessage;
+import hanghae.order_service.service.port.OrderProducerMessage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FakeOrderProductMessage implements OrderProductMessage {
+public class FakeOrderProducerMessage implements OrderProducerMessage {
 
     public List<FakeProduct> data = new ArrayList<>();
 
@@ -14,7 +14,7 @@ public class FakeOrderProductMessage implements OrderProductMessage {
     }
 
     @Override
-    public void updateStock(List<OrderProduct> orderProducts, String orderId) {
+    public void removeStock(List<OrderProduct> orderProducts, String orderId) {
         data.forEach(product -> {
             orderProducts.forEach(orderProduct -> {
                 if (product.getProductId().equals(orderProduct.productId())) {

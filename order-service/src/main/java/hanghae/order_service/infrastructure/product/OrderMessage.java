@@ -1,7 +1,8 @@
 package hanghae.order_service.infrastructure.product;
 
-public record OrderProductMessage(
+public record OrderMessage(
         String productId,
-        int orderCount
+        int orderCount,
+        String orderId
 ) {
 }

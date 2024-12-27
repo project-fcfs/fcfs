@@ -9,9 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "order_product")
 public class OrderProductEntity {
 
     @Id
@@ -48,12 +50,12 @@ public class OrderProductEntity {
     public static OrderProductEntity fromModel(OrderProduct orderProduct){
         return new OrderProductEntity(orderProduct.id(), orderProduct.orderPrice(),
                 orderProduct.orderCount(), orderProduct.productId(), orderProduct.createdAt(),
-                OrderEntity.fromModel(orderProduct.order()));
+                orderProduct.order() == null ? null : OrderEntity.fromModel(orderProduct.order()));
     }
 
     public OrderProduct toModel(){
         return new OrderProduct(id, orderPrice, orderCount, productId, createdAt,
-                order.toModel());
+                null);
     }
 
     /**

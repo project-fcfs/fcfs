@@ -1,6 +1,5 @@
 package hanghae.order_service.service;
 
-import hanghae.order_service.controller.req.OrderDecideReqDto;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.order.Delivery;
 import hanghae.order_service.domain.order.Order;
@@ -10,7 +9,7 @@ import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.DeliveryRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
-import hanghae.order_service.service.port.OrderProductMessage;
+import hanghae.order_service.service.port.OrderProducerMessage;
 import hanghae.order_service.service.port.OrderRepository;
 import hanghae.order_service.service.port.ProductClient;
 import hanghae.order_service.service.port.UuidRandomHolder;
@@ -30,19 +29,19 @@ public class OrderService {
     private final LocalDateTimeHolder localDateTimeHolder;
     private final UuidRandomHolder uuidRandomHolder;
     private final ProductClient productClient;
-    private final OrderProductMessage orderProductMessage;
+    private final OrderProducerMessage orderProducerMessage;
     private final DeliveryRepository deliveryRepository;
 
     public OrderService(OrderRepository orderRepository, CartProductRepository cartProductRepository,
                         LocalDateTimeHolder localDateTimeHolder, UuidRandomHolder uuidRandomHolder,
-                        ProductClient productClient, OrderProductMessage orderProductMessage,
+                        ProductClient productClient, OrderProducerMessage orderProducerMessage,
                         DeliveryRepository deliveryRepository) {
         this.orderRepository = orderRepository;
         this.cartProductRepository = cartProductRepository;
         this.localDateTimeHolder = localDateTimeHolder;
         this.uuidRandomHolder = uuidRandomHolder;
         this.productClient = productClient;
-        this.orderProductMessage = orderProductMessage;
+        this.orderProducerMessage = orderProducerMessage;
         this.deliveryRepository = deliveryRepository;
     }
 
@@ -58,11 +57,11 @@ public class OrderService {
         List<OrderProduct> orderProducts = generateOrderProducts(userId, productIds);
 
         Delivery delivery = Delivery.create(address, currentDate);
-        Delivery savedDelivery = deliveryRepository.save(delivery);
-        Order order = Order.create(userId, orderId, orderProducts, savedDelivery, currentDate);
+        Order order = Order.create(userId, orderId, orderProducts, delivery, currentDate);
 
-        orderProductMessage.updateStock(order.orderProducts(), order.orderId());
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        orderProducerMessage.removeStock(order.orderProducts(), savedOrder.orderId());
+        return savedOrder;
     }
 
     /**

@@ -1,12 +1,13 @@
 package hanghae.order_service.controller;
 
+import hanghae.order_service.controller.req.OrderCreateReqDto;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.service.OrderService;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,8 +28,8 @@ public class OrderController {
      */
     @PostMapping
     public ResponseEntity<?> processOrder(@RequestHeader("userId") String userId,
-                                          @RequestParam List<String> productIds, @RequestParam String address) {
-        Order order = orderService.order(productIds, address, userId);
+                                          @RequestBody OrderCreateReqDto createReqDto, @RequestParam String address) {
+        Order order = orderService.order(createReqDto.productIds(), address, userId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

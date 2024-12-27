@@ -10,7 +10,7 @@ import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.domain.order.OrderStatus;
 import hanghae.order_service.mock.FakeDeliveryRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
-import hanghae.order_service.mock.FakeOrderProductMessage;
+import hanghae.order_service.mock.FakeOrderProducerMessage;
 import hanghae.order_service.mock.FakeOrderRepository;
 import hanghae.order_service.mock.FakeProduct;
 import java.time.LocalDateTime;
@@ -25,14 +25,14 @@ class OrderSchedulerTest {
     private FakeLocalDateTimeHolder localDateTimeHolder;
     private FakeDeliveryRepository deliveryRepository;
     private FakeOrderRepository orderRepository;
-    private FakeOrderProductMessage orderProductMessage;
+    private FakeOrderProducerMessage orderProductMessage;
 
     @BeforeEach
     void setUp() {
         orderRepository = new FakeOrderRepository();
         localDateTimeHolder = new FakeLocalDateTimeHolder(LocalDateTime.now());
         deliveryRepository = new FakeDeliveryRepository();
-        orderProductMessage = new FakeOrderProductMessage();
+        orderProductMessage = new FakeOrderProducerMessage();
         orderScheduler = new OrderScheduler(deliveryRepository, orderRepository, localDateTimeHolder,
                 orderProductMessage);
     }

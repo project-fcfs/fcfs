@@ -1,8 +1,8 @@
 package hanghae.order_service.controller.req;
 
+import java.util.List;
+
 public record OrderCreateReqDto(
-        String productId,
-        String address,
-        int count
+        List<String> productIds
 ) {
 }

@@ -6,7 +6,7 @@ import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderStatus;
 import hanghae.order_service.service.port.DeliveryRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
-import hanghae.order_service.service.port.OrderProductMessage;
+import hanghae.order_service.service.port.OrderProducerMessage;
 import hanghae.order_service.service.port.OrderRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,15 +22,15 @@ public class OrderScheduler {
     private final DeliveryRepository deliveryRepository;
     private final OrderRepository orderRepository;
     private final LocalDateTimeHolder localDateTimeHolder;
-    private final OrderProductMessage orderProductMessage;
+    private final OrderProducerMessage orderProducerMessage;
 
     public OrderScheduler(DeliveryRepository deliveryRepository, OrderRepository orderRepository,
-                          LocalDateTimeHolder localDateTimeHolder, OrderProductMessage orderProductMessage
+                          LocalDateTimeHolder localDateTimeHolder, OrderProducerMessage orderProducerMessage
     ) {
         this.deliveryRepository = deliveryRepository;
         this.orderRepository = orderRepository;
         this.localDateTimeHolder = localDateTimeHolder;
-        this.orderProductMessage = orderProductMessage;
+        this.orderProducerMessage = orderProducerMessage;
     }
 
     /**
@@ -87,7 +87,7 @@ public class OrderScheduler {
             orderResults.add(completedRefund);
 
             // 재고 원복
-            orderProductMessage.restoreStock(completedRefund.orderProducts());
+            orderProducerMessage.restoreStock(completedRefund.orderProducts());
         }
 
         orderRepository.saveAll(orderResults);
