@@ -42,4 +42,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Optional<Order> findOrderById(String orderId) {
         return jpaRepository.findByOrderId(orderId).map(OrderEntity::toModel);
     }
+
+    @Override
+    public List<Order> findAllUserOrders(String userId) {
+        return jpaRepository.findUserOrders(userId);
+    }
 }

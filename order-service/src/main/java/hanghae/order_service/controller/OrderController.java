@@ -1,10 +1,13 @@
 package hanghae.order_service.controller;
 
 import hanghae.order_service.controller.req.OrderCreateReqDto;
+import hanghae.order_service.controller.resp.OrderRespDto;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.service.OrderService;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/order")
+@RequestMapping("/orders")
 @RestController
 public class OrderController {
 
@@ -51,6 +54,17 @@ public class OrderController {
                                           @PathVariable("orderId") String orderId) {
         orderService.processRefund(userId, orderId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 유저의 주문완료한 상품들을 가져온다
+     */
+    @GetMapping
+    public ResponseEntity<?> fetchAllUserOrders(@RequestHeader("userId") String userId) {
+        List<Order> orders = orderService.getUserOrderHistory(userId);
+
+        List<OrderRespDto> orderResponse = orders.stream().map(OrderRespDto::of).toList();
+        return new ResponseEntity<>(orderResponse, HttpStatus.OK);
     }
 
 

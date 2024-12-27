@@ -11,8 +11,9 @@ public record ProductRespDto(
         ProductStatus status,
         String imageUrl
 ) {
-    public static ProductRespDto of(Product product){
+    public static ProductRespDto of(Product product) {
         return new ProductRespDto(product.name(), product.price(), product.quantity(),
                 product.productId(), product.productStatus(), product.imageUrl());
     }
+
 }

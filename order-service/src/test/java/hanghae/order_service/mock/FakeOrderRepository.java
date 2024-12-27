@@ -50,6 +50,11 @@ public class FakeOrderRepository implements OrderRepository {
         return data.stream().filter(i -> i.orderId().equals(orderId)).findFirst();
     }
 
+    @Override
+    public List<Order> findAllUserOrders(String userId) {
+        return data.stream().filter(i -> i.userId().equals(userId)).toList();
+    }
+
     public Optional<Order> findById(Long id) {
         return data.stream().filter(i -> i.id().equals(id)).findFirst();
     }

@@ -4,6 +4,7 @@ import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.order.Delivery;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderProduct;
+import hanghae.order_service.domain.order.OrderStatus;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.port.CartProductRepository;
@@ -126,6 +127,13 @@ public class OrderService {
     private Order getUserOrder(String userId, String orderId) {
         return orderRepository.findByUserOrderByOrderId(userId, orderId).orElseThrow(() ->
                 new CustomApiException(ErrorMessage.NOT_FOUND_ORDER.getMessage()));
+    }
+
+    /**
+     * 유저 주문한 모든 주문을 가져온다
+     */
+    public List<Order> getUserOrderHistory(String userId) {
+        return orderRepository.findAllUserOrders(userId);
     }
 
 

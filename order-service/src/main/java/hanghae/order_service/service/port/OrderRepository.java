@@ -17,4 +17,6 @@ public interface OrderRepository {
     void saveAll(List<Order> orders);
 
     Optional<Order> findOrderById(String orderId);
+
+    List<Order> findAllUserOrders(String userId);
 }

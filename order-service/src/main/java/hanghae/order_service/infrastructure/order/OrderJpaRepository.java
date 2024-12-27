@@ -13,8 +13,12 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
     @Query("select o from OrderEntity o where o.userId = :userId and o.orderId = :orderId")
     Optional<OrderEntity> findByUserOrderByOrderId(@Param("userId") String userId, @Param("orderId") String orderId);
 
-    @Query("select 0 from OrderEntity o where o.orderStatus = :status and o.updatedAt <= :currentDate")
-    List<OrderEntity> findOrdersStatusByDate(@Param("status") OrderStatus orderStatus, @Param("currentDate") LocalDateTime dateWithMinusDay);
+    @Query("select o from OrderEntity o where o.orderStatus = :status and o.updatedAt <= :currentDate")
+    List<OrderEntity> findOrdersStatusByDate(@Param("status") OrderStatus orderStatus,
+                                             @Param("currentDate") LocalDateTime dateWithMinusDay);
 
     Optional<OrderEntity> findByOrderId(String orderId);
+
+    @Query("select o from OrderEntity o join fetch o.orderProducts op where o.userId = :userId")
+    List<Order> findUserOrders(@Param("userId") String userId);
 }
