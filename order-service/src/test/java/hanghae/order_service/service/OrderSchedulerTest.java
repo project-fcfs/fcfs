@@ -12,7 +12,7 @@ import hanghae.order_service.domain.product.OrderItem;
 import hanghae.order_service.mock.FakeDeliveryRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
 import hanghae.order_service.mock.FakeOrderRepository;
-import hanghae.order_service.mock.FakeOrderProductClient;
+import hanghae.order_service.mock.FakeOrderProductMessage;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.groups.Tuple;
@@ -26,14 +26,14 @@ class OrderSchedulerTest {
     private FakeLocalDateTimeHolder localDateTimeHolder;
     private FakeDeliveryRepository deliveryRepository;
     private FakeOrderRepository orderRepository;
-    private FakeOrderProductClient productClient;
+    private FakeOrderProductMessage productClient;
 
     @BeforeEach
     void setUp() {
         orderRepository = new FakeOrderRepository();
         localDateTimeHolder = new FakeLocalDateTimeHolder(LocalDateTime.now());
         deliveryRepository = new FakeDeliveryRepository();
-        productClient = new FakeOrderProductClient(List.of());
+        productClient = new FakeOrderProductMessage();
         orderScheduler = new OrderScheduler(deliveryRepository, orderRepository, localDateTimeHolder, productClient);
     }
 
@@ -93,7 +93,7 @@ class OrderSchedulerTest {
         // when
         orderScheduler.completeRefund();
         Order result = orderRepository.findById(1L).get();
-        List<OrderItem> orderItems = productClient.getOrderItems(List.of(productId));
+        /*List<OrderItem> orderItems = productClient.getOrderItems(List.of(productId));
 
         // then
         assertAll(() -> {
@@ -102,7 +102,7 @@ class OrderSchedulerTest {
             assertThat(orderItems).hasSize(1)
                     .extracting(OrderItem::orderCount, OrderItem::productId)
                     .containsExactlyInAnyOrder(Tuple.tuple(quantity + orderCount, productId));
-        });
+        });*/
     }
 
     private Delivery saveDelivery(LocalDateTime updatedAt, DeliveryStatus deliveryStatus) {

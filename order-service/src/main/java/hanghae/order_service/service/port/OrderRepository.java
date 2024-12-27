@@ -15,4 +15,6 @@ public interface OrderRepository {
     List<Order> findAllRequestRefund(OrderStatus orderStatus, LocalDateTime dateWithMinusDay);
 
     void saveAll(List<Order> orders);
+
+    Optional<Order> findOrderById(String orderId);
 }

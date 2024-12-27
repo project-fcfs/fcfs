@@ -38,7 +38,7 @@ public class OrderController {
     @PostMapping("/cancel/{orderId}")
     public ResponseEntity<?> cancelOrder(@RequestHeader("userId") String userId,
                                          @PathVariable("orderId") String orderId) {
-        orderService.cancel(userId,orderId);
+        orderService.cancel(userId, orderId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -47,8 +47,10 @@ public class OrderController {
      */
     @PostMapping("/refund/{orderId}")
     public ResponseEntity<?> prefundOrder(@RequestHeader("userId") String userId,
-                                         @PathVariable("orderId") String orderId) {
-        orderService.processRefund(userId,orderId);
+                                          @PathVariable("orderId") String orderId) {
+        orderService.processRefund(userId, orderId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 }

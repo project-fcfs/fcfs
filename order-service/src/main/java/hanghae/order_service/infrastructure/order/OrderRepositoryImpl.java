@@ -37,4 +37,9 @@ public class OrderRepositoryImpl implements OrderRepository {
         List<OrderEntity> entities = orders.stream().map(OrderEntity::fromModel).toList();
         jpaRepository.saveAll(entities);
     }
+
+    @Override
+    public Optional<Order> findOrderById(String orderId) {
+        return jpaRepository.findByOrderId(orderId).map(OrderEntity::toModel);
+    }
 }

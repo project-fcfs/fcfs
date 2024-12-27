@@ -60,6 +60,13 @@ public record Order(
     }
 
     /**
+     * 재고가 존재하면 성공적으로 주문을 완료한다
+     */
+    public Order completeOrder(LocalDateTime currentDate) {
+        return new Order(id, OrderStatus.COMPLETED, userId, orderId, orderProducts, delivery, createdAt, currentDate);
+    }
+
+    /**
      * 조회 로직
      */
     public int getTotalPrice() {

@@ -45,7 +45,12 @@ public class FakeOrderRepository implements OrderRepository {
         orders.forEach(this::save);
     }
 
-    public Optional<Order> findById(Long id){
+    @Override
+    public Optional<Order> findOrderById(String orderId) {
+        return data.stream().filter(i -> i.orderId().equals(orderId)).findFirst();
+    }
+
+    public Optional<Order> findById(Long id) {
         return data.stream().filter(i -> i.id().equals(id)).findFirst();
     }
 }

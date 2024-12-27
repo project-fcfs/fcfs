@@ -14,8 +14,9 @@ import hanghae.order_service.domain.product.OrderItem;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeDeliveryRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
+import hanghae.order_service.mock.FakeOrderProductMessage;
 import hanghae.order_service.mock.FakeOrderRepository;
-import hanghae.order_service.mock.FakeOrderProductClient;
+import hanghae.order_service.mock.FakeProductClient;
 import hanghae.order_service.mock.FakeUuidRandomHolder;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,20 +30,21 @@ class OrderServiceTest {
     private OrderService orderService;
     private FakeLocalDateTimeHolder localDateTimeHolder;
     private FakeUuidRandomHolder uuidRandomHolder;
-    private FakeOrderProductClient productClient;
+    private FakeProductClient productClient;
     private FakeCartProductRepository cartProductRepository;
     private FakeOrderRepository orderRepository;
+    private FakeOrderProductMessage orderProductMessage;
 
     @BeforeEach
     void setUp() {
         FakeDeliveryRepository deliveryRepository = new FakeDeliveryRepository();
-        productClient = new FakeOrderProductClient(List.of());
+        productClient = new FakeProductClient();
         orderRepository = new FakeOrderRepository();
         cartProductRepository = new FakeCartProductRepository();
         localDateTimeHolder = new FakeLocalDateTimeHolder(LocalDateTime.now());
         uuidRandomHolder = new FakeUuidRandomHolder("random");
-        orderService = new OrderService(orderRepository,cartProductRepository,localDateTimeHolder,uuidRandomHolder,productClient,deliveryRepository);
-
+        orderService = new OrderService(orderRepository, cartProductRepository, localDateTimeHolder, uuidRandomHolder,
+                productClient, orderProductMessage, deliveryRepository);
     }
 
     @Test
@@ -52,7 +54,6 @@ class OrderServiceTest {
         String productId1 = "product1";
         String productId2 = "product2";
         String userId = "userId";
-        productClient.setOrderItems(List.of(createOrderItem(productId1,3), createOrderItem(productId2,2)));
         List<String> productIds = List.of(productId1, productId2);
         List<CartProduct> cartProducts = List.of(createCartProduct(productId1, 1L, 2),
                 createCartProduct(productId2, 2L, 2));
@@ -83,7 +84,7 @@ class OrderServiceTest {
         orderRepository.save(createOrder(OrderStatus.PENDING, DeliveryStatus.PREPARING, userId, orderId));
 
         // when
-        orderService.cancel(userId,orderId);
+        orderService.cancel(userId, orderId);
         Order result = orderRepository.findById(1L).get();
 
         // then
@@ -107,7 +108,7 @@ class OrderServiceTest {
         orderRepository.save(createOrder(OrderStatus.COMPLETED, DeliveryStatus.COMPLETED, userId, orderId));
 
         // when
-        orderService.processRefund(userId,orderId);
+        orderService.processRefund(userId, orderId);
         Order result = orderRepository.findById(1L).get();
 
         // then
@@ -120,12 +121,12 @@ class OrderServiceTest {
         });
     }
 
-    private Order createOrder(OrderStatus orderStatus, DeliveryStatus deliveryStatus, String userId, String orderId){
+    private Order createOrder(OrderStatus orderStatus, DeliveryStatus deliveryStatus, String userId, String orderId) {
         return new Order(1L, orderStatus, userId, orderId, null,
                 createDelivery(deliveryStatus), LocalDateTime.now(), LocalDateTime.now());
     }
 
-    private Delivery createDelivery(DeliveryStatus deliveryStatus){
+    private Delivery createDelivery(DeliveryStatus deliveryStatus) {
         return new Delivery(1L, "address", deliveryStatus, LocalDateTime.now(), LocalDateTime.now());
     }
 
