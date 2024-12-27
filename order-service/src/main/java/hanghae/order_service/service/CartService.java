@@ -3,6 +3,7 @@ package hanghae.order_service.service;
 import hanghae.order_service.controller.resp.ProductRespDto;
 import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
+import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.port.ProductClient;
@@ -76,22 +77,27 @@ public class CartService {
     /**
      * 장바구니의 정보로 Product-service에서 정보를 가져와 유저에게 반환한다
      */
-    public List<ProductRespDto> getCartProducts(String userId) {
+    public List<Product> getCartProducts(String userId) {
         List<CartProduct> cartProducts = cartProductRepository.findAllByUserId(userId);
         List<String> productIds = cartProducts.stream()
                 .map(CartProduct::productId)
                 .toList();
-        ResponseEntity<List<ProductRespDto>> products = productClient.getProducts(productIds);
+        ResponseEntity<List<Product>> productsResponse = productClient.getProducts(productIds);
 
-        List<ProductRespDto> productDtos = products.getBody();
+        if (productsResponse.getStatusCode().is2xxSuccessful()) {
+            List<Product> products = productsResponse.getBody();
 
-        Map<String, ProductRespDto> map = productDtos.stream()
-                .collect(Collectors.toMap(ProductRespDto::productId, v -> v));
+            Map<String, Product> map = products.stream()
+                    .collect(Collectors.toMap(Product::productId, v -> v));
 
-        return cartProducts.stream()
-                .map(i -> {
-                    ProductRespDto productRespDto = map.get(i.productId());
-                    return productRespDto.convertCart(i.quantity());
-                }).toList();
+            return cartProducts.stream()
+                    .map(i -> {
+                        Product product = map.get(i.productId());
+                        return product.convertCart(i.quantity());
+                    }).toList();
+        } else{
+            throw new CustomApiException(ErrorMessage.INVALID_PRODUCT.getMessage());
+        }
+
     }
 }

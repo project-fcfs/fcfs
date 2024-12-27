@@ -1,6 +1,8 @@
 package hanghae.order_service.controller;
 
 import hanghae.order_service.controller.resp.ProductRespDto;
+import hanghae.order_service.controller.resp.ResponseDto;
+import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.CartService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -48,8 +50,10 @@ public class CartController {
 
     @GetMapping("/products")
     public ResponseEntity<?> getCartProduct(@RequestHeader("userId") String userId) {
-        List<ProductRespDto> cartProducts = cartService.getCartProducts(userId);
+        List<Product> products = cartService.getCartProducts(userId);
+        List<ProductRespDto> response = products.stream().map(ProductRespDto::of)
+                .toList();
 
-        return new ResponseEntity<>(cartProducts, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDto<>(1, "카트 상품", response), HttpStatus.OK);
     }
 }

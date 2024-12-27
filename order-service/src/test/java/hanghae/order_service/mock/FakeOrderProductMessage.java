@@ -7,7 +7,7 @@ import java.util.List;
 public class FakeOrderProductMessage implements OrderProductMessage {
 
     @Override
-    public void updateStock(List<OrderProduct> orderProducts) {
+    public void updateStock(List<OrderProduct> orderProducts, String orderId) {
 
     }
 }

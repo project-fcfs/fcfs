@@ -10,7 +10,6 @@ import hanghae.order_service.domain.order.DeliveryStatus;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.domain.order.OrderStatus;
-import hanghae.order_service.domain.product.OrderItem;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeDeliveryRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;

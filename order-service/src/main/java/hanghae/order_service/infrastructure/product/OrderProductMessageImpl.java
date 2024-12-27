@@ -9,7 +9,12 @@ import org.springframework.stereotype.Component;
 public class OrderProductMessageImpl implements OrderProductMessage {
 
     @Override
-    public void updateStock(List<OrderProduct> orderProducts) {
+    public void updateStock(List<OrderProduct> orderProducts, String orderId) {
+
+    }
+
+    @Override
+    public void restoreStock(List<OrderProduct> orderProducts) {
 
     }
 }

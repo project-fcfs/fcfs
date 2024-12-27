@@ -1,5 +1,8 @@
 package hanghae.order_service.controller.resp;
 
+import hanghae.order_service.domain.product.Product;
+import hanghae.order_service.domain.product.Product.ProductStatus;
+
 public record ProductRespDto(
         String name,
         Integer price,
@@ -8,17 +11,8 @@ public record ProductRespDto(
         ProductStatus status,
         String imageUrl
 ) {
-    enum ProductStatus {
-        ACTIVE("재고 있음"), SOLD_OUT("품절"), INACTIVE("비활성화");
-
-        private final String description;
-
-        ProductStatus(String description) {
-            this.description = description;
-        }
-    }
-
-    public ProductRespDto convertCart(int quantity){
-        return new ProductRespDto(name, price, quantity, productId, status, imageUrl);
+    public static ProductRespDto of(Product product){
+        return new ProductRespDto(product.name(), product.price(), product.quantity(),
+                product.productId(), product.productStatus(), product.imageUrl());
     }
 }

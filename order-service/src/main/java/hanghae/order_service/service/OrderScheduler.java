@@ -4,7 +4,6 @@ import hanghae.order_service.domain.order.Delivery;
 import hanghae.order_service.domain.order.DeliveryStatus;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderStatus;
-import hanghae.order_service.controller.resp.OrderProductUpdateRespDto;
 import hanghae.order_service.service.port.DeliveryRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
 import hanghae.order_service.service.port.OrderProductMessage;
@@ -88,7 +87,7 @@ public class OrderScheduler {
             orderResults.add(completedRefund);
 
             // 재고 원복
-            orderProductMessage.updateStock(completedRefund.orderProducts());
+            orderProductMessage.restoreStock(completedRefund.orderProducts());
         }
 
         orderRepository.saveAll(orderResults);
