@@ -57,12 +57,12 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<?> getProducts() {
         List<ProductRespDto> dtos = productService.getAllProducts();
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDto<>(1,"모든 상품", dtos), HttpStatus.OK);
     }
 
     @GetMapping("/cart")
     public ResponseEntity<?> fetchCartProducts(@RequestParam("ids") List<String> ids) {
         List<ProductRespDto> dtos = productService.getProductByIds(ids);
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDto<>(1,"아이디 내 상품", dtos), HttpStatus.OK);
     }
 }
