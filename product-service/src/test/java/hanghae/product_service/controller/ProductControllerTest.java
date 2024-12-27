@@ -32,7 +32,7 @@ class ProductControllerTest extends IntegrationInfraTestSupport {
         MockMultipartFile filePart = createFile();
 
         // when
-        ResultActions resultActions = mockMvc.perform(multipart("/product/create")
+        ResultActions resultActions = mockMvc.perform(multipart("/products/create")
                         .file(reqDtoPart)
                         .file(filePart)
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
@@ -50,17 +50,17 @@ class ProductControllerTest extends IntegrationInfraTestSupport {
         String name = "product";
         int price = 1000;
         int quantity = 10;
-        productRepository.save(Product.create(name,price,quantity,uid));
+        productRepository.save(Product.create(name, price, quantity, uid));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/product/{id}",uid))
+        ResultActions resultActions = mockMvc.perform(get("/products/{id}", uid))
                 .andDo(print());
 
         // then
         resultActions.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.price").value(price))
-                .andExpect(jsonPath("$.quantity").value(quantity))
+                .andExpect(jsonPath("$.data.name").value(name))
+                .andExpect(jsonPath("$.data.price").value(price))
+                .andExpect(jsonPath("$.data.quantity").value(quantity))
         ;
 
     }
