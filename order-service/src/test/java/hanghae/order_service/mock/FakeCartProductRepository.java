@@ -46,4 +46,12 @@ public class FakeCartProductRepository implements CartProductRepository {
                 .filter(i -> productIds.contains(i.productId()))
                 .toList();
     }
+
+    @Override
+    public void clearItemsByOrder(List<String> productIds, String userId) {
+        data.removeIf(i ->
+                i.cart().userId().equals(userId) &&
+                        productIds.contains(i.productId())
+        );
+    }
 }

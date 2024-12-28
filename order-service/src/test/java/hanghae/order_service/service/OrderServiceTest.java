@@ -133,57 +133,6 @@ class OrderServiceTest {
         });
     }
 
-    @Nested
-    @DisplayName("재고 여부에 따라 주문 성공, 실패가 된다")
-    class DecideOrder{
-
-        @Test
-        @DisplayName("재고가 부족하면 주문이 취소된다")
-        void IfOutOfStockCancel() throws Exception {
-            // given
-            String orderId = "orderId";
-            orderRepository.save(Order.create("user", orderId, null, createDelivery(DeliveryStatus.PREPARING), LocalDateTime.now()));
-            int code = -1;
-            LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 27, 14, 27);
-            localDateTimeHolder.setLocalDateTime(localDateTime);
-
-            // when
-            orderService.decideOrder(code,orderId);
-            Order result = orderRepository.findById(1L).get();
-
-            // then
-            assertAll(() -> {
-                assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.CANCELLED);
-                assertThat(result.delivery().status()).isEqualByComparingTo(DeliveryStatus.CANCELED);
-                assertThat(result.updatedAt()).isEqualTo(localDateTime);
-                assertThat(result.delivery().updatedAt()).isEqualTo(localDateTime);
-            });
-        }
-
-        @Test
-        @DisplayName("재고가 있으면 주문이 성공한다")
-        void CanOrderComplete() throws Exception {
-            // given
-            String orderId = "orderId";
-            orderRepository.save(Order.create("user", orderId, null, createDelivery(DeliveryStatus.PREPARING), LocalDateTime.now()));
-            int code = 1;
-            LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 27, 14, 27);
-            localDateTimeHolder.setLocalDateTime(localDateTime);
-
-            // when
-            orderService.decideOrder(code,orderId);
-            Order result = orderRepository.findById(1L).get();
-
-            // then
-            assertAll(() -> {
-                assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.COMPLETED);
-                assertThat(result.delivery().status()).isEqualByComparingTo(DeliveryStatus.PREPARING);
-                assertThat(result.updatedAt()).isEqualTo(localDateTime);
-            });
-        }
-
-    }
-
     private Product createProduct(String productId){
         return new Product("name",100,10,productId, ProductStatus.ACTIVE, null);
     }

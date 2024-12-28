@@ -4,6 +4,7 @@ import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.service.port.CartProductRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -39,5 +40,10 @@ public class CartProductRepositoryImpl implements CartProductRepository {
     public List<CartProduct> findByUserSelectedCart(String userId, List<String> productIds) {
         return jpaRepository.findAllCartProduct(userId, productIds)
                 .stream().map(CartProductEntity::toModel).toList();
+    }
+
+    @Override
+    public void clearItemsByOrder(List<String> productIds, String userId) {
+        jpaRepository.deleteAllOrderProducts(productIds, userId);
     }
 }

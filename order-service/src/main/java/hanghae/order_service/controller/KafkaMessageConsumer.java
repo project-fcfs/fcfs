@@ -3,7 +3,7 @@ package hanghae.order_service.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.order_service.controller.resp.ResponseDto;
-import hanghae.order_service.service.OrderService;
+import hanghae.order_service.service.OrderDecideService;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
 import org.slf4j.Logger;
@@ -16,18 +16,19 @@ public class KafkaMessageConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaMessageConsumer.class);
     private final ObjectMapper mapper;
-    private final OrderService orderService;
+    private final OrderDecideService orderDecideService;
 
-    public KafkaMessageConsumer(ObjectMapper mapper, OrderService orderService) {
+    public KafkaMessageConsumer(ObjectMapper mapper, OrderDecideService orderDecideService) {
         this.mapper = mapper;
-        this.orderService = orderService;
+
+        this.orderDecideService = orderDecideService;
     }
 
     @KafkaListener(topics = "fcfs-order", groupId = "order-group")
     public void orderConfirm(String message) {
         log.info(message);
         OrderDecideReqDto response = convertToConfirm(message);
-        orderService.decideOrder(response.code, response.orderId());
+        orderDecideService.decideOrder(response.code, response.orderId());
     }
 
     private OrderDecideReqDto convertToConfirm(String message) {

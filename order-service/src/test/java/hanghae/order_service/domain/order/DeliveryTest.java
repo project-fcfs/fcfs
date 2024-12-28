@@ -1,6 +1,6 @@
 package hanghae.order_service.domain.order;
 
-import static hanghae.order_service.service.common.util.OrderConstant.canReturnDay;
+import static hanghae.order_service.service.common.util.OrderConstant.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -110,7 +110,7 @@ class DeliveryTest {
             // given
             LocalDateTime updatedDate = LocalDateTime.of(2024, 12, 21, 13, 30, 11);
             Delivery delivery = createDelivery(DeliveryStatus.DELIVERING, updatedDate);
-            LocalDateTime refundDate = updatedDate.plusDays(canReturnDay);
+            LocalDateTime refundDate = updatedDate.plusDays(RETURN_DAY);
 
             // then
             assertThatThrownBy(() -> delivery.refundIfEligible(refundDate))

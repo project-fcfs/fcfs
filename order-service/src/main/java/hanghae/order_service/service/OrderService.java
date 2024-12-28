@@ -1,14 +1,14 @@
 package hanghae.order_service.service;
 
+import static hanghae.order_service.service.common.util.OrderConstant.ORDER_SUCCESS;
+
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.order.Delivery;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderProduct;
-import hanghae.order_service.domain.order.OrderStatus;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.port.CartProductRepository;
-import hanghae.order_service.service.port.DeliveryRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
 import hanghae.order_service.service.port.OrderProducerMessage;
 import hanghae.order_service.service.port.OrderRepository;
@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,8 +43,7 @@ public class OrderService {
     }
 
     /**
-     * 장바구니 정보로 Product-service에서 가격, 정보 등을 가져온다 주문을 하면 Pending 상태로 저장된다
-     * Product-service로 orderId와 수량을 보내 재고여부를 판단한다
+     * 장바구니 정보로 Product-service에서 가격, 정보 등을 가져온다 주문을 하면 Pending 상태로 저장된다 Product-service로 orderId와 수량을 보내 재고여부를 판단한다
      */
     @Transactional
     public Order order(List<String> productIds, String address, String userId) {
@@ -74,27 +72,8 @@ public class OrderService {
         return productClient.getProducts(productIds).getBody().stream()
                 .map(orderItem -> {
                     Integer count = cartProducts.get(orderItem.productId());
-                    return OrderProduct.create(orderItem.price(), count, orderItem.productId(),currentDate);
+                    return OrderProduct.create(orderItem.price(), count, orderItem.productId(), currentDate);
                 }).toList();
-    }
-
-    /**
-     * 재고 여부에 따라 주문 성공, 실패가 된다
-     */
-    @Transactional
-    public void decideOrder(int code, String orderId){
-        Order order = orderRepository.findOrderById(orderId)
-                .orElseThrow(() -> new CustomApiException(ErrorMessage.NOT_FOUND_ORDER.getMessage()));
-        LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
-        Order updatedOrder;
-
-        if (code == 1) {
-            updatedOrder = order.completeOrder(currentDate);
-        } else{
-            updatedOrder = order.cancelOrder(currentDate);
-        }
-
-        orderRepository.save(updatedOrder);
     }
 
     /**

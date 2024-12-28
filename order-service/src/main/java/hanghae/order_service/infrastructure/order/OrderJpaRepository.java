@@ -17,7 +17,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
     List<OrderEntity> findOrdersStatusByDate(@Param("status") OrderStatus orderStatus,
                                              @Param("currentDate") LocalDateTime dateWithMinusDay);
 
-    Optional<OrderEntity> findByOrderId(String orderId);
+    @Query("select o from OrderEntity o join fetch o.orderProducts op where o.orderId = :orderId")
+    Optional<OrderEntity> findByOrderId(@Param("orderId") String orderId);
 
     @Query("select o from OrderEntity o join fetch o.orderProducts op where o.userId = :userId")
     List<Order> findUserOrders(@Param("userId") String userId);
