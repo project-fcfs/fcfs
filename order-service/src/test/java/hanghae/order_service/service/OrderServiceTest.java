@@ -1,6 +1,7 @@
 package hanghae.order_service.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import hanghae.order_service.domain.cart.Cart;
@@ -20,6 +21,8 @@ import hanghae.order_service.mock.FakeOrderRepository;
 import hanghae.order_service.mock.FakeProduct;
 import hanghae.order_service.mock.FakeProductClient;
 import hanghae.order_service.mock.FakeUuidRandomHolder;
+import hanghae.order_service.service.common.exception.CustomApiException;
+import hanghae.order_service.service.common.util.ErrorMessage;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.groups.Tuple;
@@ -86,6 +89,18 @@ class OrderServiceTest {
     }
 
     @Test
+    @DisplayName("장바구니 속 상품이 없다면 예외를 반환한다")
+    void emptyCartProductError() throws Exception {
+        // given
+        String productId = "product1";
+
+        // then
+        assertThatThrownBy(() -> orderService.order(List.of(productId), "address", "userId"))
+                .isInstanceOf(CustomApiException.class)
+                .hasMessage(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage());
+    }
+
+    @Test
     @DisplayName("대기 중이거나 배달 준비중이라면 주문 취소가 가능하다")
     void canOrderCancel() throws Exception {
         // given
@@ -107,6 +122,19 @@ class OrderServiceTest {
             assertThat(result.userId()).isEqualTo(userId);
             assertThat(result.orderId()).isEqualTo(orderId);
         });
+    }
+
+    @Test
+    @DisplayName("환불 신청할 때 주문한 내역이 없다면 예외를 반환한다")
+    void notOrderError() throws Exception {
+        // given
+        String productId = "product1";
+        String orderId = "orderId";
+
+        // then
+        assertThatThrownBy(() -> orderService.processRefund(orderId, productId))
+                .isInstanceOf(CustomApiException.class)
+                .hasMessage(ErrorMessage.NOT_FOUND_ORDER.getMessage());
     }
 
     @Test
