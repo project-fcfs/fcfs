@@ -67,6 +67,10 @@ public class OrderService {
         Map<String, Integer> cartProducts = cartProductRepository.findByUserSelectedCart(userId, productIds)
                 .stream().collect(Collectors.toMap(CartProduct::productId, CartProduct::quantity));
 
+        if(cartProducts.isEmpty()) {
+            throw new CustomApiException(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage());
+        }
+
         return productClient.getProducts(productIds).getBody().stream()
                 .map(orderItem -> {
                     Integer count = cartProducts.get(orderItem.productId());
