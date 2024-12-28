@@ -16,7 +16,7 @@ public record CartProduct(
 
     public CartProduct updateCount(int count) {
         int remainQuantity = quantity + count;
-        if (remainQuantity < 0) {
+        if (remainQuantity <= 0) {
             throw new CustomApiException(ErrorMessage.OUT_OF_STOCK_CART.getMessage());
         }
         return new CartProduct(id, remainQuantity, productId, cart);
