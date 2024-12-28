@@ -14,7 +14,6 @@ import hanghae.order_service.domain.order.OrderStatus;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.domain.product.Product.ProductStatus;
 import hanghae.order_service.mock.FakeCartProductRepository;
-import hanghae.order_service.mock.FakeDeliveryRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
 import hanghae.order_service.mock.FakeOrderProducerMessage;
 import hanghae.order_service.mock.FakeOrderRepository;
@@ -28,9 +27,7 @@ import java.util.List;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
 
 class OrderServiceTest {
 
@@ -65,10 +62,10 @@ class OrderServiceTest {
         int quantity2 = 3;
         List<String> productIds = List.of(productId1, productId2);
         List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, quantity1),
-                createCartProduct(2L,productId2, quantity2));
+                createCartProduct(2L, productId2, quantity2));
         cartProducts.forEach(cartProductRepository::save);
-        orderProductMessage.addProduct(FakeProduct.create("name",100,quantity1, productId1));
-        orderProductMessage.addProduct(FakeProduct.create("name",100,quantity2, productId2));
+        orderProductMessage.addProduct(FakeProduct.create("name", 100, quantity1, productId1));
+        orderProductMessage.addProduct(FakeProduct.create("name", 100, quantity2, productId2));
         productClient.addData(createProduct(productId1));
         productClient.addData(createProduct(productId2));
 
@@ -106,21 +103,30 @@ class OrderServiceTest {
         // given
         String userId = "userId";
         String orderId = "orderId";
+        String productId = "productId";
+        int quantity = 10;
+        int orderCount = 5;
+        OrderProduct orderProduct = createOrderProduct(orderCount, productId);
+        orderProductMessage.addProduct(FakeProduct.create("name", 100, quantity, productId));
+
         LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 23, 17, 9, 16);
         localDateTimeHolder.setLocalDateTime(localDateTime);
-        orderRepository.save(createOrder(OrderStatus.PENDING, DeliveryStatus.PREPARING, userId, orderId));
+        orderRepository.save(
+                createOrder(OrderStatus.PENDING, DeliveryStatus.PREPARING, userId, orderId, List.of(orderProduct)));
 
         // when
         orderService.cancel(userId, orderId);
         Order result = orderRepository.findById(1L).get();
 
         // then
+        FakeProduct product = orderProductMessage.getProductById(productId);
         assertAll(() -> {
             assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.CANCELLED);
             assertThat(result.delivery().status()).isEqualByComparingTo(DeliveryStatus.CANCELED);
             assertThat(result.updatedAt()).isEqualTo(localDateTime);
             assertThat(result.userId()).isEqualTo(userId);
             assertThat(result.orderId()).isEqualTo(orderId);
+            assertThat(product.getQuantity()).isEqualTo(quantity + orderCount);
         });
     }
 
@@ -145,7 +151,7 @@ class OrderServiceTest {
         String orderId = "orderId";
         LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 23, 17, 9, 16);
         localDateTimeHolder.setLocalDateTime(localDateTime);
-        orderRepository.save(createOrder(OrderStatus.COMPLETED, DeliveryStatus.COMPLETED, userId, orderId));
+        orderRepository.save(createOrder(OrderStatus.COMPLETED, DeliveryStatus.COMPLETED, userId, orderId, null));
 
         // when
         orderService.processRefund(userId, orderId);
@@ -161,12 +167,13 @@ class OrderServiceTest {
         });
     }
 
-    private Product createProduct(String productId){
-        return new Product("name",100,10,productId, ProductStatus.ACTIVE, null);
+    private Product createProduct(String productId) {
+        return new Product("name", 100, 10, productId, ProductStatus.ACTIVE, null);
     }
 
-    private Order createOrder(OrderStatus orderStatus, DeliveryStatus deliveryStatus, String userId, String orderId) {
-        return new Order(1L, orderStatus, userId, orderId, null,
+    private Order createOrder(OrderStatus orderStatus, DeliveryStatus deliveryStatus, String userId, String orderId,
+                              List<OrderProduct> orderProducts) {
+        return new Order(1L, orderStatus, userId, orderId, orderProducts,
                 createDelivery(deliveryStatus), LocalDateTime.now(), LocalDateTime.now());
     }
 
@@ -176,5 +183,9 @@ class OrderServiceTest {
 
     private CartProduct createCartProduct(long id, String productId, int quantity) {
         return new CartProduct(id, quantity, productId, Cart.create("userId"));
+    }
+
+    private OrderProduct createOrderProduct(int orderCount, String productId) {
+        return OrderProduct.create(100, orderCount, productId, LocalDateTime.now());
     }
 }
