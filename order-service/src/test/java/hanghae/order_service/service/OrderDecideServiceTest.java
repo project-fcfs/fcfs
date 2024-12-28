@@ -3,14 +3,19 @@ package hanghae.order_service.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import hanghae.order_service.domain.cart.Cart;
+import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.order.Delivery;
 import hanghae.order_service.domain.order.DeliveryStatus;
 import hanghae.order_service.domain.order.Order;
+import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.domain.order.OrderStatus;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
 import hanghae.order_service.mock.FakeOrderRepository;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -60,12 +65,17 @@ class OrderDecideServiceTest {
         }
 
         @Test
-        @DisplayName("재고가 있으면 주문이 성공한다")
+        @DisplayName("재고가 있으면 주문이 성공하고 장바구니에서 해당 상품들을 삭제한다")
         void CanOrderComplete() throws Exception {
             // given
+            String userId = "userId";
             String orderId = "orderId";
+            String productId = "productId";
+            int quantity = 10;
+            int orderCount = 5;
+            saveCartProduct(quantity,productId, userId);
             orderRepository.save(
-                    Order.create("user", orderId, null, createDelivery(DeliveryStatus.PREPARING), LocalDateTime.now()));
+                    Order.create(userId, orderId, List.of(createOrderProduct(orderCount,productId)), createDelivery(DeliveryStatus.PREPARING), LocalDateTime.now()));
             int code = 1;
             LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 27, 14, 27);
             localDateTimeHolder.setLocalDateTime(localDateTime);
@@ -75,13 +85,23 @@ class OrderDecideServiceTest {
             Order result = orderRepository.findById(1L).get();
 
             // then
+            Optional<CartProduct> cartProduct = cartProductRepository.findCartProduct(productId, userId);
             assertAll(() -> {
                 assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.COMPLETED);
                 assertThat(result.delivery().status()).isEqualByComparingTo(DeliveryStatus.PREPARING);
                 assertThat(result.updatedAt()).isEqualTo(localDateTime);
+                assertThat(cartProduct).isEmpty();
             });
         }
 
+    }
+
+    private OrderProduct createOrderProduct(int orderCount, String productId){
+        return OrderProduct.create(100, orderCount, productId, LocalDateTime.now());
+    }
+
+    private void saveCartProduct(int quantity, String productId, String userId){
+        cartProductRepository.save(new CartProduct(null, quantity, productId, Cart.create(userId)));
     }
 
     private Delivery createDelivery(DeliveryStatus deliveryStatus) {
