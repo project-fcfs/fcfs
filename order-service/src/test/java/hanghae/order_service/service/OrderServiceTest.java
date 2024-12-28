@@ -42,14 +42,13 @@ class OrderServiceTest {
     @BeforeEach
     void setUp() {
         orderProductMessage = new FakeOrderProducerMessage();
-        FakeDeliveryRepository deliveryRepository = new FakeDeliveryRepository();
         productClient = new FakeProductClient();
         orderRepository = new FakeOrderRepository();
         cartProductRepository = new FakeCartProductRepository();
         localDateTimeHolder = new FakeLocalDateTimeHolder(LocalDateTime.now());
         uuidRandomHolder = new FakeUuidRandomHolder("random");
         orderService = new OrderService(orderRepository, cartProductRepository, localDateTimeHolder, uuidRandomHolder,
-                productClient, orderProductMessage, deliveryRepository);
+                productClient, orderProductMessage);
     }
 
     @Test
@@ -144,12 +143,12 @@ class OrderServiceTest {
             // given
             String orderId = "orderId";
             orderRepository.save(Order.create("user", orderId, null, createDelivery(DeliveryStatus.PREPARING), LocalDateTime.now()));
-            ResponseEntity<?> response = ResponseEntity.badRequest().build();
+            int code = -1;
             LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 27, 14, 27);
             localDateTimeHolder.setLocalDateTime(localDateTime);
 
             // when
-            orderService.decideOrder(response,orderId);
+            orderService.decideOrder(code,orderId);
             Order result = orderRepository.findById(1L).get();
 
             // then
@@ -167,12 +166,12 @@ class OrderServiceTest {
             // given
             String orderId = "orderId";
             orderRepository.save(Order.create("user", orderId, null, createDelivery(DeliveryStatus.PREPARING), LocalDateTime.now()));
-            ResponseEntity<?> response = ResponseEntity.ok().build();
+            int code = 1;
             LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 27, 14, 27);
             localDateTimeHolder.setLocalDateTime(localDateTime);
 
             // when
-            orderService.decideOrder(response,orderId);
+            orderService.decideOrder(code,orderId);
             Order result = orderRepository.findById(1L).get();
 
             // then

@@ -31,19 +31,16 @@ public class OrderService {
     private final UuidRandomHolder uuidRandomHolder;
     private final ProductClient productClient;
     private final OrderProducerMessage orderProducerMessage;
-    private final DeliveryRepository deliveryRepository;
 
     public OrderService(OrderRepository orderRepository, CartProductRepository cartProductRepository,
                         LocalDateTimeHolder localDateTimeHolder, UuidRandomHolder uuidRandomHolder,
-                        ProductClient productClient, OrderProducerMessage orderProducerMessage,
-                        DeliveryRepository deliveryRepository) {
+                        ProductClient productClient, OrderProducerMessage orderProducerMessage) {
         this.orderRepository = orderRepository;
         this.cartProductRepository = cartProductRepository;
         this.localDateTimeHolder = localDateTimeHolder;
         this.uuidRandomHolder = uuidRandomHolder;
         this.productClient = productClient;
         this.orderProducerMessage = orderProducerMessage;
-        this.deliveryRepository = deliveryRepository;
     }
 
     /**
@@ -85,13 +82,13 @@ public class OrderService {
      * 재고 여부에 따라 주문 성공, 실패가 된다
      */
     @Transactional
-    public void decideOrder(ResponseEntity<?> response, String orderId){
+    public void decideOrder(int code, String orderId){
         Order order = orderRepository.findOrderById(orderId)
                 .orElseThrow(() -> new CustomApiException(ErrorMessage.NOT_FOUND_ORDER.getMessage()));
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
         Order updatedOrder;
 
-        if (response.getStatusCode().is2xxSuccessful()) {
+        if (code == 1) {
             updatedOrder = order.completeOrder(currentDate);
         } else{
             updatedOrder = order.cancelOrder(currentDate);

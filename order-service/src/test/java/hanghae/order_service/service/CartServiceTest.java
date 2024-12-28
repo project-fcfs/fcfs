@@ -37,7 +37,7 @@ class CartServiceTest {
     @DisplayName("상품을 장바구니에 저장할 수 있다")
     void canAddShop() throws Exception {
         // given
-        String productId = "product";
+        String productId = "response";
         String userId = "user";
         cartProductClient.addData(createProduct(productId));
 
@@ -70,7 +70,7 @@ class CartServiceTest {
         @DisplayName("올바른 값을 입력하면 장바구니 수량을 업데이트 할 수 있다")
         void canUpdateCartProduct() throws Exception {
             // given
-            String productId = "product";
+            String productId = "response";
             String userId = "user";
             int count = 5;
             cartProductRepository.save(CartProduct.create(productId, Cart.create(userId)));
@@ -91,7 +91,7 @@ class CartServiceTest {
         @DisplayName("장바구니 수량보다 많이 양을 빼려고 하면 예외를 반환한다")
         void outOfStockCartProduct() throws Exception {
             // given
-            String productId = "product";
+            String productId = "response";
             String userId = "user";
             int count = -5;
             cartProductRepository.save(CartProduct.create(productId, Cart.create(userId)));
@@ -111,7 +111,7 @@ class CartServiceTest {
         @DisplayName("장바구니에 있는 상품을 지울 수 있다")
         void canUpdateCartProduct() throws Exception {
             // given
-            String productId = "product";
+            String productId = "response";
             String userId = "user";
             cartProductRepository.save(CartProduct.create(productId, Cart.create(userId)));
 
@@ -127,7 +127,7 @@ class CartServiceTest {
         @DisplayName("장바구니에 없는 상품을 지우려고 하면 예외를 반환한다")
         void outOfStockCartProduct() throws Exception {
             // given
-            String productId = "product";
+            String productId = "response";
             String userId = "user";
 
             // then

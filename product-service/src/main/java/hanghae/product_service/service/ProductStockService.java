@@ -44,10 +44,10 @@ public class ProductStockService {
             }
 
             productRepository.saveAll(updatedProducts);
-            orderProductMessage.sendResult(1, "주문 성공");
+            orderProductMessage.sendResult(1, "success", reqDtos.getFirst().orderId());
         } catch (CustomApiException e) {
             log.info("product save error {}", e.getMessage());
-            orderProductMessage.sendResult(-1, e.getMessage());
+            orderProductMessage.sendResult(-1, e.getMessage(), reqDtos.getFirst().orderId());
         }
 
     }

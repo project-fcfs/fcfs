@@ -11,7 +11,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrderProductMessageImpl implements OrderProductMessage {
+public class OrderProductMessageImpl<T> implements OrderProductMessage<T> {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final String orderDecideTopic;
     private final ObjectMapper mapper;
@@ -24,8 +24,8 @@ public class OrderProductMessageImpl implements OrderProductMessage {
     }
 
     @Override
-    public void sendResult(int code, String value) {
-        ResponseDto<Object> response = new ResponseDto<>(code, value, null);
+    public void sendResult(int code, String value, T data) {
+        ResponseDto<Object> response = new ResponseDto<>(code, value, data);
         String message = convertToResponse(response);
         kafkaTemplate.send(orderDecideTopic, message);
     }

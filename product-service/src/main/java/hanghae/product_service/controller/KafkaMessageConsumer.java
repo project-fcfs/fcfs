@@ -25,16 +25,16 @@ public class KafkaMessageConsumer {
         this.mapper = mapper;
     }
 
-    @KafkaListener(topics = "fcfs_order_remove", groupId = "order-group")
+    @KafkaListener(topics = "fcfs_order_remove", groupId = "product-group")
     public void productOrderRemove(String message) {
-        log.info(message);
+        log.info("fcfs_order_remove {}", message);
         List<OrderMessageReqDto> orderMessages = convertToRequest(message);
         productStockService.processOrder(orderMessages);
     }
 
-    @KafkaListener(topics = "fcfs_order_restore", groupId = "order-group")
+    @KafkaListener(topics = "fcfs_order_restore", groupId = "product-group")
     public void productOrderRestore(String message) {
-        log.info(message);
+        log.info("fcfs_order_restore {}", message);
         List<OrderMessageReqDto> orderMessages = convertToRequest(message);
         productStockService.restoreQuantity(orderMessages);
     }
