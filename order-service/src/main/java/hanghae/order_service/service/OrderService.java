@@ -1,7 +1,5 @@
 package hanghae.order_service.service;
 
-import static hanghae.order_service.service.common.util.OrderConstant.ORDER_SUCCESS;
-
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.order.Delivery;
 import hanghae.order_service.domain.order.Order;
@@ -78,13 +76,14 @@ public class OrderService {
 
     /**
      * 주문취소 가능한지 확인하고 주문 취소하기
+     * 취소하고 원복하기
      */
     @Transactional
     public void cancel(String userId, String orderId) {
         Order order = getUserOrder(userId, orderId);
         Order canceldOrder = order.cancelOrder(localDateTimeHolder.getCurrentDate());
-        // todo 재고 원복
-        orderRepository.save(canceldOrder);
+        Order savedOrder = orderRepository.save(canceldOrder);
+        orderProducerMessage.restoreStock(savedOrder.orderProducts());
     }
 
     /**

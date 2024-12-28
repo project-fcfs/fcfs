@@ -1,14 +1,13 @@
 package hanghae.order_service.service;
 
-import hanghae.order_service.controller.resp.ProductRespDto;
 import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
-import hanghae.order_service.service.port.ProductClient;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.CartRepository;
+import hanghae.order_service.service.port.ProductClient;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,23 +31,21 @@ public class CartService {
     }
 
     /**
-     * 장바구니에 담는다
-     * 장바구니에 담을 때는 상품ID만 담고 수량을 1로 체크한다
+     * 장바구니에 담는다 장바구니에 담을 때는 상품ID만 담고 수량을 1로 체크한다
      */
     @Transactional
     public void add(String userId, String productId) {
         ResponseEntity<?> product = productClient.isValidProduct(productId);
-        if(product.getStatusCode().is2xxSuccessful()){
+        if (product.getStatusCode().is2xxSuccessful()) {
             Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> cartRepository.save(Cart.create(userId)));
             cartProductRepository.save(CartProduct.create(productId, cart));
-        } else{
+        } else {
             throw new CustomApiException(ErrorMessage.INVALID_PRODUCT.getMessage());
         }
     }
 
     /**
-     * 장바구니 상품의 수량을 특정한 수량만큼 더하거나 뺄 수 있다
-     * 하지만 수량이 0이 될 순 없다
+     * 장바구니 상품의 수량을 특정한 수량만큼 더하거나 뺄 수 있다 하지만 수량이 0이 될 순 없다
      */
     @Transactional
     public void updateQuantity(String userId, String productId, int count) {
@@ -95,7 +92,7 @@ public class CartService {
                         Product product = map.get(i.productId());
                         return product.convertCart(i.quantity());
                     }).toList();
-        } else{
+        } else {
             throw new CustomApiException(ErrorMessage.INVALID_PRODUCT.getMessage());
         }
 
