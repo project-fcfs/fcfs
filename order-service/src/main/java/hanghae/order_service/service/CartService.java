@@ -8,6 +8,7 @@ import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.CartRepository;
 import hanghae.order_service.service.port.ProductClient;
+import io.github.resilience4j.retry.annotation.Retry;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ public class CartService {
      * 장바구니에 담는다 장바구니에 담을 때는 상품ID만 담고 수량을 1로 체크한다
      */
     @Transactional
+    @Retry(name = "retryCheckProduct", fallbackMethod = "badFallbackMethod")
     public void add(String userId, String productId) {
         ResponseEntity<?> product = productClient.isValidProduct(productId);
         if (product.getStatusCode().is2xxSuccessful()) {
