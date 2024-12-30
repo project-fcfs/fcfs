@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "product-service")
 public interface ProductClientImpl extends ProductClient {
 
-
     Logger log = LoggerFactory.getLogger(ProductClientImpl.class);
 
     @Override
@@ -42,6 +41,7 @@ public interface ProductClientImpl extends ProductClient {
         List<ProductFeignResponse> data = productsResponse.getBody();
 
         List<Product> products = data.stream().map(ProductFeignResponse::toModel).toList();
+        log.debug("getProducts: {}", products);
 
         return new ResponseEntity<>(products, productsResponse.getStatusCode());
     }

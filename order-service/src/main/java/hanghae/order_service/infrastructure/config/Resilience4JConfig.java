@@ -49,7 +49,7 @@ public class Resilience4JConfig {
     }
 
     @Bean
-    public Retry retryRegistry() {
+    public Retry retryCustomizer() {
         RetryConfig retryConfig = customRetryConfig();
         RetryRegistry retryRegistry = RetryRegistry.of(retryConfig);
         return retryRegistry.retry("customRetry",
