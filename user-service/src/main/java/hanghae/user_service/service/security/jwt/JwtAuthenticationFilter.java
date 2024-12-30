@@ -71,7 +71,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Long expirationTime = Long.valueOf(env.getProperty("login.user.expiration-time"));
 
         String accessToken = jwtProcess.createAccessToken(loginUser.userId(), expirationTime);
-        tokenStoreRepository.save(accessToken, 1, expirationTime);
+        String key = env.getProperty("redis.user.token");
+        tokenStoreRepository.save(key, accessToken, expirationTime);
 
         response.addHeader(AUTHORIZATION, TOKEN_PREFIX + accessToken);
         CustomResponseUtil.success(response, LOGIN_SUCCESS);

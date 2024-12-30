@@ -4,7 +4,6 @@ import static hanghae.user_service.service.common.util.ErrorMessage.INVALID_JWT_
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import hanghae.user_service.domain.user.User;
-import hanghae.user_service.service.common.exception.InvalidJwtTokenException;
 import hanghae.user_service.service.port.UserRepository;
 import hanghae.user_service.service.security.model.LoginUser;
 import hanghae.user_service.service.security.model.PrincipalDetails;
@@ -16,6 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
+    private static Logger log = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
     private final JwtProcess jwtProcess;
     private final UserRepository userRepository;
 
@@ -54,7 +56,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     SecurityContextHolder.getContextHolderStrategy().getContext().setAuthentication(authToken);
                 }
             } catch (MalformedJwtException | ExpiredJwtException e) {
-                throw new AccessDeniedException(INVALID_JWT_TOKEN.getMessage(), e);
+                log.error("Invalid jwt Token {}", e.getMessage());
             }
 
         }

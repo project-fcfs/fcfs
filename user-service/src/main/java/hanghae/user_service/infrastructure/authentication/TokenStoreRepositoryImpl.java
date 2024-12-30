@@ -16,13 +16,13 @@ public class TokenStoreRepositoryImpl implements TokenStoreRepository {
 
     @Transactional
     @Override
-    public void save(String key, Integer value, Long expirationTime) {
+    public void save(String key, String value, Long expirationTime) {
         redisTemplate.opsForSet().add(key, value);
         redisTemplate.expire(key, Duration.ofMillis(expirationTime));
     }
 
     @Override
-    public void deleteToken(String key) {
-        redisTemplate.opsForSet().remove(key);
+    public void deleteToken(String key, String value) {
+        redisTemplate.opsForSet().remove(key, value);
     }
 }
