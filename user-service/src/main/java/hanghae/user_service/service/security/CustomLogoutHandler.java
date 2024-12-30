@@ -28,7 +28,6 @@ public class CustomLogoutHandler implements LogoutHandler {
             String key = env.getProperty("redis.user.token");
             tokenStoreRepository.deleteToken(key, token);
         }
-        response.setHeader(HttpHeaders.AUTHORIZATION, "");
         SecurityContextHolder.getContextHolderStrategy().getContext().setAuthentication(null);
         SecurityContextHolder.getContextHolderStrategy().clearContext();
     }

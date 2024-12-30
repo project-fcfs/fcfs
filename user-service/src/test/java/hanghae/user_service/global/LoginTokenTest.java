@@ -15,7 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 public class LoginTokenTest extends IntegrationUserTestSupport {
 
@@ -52,13 +54,14 @@ public class LoginTokenTest extends IntegrationUserTestSupport {
         redisTemplate.opsForSet().add(key, token);
 
         // when
-        mockMvc.perform(post("/logout")
+        ResultActions resultActions = mockMvc.perform(post("/logout")
                         .header(HttpHeaders.AUTHORIZATION, JwtVO.TOKEN_PREFIX + token))
                 .andDo(MockMvcResultHandlers.print());
 
         Boolean result = redisTemplate.opsForSet().isMember(key, token);
 
         // then
+        resultActions.andExpect(MockMvcResultMatchers.header().doesNotExist(HttpHeaders.AUTHORIZATION));
         assertThat(result).isFalse();
     }
 
