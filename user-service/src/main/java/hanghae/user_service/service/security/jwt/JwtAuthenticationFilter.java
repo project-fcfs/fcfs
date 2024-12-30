@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.user_service.controller.req.UserLoginReqDto;
 import hanghae.user_service.service.common.util.CustomResponseUtil;
 import hanghae.user_service.service.port.PersonalDataEncryptor;
+import hanghae.user_service.service.port.TokenStoreRepository;
 import hanghae.user_service.service.security.model.LoginUser;
 import hanghae.user_service.service.security.model.PrincipalDetails;
 import jakarta.servlet.FilterChain;
@@ -14,6 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -29,14 +31,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final AuthenticationManager authenticationManager;
     private final JwtProcess jwtProcess;
     private final PersonalDataEncryptor encryptor;
+    private final Environment env;
+    private final TokenStoreRepository tokenStoreRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtProcess jwtProcess,
-                                   PersonalDataEncryptor encryptor) {
+                                   PersonalDataEncryptor encryptor, Environment env,
+                                   TokenStoreRepository tokenStoreRepository) {
         super(authenticationManager);
         this.authenticationManager = authenticationManager;
         this.jwtProcess = jwtProcess;
         this.encryptor = encryptor;
+        this.env = env;
+        this.tokenStoreRepository = tokenStoreRepository;
         setFilterProcessesUrl("/api/login");
     }
 
@@ -61,8 +68,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication authResult) throws IOException, ServletException {
         PrincipalDetails principal = (PrincipalDetails) authResult.getPrincipal();
         LoginUser loginUser = principal.getLoginUser();
+        Long expirationTime = Long.valueOf(env.getProperty("login.user.expiration-time"));
 
-        String accessToken = jwtProcess.createAccessToken(loginUser.userId(), JwtVO.ACCESS_TOKEN_EXPIRATION);
+        String accessToken = jwtProcess.createAccessToken(loginUser.userId(), expirationTime);
+        tokenStoreRepository.save(accessToken, 1, expirationTime);
 
         response.addHeader(AUTHORIZATION, TOKEN_PREFIX + accessToken);
         CustomResponseUtil.success(response, LOGIN_SUCCESS);
