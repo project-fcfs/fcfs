@@ -1,11 +1,10 @@
-package hanghae.gateway_service.jwt;
+package hanghae.gateway_service.service;
 
 import static hanghae.gateway_service.util.JwtVO.CATEGORY_ACCESS;
 import static hanghae.gateway_service.util.JwtVO.HEADER_PREFIX;
 import static hanghae.gateway_service.util.JwtVO.PAYLOAD_USER_ID;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -41,14 +40,10 @@ public class JwtTokenProvider {
         return subject.equals(CATEGORY_ACCESS);
     }
 
-    // 토큰 유효성 검사
+
     public boolean isExpired(String token) {
-        try {
-            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-                    .getPayload().getExpiration().before(new Date());
-        } catch (JwtException e) {
-            return false;
-        }
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
+                .getPayload().getExpiration().before(new Date());
     }
 
     // Authorization 헤더에서 토큰 추출

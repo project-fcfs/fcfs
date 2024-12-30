@@ -1,4 +1,4 @@
-package hanghae.gateway_service.config;
+package hanghae.gateway_service.infrastructure.config;
 
 import static hanghae.gateway_service.util.GatewayConstant.ORDER_ROUTE_ID;
 import static hanghae.gateway_service.util.GatewayConstant.ORDER_SERVICE_URI;
@@ -6,11 +6,10 @@ import static hanghae.gateway_service.util.GatewayConstant.REWRITE_PATH_REPLACEM
 import static hanghae.gateway_service.util.GatewayConstant.USER_ROUTE_ID;
 import static hanghae.gateway_service.util.GatewayConstant.createRewritePathPattern;
 
-import hanghae.gateway_service.filter.AuthorizationHeaderFilter;
+import hanghae.gateway_service.service.AuthorizationHeaderFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 //@Configuration
 public class OrderFilterConfig {

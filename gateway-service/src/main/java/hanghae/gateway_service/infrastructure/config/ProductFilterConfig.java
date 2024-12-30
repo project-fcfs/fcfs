@@ -1,4 +1,4 @@
-package hanghae.gateway_service.config;
+package hanghae.gateway_service.infrastructure.config;
 
 import static hanghae.gateway_service.util.GatewayConstant.PRODUCT_ROUTE_ID;
 import static hanghae.gateway_service.util.GatewayConstant.PRODUCT_SERVICE_URI;
@@ -8,7 +8,6 @@ import static hanghae.gateway_service.util.GatewayConstant.createRewritePathPatt
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 //@Configuration
 public class ProductFilterConfig {

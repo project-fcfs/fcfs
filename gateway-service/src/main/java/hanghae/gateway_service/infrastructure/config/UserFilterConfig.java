@@ -1,12 +1,11 @@
-package hanghae.gateway_service.config;
+package hanghae.gateway_service.infrastructure.config;
 
 import static hanghae.gateway_service.util.GatewayConstant.*;
 
-import hanghae.gateway_service.filter.AuthorizationHeaderFilter;
+import hanghae.gateway_service.service.AuthorizationHeaderFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 
 //@Configuration

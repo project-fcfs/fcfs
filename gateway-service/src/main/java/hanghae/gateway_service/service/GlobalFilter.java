@@ -1,4 +1,4 @@
-package hanghae.gateway_service.filter;
+package hanghae.gateway_service.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
