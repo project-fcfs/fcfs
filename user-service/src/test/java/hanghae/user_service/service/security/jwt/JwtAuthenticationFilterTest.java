@@ -1,5 +1,8 @@
 package hanghae.user_service.service.security.jwt;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -10,7 +13,10 @@ import hanghae.user_service.testSupport.IntegrationInfraTestSupport;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -21,6 +27,8 @@ class JwtAuthenticationFilterTest extends IntegrationInfraTestSupport {
 
     @Autowired
     private PersonalDataEncryptor encryptor;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Test
     @DisplayName("DB에 있는 유저와 로그인의 정보가 같으면 JWT를 발급해준다")
@@ -43,7 +51,7 @@ class JwtAuthenticationFilterTest extends IntegrationInfraTestSupport {
         // then
         resultActions.andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("로그인 성공"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Login Success"));
     }
 
     @Test
@@ -62,7 +70,7 @@ class JwtAuthenticationFilterTest extends IntegrationInfraTestSupport {
         // then
         resultActions.andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(-1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("로그인 실패"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Login Fail"));
     }
 
     private User createUser(String email, String password) {

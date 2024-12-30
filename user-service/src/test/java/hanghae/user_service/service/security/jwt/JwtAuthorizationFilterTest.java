@@ -50,7 +50,7 @@ class JwtAuthorizationFilterTest extends IntegrationInfraTestSupport {
     }
 
     @Test
-    @DisplayName("JWT가 올바르지 않다면 에러를 반환한다")
+    @DisplayName("JWT가 올바르지 않다면 로그인을 진행하라고 한다")
     void InvalidJWTCallError() throws Exception {
         // given
         saveUser(UserRole.ROLE_USER);
@@ -62,9 +62,8 @@ class JwtAuthorizationFilterTest extends IntegrationInfraTestSupport {
                 .andDo(MockMvcResultHandlers.print());
 
         // then
-        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(status().isUnauthorized());
     }
-
 
     @Nested
     @DisplayName("Admin 권한은 어느곳이나 갈 수 있다")

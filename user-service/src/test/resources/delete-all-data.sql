@@ -1,3 +1,3 @@
-set referential_integrity false;
+SET FOREIGN_KEY_CHECKS = 0;
 truncate table users;
-set referential_integrity true;
+SET FOREIGN_KEY_CHECKS = 1;
