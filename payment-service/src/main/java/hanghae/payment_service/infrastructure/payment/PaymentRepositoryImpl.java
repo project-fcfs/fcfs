@@ -1,4 +1,4 @@
-package hanghae.payment_service.infrastructure;
+package hanghae.payment_service.infrastructure.payment;
 
 import hanghae.payment_service.domain.Payment;
 import hanghae.payment_service.service.port.PaymentRepository;

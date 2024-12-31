@@ -7,9 +7,10 @@ public record Payment(
         String orderId,
         PaymentStatus status,
         Long amount,
+        String paymentId,
         LocalDateTime createdAt
 ) {
-    public static Payment create(String orderId, PaymentStatus status, Long amount, LocalDateTime createdAt) {
-        return new Payment(null, orderId, status, amount, createdAt);
+    public static Payment create(String orderId, PaymentStatus status, Long amount, String paymentId, LocalDateTime createdAt) {
+        return new Payment(null, orderId, status, amount, paymentId, createdAt);
     }
 }

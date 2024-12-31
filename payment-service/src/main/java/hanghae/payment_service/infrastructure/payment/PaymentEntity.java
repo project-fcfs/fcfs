@@ -1,4 +1,4 @@
-package hanghae.payment_service.infrastructure;
+package hanghae.payment_service.infrastructure.payment;
 
 import hanghae.payment_service.domain.Payment;
 import hanghae.payment_service.domain.PaymentStatus;
@@ -26,24 +26,29 @@ public class PaymentEntity {
     @Column(nullable = false)
     private Long amount;
     @Column(nullable = false)
+    private String paymentId;
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     protected PaymentEntity() {
     }
 
-    public PaymentEntity(Long id, String orderId, PaymentStatus status, Long amount, LocalDateTime createdAt) {
+    public PaymentEntity(Long id, String orderId, PaymentStatus status, Long amount, String paymentId,
+                         LocalDateTime createdAt) {
         this.id = id;
         this.orderId = orderId;
         this.status = status;
         this.amount = amount;
+        this.paymentId = paymentId;
         this.createdAt = createdAt;
     }
 
     public static PaymentEntity toModel(Payment payment) {
-        return new PaymentEntity(payment.id(), payment.orderId(), payment.status(), payment.amount(), payment.createdAt());
+        return new PaymentEntity(payment.id(), payment.orderId(), payment.status(), payment.amount(),
+                payment.paymentId(), payment.createdAt());
     }
 
-    public Payment toModel(){
-        return new Payment(id, orderId, status, amount, createdAt);
+    public Payment toModel() {
+        return new Payment(id, orderId, status, amount, paymentId, createdAt);
     }
 }

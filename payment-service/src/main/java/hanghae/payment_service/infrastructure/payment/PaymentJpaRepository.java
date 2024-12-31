@@ -1,4 +1,4 @@
-package hanghae.payment_service.infrastructure;
+package hanghae.payment_service.infrastructure.payment;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
