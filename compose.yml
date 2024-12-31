@@ -17,7 +17,7 @@ services:
     volumes:
       - ${PRODUCT_DATA_PATH}:/var/lib/mysql
     ports:
-      - 4000:3306
+      - ${PRODUCT_DB_BINDING_PORT}:3306
 
   order-db:
     image: mysql
@@ -28,6 +28,16 @@ services:
       - ${ORDER_DATA_PATH}:/var/lib/mysql
     ports:
       - ${ORDER_DB_BINDING_PORT}:3306
+      
+  payment-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${PAYMENT_DB_PASSWORD}
+      MYSQL_DATABASE: ${PAYMENT_DB_NAME}
+    volumes:
+      - ${PAYMENT_DATA_PATH}:/var/lib/mysql
+    ports:
+      - ${PAYMENT_DB_BINDING_PORT}:3306
 
   cache-server:
     image: redis/redis-stack-server:6.2.6-v17
