@@ -69,3 +69,20 @@ services:
       - 9092:9092
       - 9093:9093
       - 29092:29092
+  
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./db/grafana:/var/lib/grafana
+    depends_on:
+      - prometheus
+  
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./db/prometheus/config:/etc/prometheus
+      - ./db/promotheus/config:/prometheus/data
+    command:
+      - '--config.file=/db/prometheus.yml'
