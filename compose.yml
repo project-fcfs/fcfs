@@ -84,5 +84,6 @@ services:
     volumes:
       - ./db/prometheus/config:/etc/prometheus
       - ./db/promotheus/config:/prometheus/data
-    command:
-      - '--config.file=/db/prometheus.yml'
+      - ./db/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
