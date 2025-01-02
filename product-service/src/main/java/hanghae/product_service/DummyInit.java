@@ -16,8 +16,6 @@ public class DummyInit {
     @PostConstruct
     public void init() {
         productService.create("name1", 1000, 10, null);
-        productService.create("name2", 2000, 20, null);
-        productService.create("name3", 3000, 30, null);
         productService.create("name4", 4000, 100_000, null);
     }
 }

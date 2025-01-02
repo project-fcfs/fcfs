@@ -2,6 +2,7 @@ package hanghae.user_service.infrastructure.user;
 
 import hanghae.user_service.domain.user.User;
 import hanghae.user_service.service.port.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
