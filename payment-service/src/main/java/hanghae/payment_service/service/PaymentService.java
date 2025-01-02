@@ -8,9 +8,9 @@ import hanghae.payment_service.domain.PaymentStatus;
 import hanghae.payment_service.service.port.LocalDateTimeHolder;
 import hanghae.payment_service.service.port.OrderMessage;
 import hanghae.payment_service.service.port.PaymentRepository;
+import hanghae.payment_service.service.port.RandomHolder;
 import hanghae.payment_service.service.port.UuidRandomHolder;
 import java.time.LocalDateTime;
-import java.util.Random;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,19 +20,21 @@ public class PaymentService {
     private final LocalDateTimeHolder localDateTimeHolder;
     private final UuidRandomHolder uuidRandomHolder;
     private final OrderMessage orderMessage;
+    private final RandomHolder randomHolder;
 
     public PaymentService(PaymentRepository paymentRepository, LocalDateTimeHolder localDateTimeHolder,
-                          UuidRandomHolder uuidRandomHolder, OrderMessage orderMessage) {
+                          UuidRandomHolder uuidRandomHolder, OrderMessage orderMessage, RandomHolder randomHolder) {
         this.paymentRepository = paymentRepository;
         this.localDateTimeHolder = localDateTimeHolder;
         this.uuidRandomHolder = uuidRandomHolder;
         this.orderMessage = orderMessage;
+        this.randomHolder = randomHolder;
     }
 
     public Payment create(String orderId, Long amount) {
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
         String paymentId = uuidRandomHolder.getRandomUuid();
-        int random = new Random().nextInt(10);
+        int random = randomHolder.getRandom();
 
         PaymentStatus paymentStatus = random > 2 ? PaymentStatus.SUCCESS : PaymentStatus.FAIL;
         int code = paymentStatus.equals(PaymentStatus.SUCCESS) ? SUCCESS.getCode() : FAIL.getCode();
