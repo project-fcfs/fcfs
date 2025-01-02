@@ -12,6 +12,7 @@ import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.domain.order.OrderStatus;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
+import hanghae.order_service.mock.FakeOrderProductMessage;
 import hanghae.order_service.mock.FakeOrderRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,13 +28,16 @@ class OrderDecideServiceTest {
     private FakeOrderRepository orderRepository;
     private FakeLocalDateTimeHolder localDateTimeHolder;
     private FakeCartProductRepository cartProductRepository;
+    private FakeOrderProductMessage orderProductMessage;
 
     @BeforeEach
     void setUp() {
+        orderProductMessage = new FakeOrderProductMessage();
         cartProductRepository = new FakeCartProductRepository();
         localDateTimeHolder = new FakeLocalDateTimeHolder(LocalDateTime.now());
         orderRepository = new FakeOrderRepository();
-        orderDecideService = new OrderDecideService(localDateTimeHolder, orderRepository, cartProductRepository);
+        orderDecideService = new OrderDecideService(localDateTimeHolder, orderRepository, cartProductRepository,
+                orderProductMessage);
     }
 
     @Nested
@@ -73,9 +77,10 @@ class OrderDecideServiceTest {
             String productId = "productId";
             int quantity = 10;
             int orderCount = 5;
-            saveCartProduct(quantity,productId, userId);
+            saveCartProduct(quantity, productId, userId);
             orderRepository.save(
-                    Order.create(userId, orderId, List.of(createOrderProduct(orderCount,productId)), createDelivery(DeliveryStatus.PREPARING), LocalDateTime.now()));
+                    Order.create(userId, orderId, List.of(createOrderProduct(orderCount, productId)),
+                            createDelivery(DeliveryStatus.PREPARING), LocalDateTime.now()));
             int code = 1;
             LocalDateTime localDateTime = LocalDateTime.of(2024, 12, 27, 14, 27);
             localDateTimeHolder.setLocalDateTime(localDateTime);
@@ -96,11 +101,11 @@ class OrderDecideServiceTest {
 
     }
 
-    private OrderProduct createOrderProduct(int orderCount, String productId){
+    private OrderProduct createOrderProduct(int orderCount, String productId) {
         return OrderProduct.create(100, orderCount, productId, LocalDateTime.now());
     }
 
-    private void saveCartProduct(int quantity, String productId, String userId){
+    private void saveCartProduct(int quantity, String productId, String userId) {
         cartProductRepository.save(new CartProduct(null, quantity, productId, Cart.create(userId)));
     }
 

@@ -58,31 +58,55 @@ class OrderServiceTest {
         String productId1 = "product1";
         String productId2 = "product2";
         String userId = "userId";
-        int quantity1 = 2;
-        int quantity2 = 3;
+        int orderCount1 = 2;
+        int orderCount2 = 3;
+        int quantity = 10;
         List<String> productIds = List.of(productId1, productId2);
-        List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, quantity1),
-                createCartProduct(2L, productId2, quantity2));
+        List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
+                createCartProduct(2L, productId2, orderCount2));
         cartProducts.forEach(cartProductRepository::save);
-        orderProductMessage.addProduct(FakeProduct.create("name", 100, quantity1, productId1));
-        orderProductMessage.addProduct(FakeProduct.create("name", 100, quantity2, productId2));
-        productClient.addData(createProduct(productId1));
-        productClient.addData(createProduct(productId2));
+        orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
+        orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
+        productClient.addData(createProduct(productId1, quantity));
+        productClient.addData(createProduct(productId2, quantity));
 
         // when
         Order result = orderService.order(productIds, "address", userId);
 
         // then
-        FakeProduct product = orderProductMessage.getProductById(productId1);
         assertAll(() -> {
             assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.PENDING);
             assertThat(result.delivery().status()).isEqualByComparingTo(DeliveryStatus.PREPARING);
             assertThat(result.delivery().address()).isEqualTo("address");
             assertThat(result.orderProducts()).hasSize(2)
                     .extracting(OrderProduct::productId, OrderProduct::orderCount)
-                    .containsExactlyInAnyOrder(Tuple.tuple(productId1, quantity1), Tuple.tuple(productId2, quantity2));
-            assertThat(product.getQuantity()).isEqualTo(0);
+                    .containsExactlyInAnyOrder(Tuple.tuple(productId1, orderCount1), Tuple.tuple(productId2, orderCount2));
         });
+    }
+
+    @Test
+    @DisplayName("주문을 했는데 재고가 없으면 예외를 반환한다")
+    void processOrderOutOfStock() throws Exception {
+        // given
+        String productId1 = "product1";
+        String productId2 = "product2";
+        String userId = "userId";
+        int orderCount1 = 2;
+        int orderCount2 = 3;
+        int quantity = 1;
+        List<String> productIds = List.of(productId1, productId2);
+        List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
+                createCartProduct(2L, productId2, orderCount2));
+        cartProducts.forEach(cartProductRepository::save);
+        orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
+        orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
+        productClient.addData(createProduct(productId1, quantity));
+        productClient.addData(createProduct(productId2, quantity));
+
+        // then
+        assertThatThrownBy(() -> orderService.order(productIds, "address", userId))
+                .isInstanceOf(CustomApiException.class)
+                .hasMessage(ErrorMessage.OUT_OF_STOCK.getMessage());
     }
 
     @Test
@@ -167,8 +191,8 @@ class OrderServiceTest {
         });
     }
 
-    private Product createProduct(String productId) {
-        return new Product("name", 100, 10, productId, ProductStatus.ACTIVE, null);
+    private Product createProduct(String productId, int quantity) {
+        return new Product("name", 100, quantity, productId, ProductStatus.ACTIVE, null);
     }
 
     private Order createOrder(OrderStatus orderStatus, DeliveryStatus deliveryStatus, String userId, String orderId,
