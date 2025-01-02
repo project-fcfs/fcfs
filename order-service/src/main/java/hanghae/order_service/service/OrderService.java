@@ -6,6 +6,7 @@ import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.util.OrderConstant;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
 import hanghae.order_service.service.port.OrderProductMessage;
@@ -13,6 +14,7 @@ import hanghae.order_service.service.port.OrderRepository;
 import hanghae.order_service.service.port.ProductClient;
 import hanghae.order_service.service.port.UuidRandomHolder;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,6 +53,11 @@ public class OrderService {
         String orderId = uuidRandomHolder.getRandomUuid();
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
 
+        LocalTime currentTime = currentDate.toLocalTime();
+        if (currentTime.isBefore(OrderConstant.OPEN_TIME)) {
+            throw new CustomApiException(ErrorMessage.NOT_OPEN_TIME.getMessage());
+        }
+
         List<OrderProduct> orderProducts = generateOrderProducts(userId, productIds);
 
         Delivery delivery = Delivery.create(address, currentDate);
@@ -61,6 +68,21 @@ public class OrderService {
             return orderRepository.save(order);
         }
         throw new CustomApiException(ErrorMessage.OUT_OF_STOCK.getMessage());
+    }
+
+    /**
+     * 선착순 구매
+     * 선착순 구매는 오픈시간이 있고, 해당 오픈시간이 되지 않으면 구매할 수 없다
+     */
+    @Transactional
+    public Order fcfsOrder(List<String> productIds, String address, String userId) {
+        LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
+        LocalTime currentTime = currentDate.toLocalTime();
+
+        if (currentTime.isBefore(OrderConstant.OPEN_TIME)) {
+            throw new CustomApiException(ErrorMessage.NOT_OPEN_TIME.getMessage());
+        }
+        return order(productIds, address, userId);
     }
 
     /**
