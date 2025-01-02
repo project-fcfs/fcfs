@@ -27,6 +27,7 @@ import java.util.List;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class OrderServiceTest {
@@ -51,63 +52,135 @@ class OrderServiceTest {
                 productClient, orderProductMessage);
     }
 
-    @Test
-    @DisplayName("주문을 하면 장바구니에 있는 상품을 가져와서 주문을 한다")
-    void createOrder() throws Exception {
-        // given
-        String productId1 = "product1";
-        String productId2 = "product2";
-        String userId = "userId";
-        int orderCount1 = 2;
-        int orderCount2 = 3;
-        int quantity = 10;
-        List<String> productIds = List.of(productId1, productId2);
-        List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
-                createCartProduct(2L, productId2, orderCount2));
-        cartProducts.forEach(cartProductRepository::save);
-        orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
-        orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
-        productClient.addData(createProduct(productId1, quantity));
-        productClient.addData(createProduct(productId2, quantity));
+    @Nested
+    @DisplayName("일반 주문 시에 상품의 재고에 따라 주문 성공, 실패가 된다")
+    class processOrder{
+        @Test
+        @DisplayName("주문을 하면 장바구니에 있는 상품을 가져와서 주문을 한다")
+        void createOrder() throws Exception {
+            // given
+            String productId1 = "product1";
+            String productId2 = "product2";
+            String userId = "userId";
+            int orderCount1 = 2;
+            int orderCount2 = 3;
+            int quantity = 10;
+            List<String> productIds = List.of(productId1, productId2);
+            List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
+                    createCartProduct(2L, productId2, orderCount2));
+            cartProducts.forEach(cartProductRepository::save);
+            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
+            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
+            productClient.addData(createProduct(productId1, quantity));
+            productClient.addData(createProduct(productId2, quantity));
 
-        // when
-        Order result = orderService.order(productIds, "address", userId);
+            // when
+            Order result = orderService.order(productIds, "address", userId);
 
-        // then
-        assertAll(() -> {
-            assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.PENDING);
-            assertThat(result.delivery().status()).isEqualByComparingTo(DeliveryStatus.PREPARING);
-            assertThat(result.delivery().address()).isEqualTo("address");
-            assertThat(result.orderProducts()).hasSize(2)
-                    .extracting(OrderProduct::productId, OrderProduct::orderCount)
-                    .containsExactlyInAnyOrder(Tuple.tuple(productId1, orderCount1), Tuple.tuple(productId2, orderCount2));
-        });
+            // then
+            assertAll(() -> {
+                assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.PENDING);
+                assertThat(result.delivery().status()).isEqualByComparingTo(DeliveryStatus.PREPARING);
+                assertThat(result.delivery().address()).isEqualTo("address");
+                assertThat(result.orderProducts()).hasSize(2)
+                        .extracting(OrderProduct::productId, OrderProduct::orderCount)
+                        .containsExactlyInAnyOrder(Tuple.tuple(productId1, orderCount1), Tuple.tuple(productId2, orderCount2));
+            });
+        }
+
+        @Test
+        @DisplayName("주문을 했는데 재고가 없으면 예외를 반환한다")
+        void processOrderOutOfStock() throws Exception {
+            // given
+            String productId1 = "product1";
+            String productId2 = "product2";
+            String userId = "userId";
+            int orderCount1 = 2;
+            int orderCount2 = 3;
+            int quantity = 1;
+            List<String> productIds = List.of(productId1, productId2);
+            List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
+                    createCartProduct(2L, productId2, orderCount2));
+            cartProducts.forEach(cartProductRepository::save);
+            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
+            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
+            productClient.addData(createProduct(productId1, quantity));
+            productClient.addData(createProduct(productId2, quantity));
+
+            // then
+            assertThatThrownBy(() -> orderService.order(productIds, "address", userId))
+                    .isInstanceOf(CustomApiException.class)
+                    .hasMessage(ErrorMessage.OUT_OF_STOCK.getMessage());
+        }
     }
 
-    @Test
-    @DisplayName("주문을 했는데 재고가 없으면 예외를 반환한다")
-    void processOrderOutOfStock() throws Exception {
-        // given
-        String productId1 = "product1";
-        String productId2 = "product2";
-        String userId = "userId";
-        int orderCount1 = 2;
-        int orderCount2 = 3;
-        int quantity = 1;
-        List<String> productIds = List.of(productId1, productId2);
-        List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
-                createCartProduct(2L, productId2, orderCount2));
-        cartProducts.forEach(cartProductRepository::save);
-        orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
-        orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
-        productClient.addData(createProduct(productId1, quantity));
-        productClient.addData(createProduct(productId2, quantity));
+    @Nested
+    @DisplayName("선착순 구매는 주문시간 여부에 따라 주문 성공, 실패가 된다")
+    class processFcfs{
 
-        // then
-        assertThatThrownBy(() -> orderService.order(productIds, "address", userId))
-                .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.OUT_OF_STOCK.getMessage());
+        @Test
+        @DisplayName("영업시간 내에 주문을 하게 되면 주문이 가능하다")
+        void processFcfsOrder() throws Exception {
+            // given
+            LocalDateTime localDateTime = LocalDateTime.of(2025, 1, 2, 9, 0, 0);
+            localDateTimeHolder.setLocalDateTime(localDateTime);
+            String productId1 = "product1";
+            String productId2 = "product2";
+            String userId = "userId";
+            int orderCount1 = 2;
+            int orderCount2 = 3;
+            int quantity = 10;
+            List<String> productIds = List.of(productId1, productId2);
+            List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
+                    createCartProduct(2L, productId2, orderCount2));
+            cartProducts.forEach(cartProductRepository::save);
+            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
+            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
+            productClient.addData(createProduct(productId1, quantity));
+            productClient.addData(createProduct(productId2, quantity));
+
+            // when
+            Order result = orderService.fcfsOrder(productIds, "address", userId);
+
+            // then
+            assertAll(() -> {
+                assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.PENDING);
+                assertThat(result.delivery().status()).isEqualByComparingTo(DeliveryStatus.PREPARING);
+                assertThat(result.delivery().address()).isEqualTo("address");
+                assertThat(result.orderProducts()).hasSize(2)
+                        .extracting(OrderProduct::productId, OrderProduct::orderCount)
+                        .containsExactlyInAnyOrder(Tuple.tuple(productId1, orderCount1), Tuple.tuple(productId2, orderCount2));
+            });
+        }
+
+        @Test
+        @DisplayName("엽업시간 전에 주문을 하게 되면 예외를 반환한다")
+        void notOpenTimeError() throws Exception {
+            // given
+            LocalDateTime localDateTime = LocalDateTime.of(2025, 1, 2, 8, 59, 59);
+            localDateTimeHolder.setLocalDateTime(localDateTime);
+            String productId1 = "product1";
+            String productId2 = "product2";
+            String userId = "userId";
+            int orderCount1 = 2;
+            int orderCount2 = 3;
+            int quantity = 10;
+            List<String> productIds = List.of(productId1, productId2);
+            List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
+                    createCartProduct(2L, productId2, orderCount2));
+            cartProducts.forEach(cartProductRepository::save);
+            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
+            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
+            productClient.addData(createProduct(productId1, quantity));
+            productClient.addData(createProduct(productId2, quantity));
+
+            // when
+            assertThatThrownBy(() -> orderService.fcfsOrder(productIds, "addres", userId))
+                    .isInstanceOf(CustomApiException.class)
+                    .hasMessage(ErrorMessage.NOT_OPEN_TIME.getMessage());
+        }
     }
+
 
     @Test
     @DisplayName("장바구니 속 상품이 없다면 예외를 반환한다")

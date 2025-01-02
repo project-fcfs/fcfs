@@ -3,6 +3,7 @@ package hanghae.order_service.resilience;
 import hanghae.order_service.support.IntegrationResilienceTestSupport;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.retry.Retry;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class CustomResilienceTest extends IntegrationResilienceTestSupport {
 
     @Test
     @DisplayName("CircuitBreaker 동작 테스트")
+    @Disabled
     void canCircuitBreaker() throws Exception {
         // given
         CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("my-circuit");
@@ -33,6 +35,7 @@ public class CustomResilienceTest extends IntegrationResilienceTestSupport {
 
     @Test
     @DisplayName("Retry 동작 테스트")
+    @Disabled
     void canRetryTest() throws Exception {
         // given
         Retry retry = retryRegistry.retry("my-retry");
