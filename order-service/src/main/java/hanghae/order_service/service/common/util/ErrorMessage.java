@@ -10,7 +10,8 @@ public enum ErrorMessage {
     ERROR_CANNOT_RETURN_SHIPPED("배송완료된 상품은 반품할 수 없습니다."),
     ERROR_REQUEST_REFUND("주문 완료된 상품만 환불 신청이 가능합니다."),
     ERROR_COMPLETE_REFUND("환불 신청한 상품만 환불이 가능합니다."),
-    ERROR_PARSE_JSON("문자열 변환 중에 문제가 발생했습니다.")
+    ERROR_PARSE_JSON("문자열 변환 중에 문제가 발생했습니다."),
+    OUT_OF_STOCK("주문하신 상품의 재고가 부족합니다.")
     ;
 
     private String message;

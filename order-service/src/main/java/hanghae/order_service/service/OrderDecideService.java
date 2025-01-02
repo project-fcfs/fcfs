@@ -8,6 +8,7 @@ import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
+import hanghae.order_service.service.port.OrderProductMessage;
 import hanghae.order_service.service.port.OrderRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,12 +21,14 @@ public class OrderDecideService {
     private final LocalDateTimeHolder localDateTimeHolder;
     private final OrderRepository orderRepository;
     private final CartProductRepository cartProductRepository;
+    private final OrderProductMessage orderProductMessage;
 
     public OrderDecideService(LocalDateTimeHolder localDateTimeHolder, OrderRepository orderRepository,
-                              CartProductRepository cartProductRepository) {
+                              CartProductRepository cartProductRepository, OrderProductMessage orderProductMessage) {
         this.localDateTimeHolder = localDateTimeHolder;
         this.orderRepository = orderRepository;
         this.cartProductRepository = cartProductRepository;
+        this.orderProductMessage = orderProductMessage;
     }
 
     /**
@@ -39,9 +42,9 @@ public class OrderDecideService {
         Order updatedOrder;
 
         if (code == ORDER_SUCCESS) {
-            updatedOrder = completeProcessOrder(order, currentDate);
+            updatedOrder = processCompleteOrder(order, currentDate);
         } else {
-            updatedOrder = order.cancelOrder(currentDate);
+            updatedOrder = processCancelOrder(order, currentDate);
         }
 
         orderRepository.save(updatedOrder);
@@ -50,12 +53,21 @@ public class OrderDecideService {
     /**
      * 주문 성공 시 주문완료로 바꾸고 해당하는 상품들을 장바구니에서 삭제한다
      */
-    private Order completeProcessOrder(Order order, LocalDateTime currentDate) {
+    private Order processCompleteOrder(Order order, LocalDateTime currentDate) {
         Order completedOrder = order.completeOrder(currentDate);
         List<String> productIds = completedOrder.orderProducts().stream().map(OrderProduct::productId).toList();
         String userId = order.userId();
 
         cartProductRepository.clearItemsByOrder(productIds, userId);
         return completedOrder;
+    }
+
+    /**
+     * 주문 실패 시 차감했던 재고를 원복한다
+     */
+    private Order processCancelOrder(Order order, LocalDateTime currentDate) {
+        Order canceledOrder = order.cancelOrder(currentDate);
+        orderProductMessage.restoreStock(canceledOrder.orderProducts());
+        return canceledOrder;
     }
 }

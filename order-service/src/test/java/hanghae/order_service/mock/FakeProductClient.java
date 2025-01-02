@@ -1,5 +1,6 @@
 package hanghae.order_service.mock;
 
+import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.port.ProductClient;
 import java.util.ArrayList;
@@ -17,10 +18,10 @@ public class FakeProductClient implements ProductClient {
     @Override
     public ResponseEntity<?> isValidProduct(String productId) {
         return data.stream()
-                .filter(i -> i.productId().equals(productId))  // 필터링
-                .findFirst()  // 첫 번째 항목 찾기
-                .map(product -> ResponseEntity.ok().build())  // 찾은 경우 200 OK 응답 반환
-                .orElseGet(() -> ResponseEntity.notFound().build());  // 못 찾은 경우 404 Not Found 응답 반환
+                .filter(i -> i.productId().equals(productId))
+                .findFirst()
+                .map(product -> ResponseEntity.ok().build())
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Override
@@ -28,5 +29,19 @@ public class FakeProductClient implements ProductClient {
         List<Product> products = data.stream().filter(i -> productIds.contains(i.productId()))
                 .toList();
         return ResponseEntity.ok().body(products);
+    }
+
+    @Override
+    public ResponseEntity<?> removeStock(List<OrderProduct> orderProducts) {
+        List<Integer> updatedQuantities = orderProducts.stream()
+                .map(orderProduct -> data.stream()
+                        .filter(i -> i.productId().equals(orderProduct.productId()))
+                        .map(i -> i.quantity() - orderProduct.orderCount())
+                        .findFirst()
+                        .orElse(0))
+                .toList();
+
+        boolean hasNegativeStock = updatedQuantities.stream().anyMatch(quantity -> quantity < 0);
+        return hasNegativeStock ? ResponseEntity.badRequest().build() : ResponseEntity.ok().build();
     }
 }

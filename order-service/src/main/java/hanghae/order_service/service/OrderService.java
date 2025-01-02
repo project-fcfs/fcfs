@@ -8,7 +8,7 @@ import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
-import hanghae.order_service.service.port.OrderProducerMessage;
+import hanghae.order_service.service.port.OrderProductMessage;
 import hanghae.order_service.service.port.OrderRepository;
 import hanghae.order_service.service.port.ProductClient;
 import hanghae.order_service.service.port.UuidRandomHolder;
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,21 +28,23 @@ public class OrderService {
     private final LocalDateTimeHolder localDateTimeHolder;
     private final UuidRandomHolder uuidRandomHolder;
     private final ProductClient productClient;
-    private final OrderProducerMessage orderProducerMessage;
+    private final OrderProductMessage orderProductMessage;
 
     public OrderService(OrderRepository orderRepository, CartProductRepository cartProductRepository,
                         LocalDateTimeHolder localDateTimeHolder, UuidRandomHolder uuidRandomHolder,
-                        ProductClient productClient, OrderProducerMessage orderProducerMessage) {
+                        ProductClient productClient, OrderProductMessage orderProductMessage) {
         this.orderRepository = orderRepository;
         this.cartProductRepository = cartProductRepository;
         this.localDateTimeHolder = localDateTimeHolder;
         this.uuidRandomHolder = uuidRandomHolder;
         this.productClient = productClient;
-        this.orderProducerMessage = orderProducerMessage;
+        this.orderProductMessage = orderProductMessage;
     }
 
     /**
-     * 장바구니 정보로 Product-service에서 가격, 정보 등을 가져온다 주문을 하면 Pending 상태로 저장된다 Product-service로 orderId와 수량을 보내 재고여부를 판단한다
+     * 장바구니 정보로 Product-service에서 가격, 정보 등을 가져온다
+     * 주문을 하면 Pending 상태로 저장된다
+     * Product-service로 orderId와 수량을 보내 재고여부를 판단하여 주문이 진행되거나 예외가 발생한다
      */
     @Transactional
     public Order order(List<String> productIds, String address, String userId) {
@@ -53,9 +56,11 @@ public class OrderService {
         Delivery delivery = Delivery.create(address, currentDate);
         Order order = Order.create(userId, orderId, orderProducts, delivery, currentDate);
 
-        Order savedOrder = orderRepository.save(order);
-        orderProducerMessage.removeStock(order.orderProducts(), savedOrder.orderId());
-        return savedOrder;
+        ResponseEntity<?> response = productClient.removeStock(order.orderProducts());
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return orderRepository.save(order);
+        }
+        throw new CustomApiException(ErrorMessage.OUT_OF_STOCK.getMessage());
     }
 
     /**
@@ -87,7 +92,7 @@ public class OrderService {
         Order order = getUserOrder(userId, orderId);
         Order canceldOrder = order.cancelOrder(localDateTimeHolder.getCurrentDate());
         Order savedOrder = orderRepository.save(canceldOrder);
-        orderProducerMessage.restoreStock(savedOrder.orderProducts());
+        orderProductMessage.restoreStock(savedOrder.orderProducts());
     }
 
     /**

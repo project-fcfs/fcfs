@@ -15,7 +15,7 @@ import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.domain.product.Product.ProductStatus;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
-import hanghae.order_service.mock.FakeOrderProducerMessage;
+import hanghae.order_service.mock.FakeOrderProductMessage;
 import hanghae.order_service.mock.FakeOrderRepository;
 import hanghae.order_service.mock.FakeProduct;
 import hanghae.order_service.mock.FakeProductClient;
@@ -37,11 +37,11 @@ class OrderServiceTest {
     private FakeProductClient productClient;
     private FakeCartProductRepository cartProductRepository;
     private FakeOrderRepository orderRepository;
-    private FakeOrderProducerMessage orderProductMessage;
+    private FakeOrderProductMessage orderProductMessage;
 
     @BeforeEach
     void setUp() {
-        orderProductMessage = new FakeOrderProducerMessage();
+        orderProductMessage = new FakeOrderProductMessage();
         productClient = new FakeProductClient();
         orderRepository = new FakeOrderRepository();
         cartProductRepository = new FakeCartProductRepository();

@@ -2,6 +2,7 @@ package hanghae.order_service.infrastructure.product;
 
 
 import hanghae.order_service.controller.resp.ResponseDto;
+import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.port.ProductClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "product-service")
@@ -46,6 +49,18 @@ public interface ProductClientImpl extends ProductClient {
         return new ResponseEntity<>(products, productsResponse.getStatusCode());
     }
 
+    @PostMapping("/products/")
+    @Retry(name = "retryGetProduct", fallbackMethod = "badGetFallbackMethod")
+    @CircuitBreaker(name = "circuitGetProduct", fallbackMethod = "badGetFallbackMethod")
+    ResponseEntity<?> processOrder(@RequestBody List<RequestOrder> requestOrders);
+
+    @Override
+    default ResponseEntity<?> removeStock(List<OrderProduct> orderProducts) {
+        List<RequestOrder> request = orderProducts.stream().map(i -> new RequestOrder(i.productId(), i.orderPrice()))
+                .toList();
+        return processOrder(request);
+    }
+
     default ResponseEntity<?> badCheckFallbackMethod(String productId, Throwable t){
         log.error("Bad Check fallback error {}, id -> {}", t.getMessage(), productId);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -55,5 +70,10 @@ public interface ProductClientImpl extends ProductClient {
         log.error("Bad Get fallback method error {} ids -> {}", t.getMessage(), productIds);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+    record RequestOrder(
+            String productId,
+            Integer orderPrice
+    ) {}
 
 }

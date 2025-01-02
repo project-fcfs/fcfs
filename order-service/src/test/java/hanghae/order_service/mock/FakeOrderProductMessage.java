@@ -1,11 +1,11 @@
 package hanghae.order_service.mock;
 
 import hanghae.order_service.domain.order.OrderProduct;
-import hanghae.order_service.service.port.OrderProducerMessage;
+import hanghae.order_service.service.port.OrderProductMessage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FakeOrderProducerMessage implements OrderProducerMessage {
+public class FakeOrderProductMessage implements OrderProductMessage {
 
     public List<FakeProduct> data = new ArrayList<>();
 

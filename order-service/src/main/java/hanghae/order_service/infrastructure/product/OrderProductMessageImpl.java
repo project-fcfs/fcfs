@@ -5,24 +5,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
-import hanghae.order_service.service.port.OrderProducerMessage;
+import hanghae.order_service.service.port.OrderProductMessage;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrderProducerMessageImpl implements OrderProducerMessage {
+public class OrderProductMessageImpl implements OrderProductMessage {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final String removeTopic;
     private final String restoreTopic;
     private final ObjectMapper mapper;
 
-    public OrderProducerMessageImpl(KafkaTemplate<String, String> kafkaTemplate,
-                                    @Value("${order.topic.remove}") String removeTopic,
-                                    @Value("${order.topic.restore}") String restoreTopic,
-                                    ObjectMapper mapper) {
+    public OrderProductMessageImpl(KafkaTemplate<String, String> kafkaTemplate,
+                                   @Value("${order.topic.remove}") String removeTopic,
+                                   @Value("${order.topic.restore}") String restoreTopic,
+                                   ObjectMapper mapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.removeTopic = removeTopic;
         this.restoreTopic = restoreTopic;
