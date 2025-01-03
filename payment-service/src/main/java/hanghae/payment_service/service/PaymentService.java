@@ -36,7 +36,7 @@ public class PaymentService {
         String paymentId = uuidRandomHolder.getRandomUuid();
         int random = randomHolder.getRandom();
 
-        PaymentStatus paymentStatus = random > 2 ? PaymentStatus.SUCCESS : PaymentStatus.FAIL;
+        PaymentStatus paymentStatus = random > 7 ? PaymentStatus.SUCCESS : PaymentStatus.FAIL;
         int code = paymentStatus.equals(PaymentStatus.SUCCESS) ? SUCCESS.getCode() : FAIL.getCode();
         String messageDescription =
                 paymentStatus.equals(PaymentStatus.SUCCESS) ? SUCCESS.getDescription() : FAIL.getDescription();
