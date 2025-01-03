@@ -53,6 +53,9 @@ public interface ProductClientImpl extends ProductClient {
                 .map(i -> new RequestOrder(i.getKey(), i.getValue()))
                 .toList();
         ResponseDto<?> responseDto = removeStock(request);
+        if(responseDto.code() == -1){
+            return new ResponseDto<>(responseDto.code(), responseDto.message(), null, responseDto.httpStatus());
+        }
         List<ProductFeignResponse> responses = new ObjectMapper().convertValue(responseDto.data(),
                 new TypeReference<List<ProductFeignResponse>>() {});
 
