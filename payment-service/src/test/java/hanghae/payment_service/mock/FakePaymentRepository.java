@@ -25,6 +25,11 @@ public class FakePaymentRepository implements PaymentRepository {
         }
     }
 
+    @Override
+    public Optional<Payment> findByOrderId(String orderId) {
+        return data.stream().filter(p -> p.orderId().equals(orderId)).findFirst();
+    }
+
     public Optional<Payment> findById(long id) {
         return data.stream().filter(i -> i.id().equals(id)).findFirst();
     }

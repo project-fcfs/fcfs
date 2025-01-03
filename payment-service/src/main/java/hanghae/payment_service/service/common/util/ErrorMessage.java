@@ -1,7 +1,9 @@
 package hanghae.payment_service.service.common.util;
 
 public enum ErrorMessage {
-    ERROR_PARSE_JSON("문자열 변환 중에 문제가 발생했습니다.");
+    ERROR_PARSE_JSON("문자열 변환 중에 문제가 발생했습니다."),
+    DUPLICATE_ORDER("이미 존재하는 주문입니다.")
+    ;
 
     private String message;
 

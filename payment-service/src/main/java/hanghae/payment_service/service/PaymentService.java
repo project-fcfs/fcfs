@@ -5,12 +5,15 @@ import static hanghae.payment_service.service.common.util.PaymentConst.SUCCESS;
 
 import hanghae.payment_service.domain.Payment;
 import hanghae.payment_service.domain.PaymentStatus;
+import hanghae.payment_service.service.common.exception.CustomApiException;
+import hanghae.payment_service.service.common.util.ErrorMessage;
 import hanghae.payment_service.service.port.LocalDateTimeHolder;
 import hanghae.payment_service.service.port.OrderMessage;
 import hanghae.payment_service.service.port.PaymentRepository;
 import hanghae.payment_service.service.port.RandomHolder;
 import hanghae.payment_service.service.port.UuidRandomHolder;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +36,10 @@ public class PaymentService {
     }
 
     public Payment create(String orderId, Long amount) {
+        Optional<Payment> _payment = paymentRepository.findByOrderId(orderId);
+        if(_payment.isPresent()) {
+            throw new CustomApiException(ErrorMessage.DUPLICATE_ORDER.getMessage());
+        }
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
         String paymentId = uuidRandomHolder.getRandomUuid();
         int random = randomHolder.getRandom();
