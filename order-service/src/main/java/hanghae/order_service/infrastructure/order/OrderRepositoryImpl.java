@@ -45,6 +45,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public List<Order> findAllUserOrders(String userId) {
-        return jpaRepository.findUserOrders(userId);
+        return jpaRepository.findUserOrders(userId).stream().map(OrderEntity::toModel).toList();
     }
 }

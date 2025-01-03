@@ -21,5 +21,5 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
     Optional<OrderEntity> findByOrderId(@Param("orderId") String orderId);
 
     @Query("select o from OrderEntity o join fetch o.orderProducts op where o.userId = :userId")
-    List<Order> findUserOrders(@Param("userId") String userId);
+    List<OrderEntity> findUserOrders(@Param("userId") String userId);
 }
