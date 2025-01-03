@@ -26,6 +26,9 @@ class RaceConditionTest extends IntegrationInfraTestSupport {
     @Autowired
     private NamedLockStockFacade namedLockStockFacade;
 
+    @Autowired
+    private RedissonLockStockFacade redissonLockStockFacade;
+
     @BeforeEach
     void setUp() {
         productRepository.save(Product.create("name", 100, 100, "productId"));
@@ -61,7 +64,7 @@ class RaceConditionTest extends IntegrationInfraTestSupport {
 
         // then
         assertThat(result.quantity()).isEqualTo(0);
-        System.out.println("time taken: " + (endTime - startTime));
+        System.out.println("time taken: " + (endTime - startTime) +"ms");
     }
 
     @Test
@@ -94,7 +97,42 @@ class RaceConditionTest extends IntegrationInfraTestSupport {
 
         // then
         assertThat(result.quantity()).isEqualTo(0);
-        System.out.println("time taken: " + (endTime - startTime));
+        System.out.println("time taken: " + (endTime - startTime) +"ms");
     }
+
+    @Test
+    @DisplayName("Redisson 락 동시성 테스트")
+    void RedissondLockTest() throws Exception {
+        // given
+        long startTime = System.currentTimeMillis();
+        int threadCount = 100;
+        ExecutorService es = Executors.newFixedThreadPool(32);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        String productId = "productId";
+
+        OrderCreateReqDto request = new OrderCreateReqDto(productId, 1);
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            es.submit(() -> {
+                try {
+                    redissonLockStockFacade.decrease(List.of(request));
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        Product result = productRepository.findProductById(productId).get();
+        long endTime = System.currentTimeMillis();
+
+        // then
+        assertThat(result.quantity()).isEqualTo(0);
+        System.out.println("time taken: " + (endTime - startTime) +"ms");
+    }
+
+
 
 }
