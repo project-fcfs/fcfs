@@ -30,6 +30,11 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	// https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter
+	implementation group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.40.2'
+
 	// kafka
 	implementation 'org.springframework.kafka:spring-kafka'
 	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-config
