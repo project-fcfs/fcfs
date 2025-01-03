@@ -11,6 +11,7 @@ import hanghae.payment_service.service.port.PaymentRepository;
 import hanghae.payment_service.service.port.RandomHolder;
 import hanghae.payment_service.service.port.UuidRandomHolder;
 import java.time.LocalDateTime;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,15 +41,18 @@ public class PaymentService {
         int code = paymentStatus.equals(PaymentStatus.SUCCESS) ? SUCCESS.getCode() : FAIL.getCode();
         String messageDescription =
                 paymentStatus.equals(PaymentStatus.SUCCESS) ? SUCCESS.getDescription() : FAIL.getDescription();
+        HttpStatus httpStatus = paymentStatus.equals(PaymentStatus.SUCCESS) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
-        return processPayment(orderId, amount, paymentId, currentDate, paymentStatus, code, messageDescription);
+        return processPayment(orderId, amount, paymentId, currentDate, paymentStatus, code, messageDescription,
+                httpStatus);
     }
 
     private Payment processPayment(String orderId, Long amount, String paymentId, LocalDateTime currentDate,
-                                   PaymentStatus paymentStatus, int code, String messageDescription) {
+                                   PaymentStatus paymentStatus, int code, String messageDescription,
+                                   HttpStatus httpStatus) {
         Payment payment = Payment.create(orderId, paymentStatus, amount, paymentId, currentDate);
         Payment savedPayment = paymentRepository.save(payment);
-        orderMessage.sendOrderDecide(code, messageDescription, orderId);
+        orderMessage.sendOrderDecide(code, messageDescription, orderId, httpStatus);
         return savedPayment;
     }
 }

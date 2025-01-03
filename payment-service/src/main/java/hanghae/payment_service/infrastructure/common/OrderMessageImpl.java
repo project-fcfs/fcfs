@@ -7,6 +7,7 @@ import hanghae.payment_service.service.common.exception.CustomApiException;
 import hanghae.payment_service.service.common.util.ErrorMessage;
 import hanghae.payment_service.service.port.OrderMessage;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +24,8 @@ public class OrderMessageImpl implements OrderMessage {
     }
 
     @Override
-    public void sendOrderDecide(int code, String message, String orderId) {
-        ResponseDto<String> responseDto = new ResponseDto<>(code, message, orderId);
+    public void sendOrderDecide(int code, String message, String orderId, HttpStatus httpStatus) {
+        ResponseDto<String> responseDto = new ResponseDto<>(code, message, orderId, httpStatus);
         String responseMessage = convertSendMessage(responseDto);
         kafkaTemplate.send(orderDecideTopic, responseMessage);
     }
