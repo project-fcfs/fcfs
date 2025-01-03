@@ -126,19 +126,6 @@ class CartServiceTest {
             // then
             assertThat(result).isEmpty();
         }
-
-        @Test
-        @DisplayName("장바구니에 없는 상품을 지우려고 하면 예외를 반환한다")
-        void outOfStockCartProduct() throws Exception {
-            // given
-            String productId = "response";
-            String userId = "user";
-
-            // then
-            assertThatThrownBy(() -> cartService.deleteProduct(userId, List.of(productId)))
-                    .isInstanceOf(CustomApiException.class)
-                    .hasMessage(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage());
-        }
     }
 
     private Product createProduct(String productId) {

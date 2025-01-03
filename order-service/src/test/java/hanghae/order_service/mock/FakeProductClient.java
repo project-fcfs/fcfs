@@ -30,7 +30,7 @@ public class FakeProductClient implements ProductClient {
     public ResponseDto<List<Product>> processOrder(Map<String, Integer> cartProducts) {
         List<Product> products = data.stream().map(i -> {
             Integer orderCount = cartProducts.get(i.productId());
-            return i.convertCart(orderCount);
+            return i.convertCart(i.quantity() - orderCount);
         }).toList();
 
         for (Product product : products) {

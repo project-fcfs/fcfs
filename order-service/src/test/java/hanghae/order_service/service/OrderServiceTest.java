@@ -127,29 +127,26 @@ class OrderServiceTest {
             String productId1 = "product1";
             String userId = "userId";
             int orderCount1 = 2;
-            int orderCount2 = 3;
             int quantity = 10;
-            List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1));
-            cartProducts.forEach(cartProductRepository::save);
             orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
             productClient.addData(createProduct(productId1, quantity));
 
             // when
-            Order result = orderService.fcfsOrder(productId1, "address", userId);
+            Order result = orderService.fcfsOrder(productId1, orderCount1,"address", userId);
 
             // then
             assertAll(() -> {
                 assertThat(result.orderStatus()).isEqualByComparingTo(OrderStatus.PENDING);
                 assertThat(result.delivery().status()).isEqualByComparingTo(DeliveryStatus.PREPARING);
                 assertThat(result.delivery().address()).isEqualTo("address");
-                assertThat(result.orderProducts()).hasSize(2)
+                assertThat(result.orderProducts()).hasSize(1)
                         .extracting(OrderProduct::productId, OrderProduct::orderCount)
                         .containsExactlyInAnyOrder(Tuple.tuple(productId1, orderCount1));
             });
         }
 
         @Test
-        @DisplayName("엽업시간 전에 주문을 하게 되면 예외를 반환한다")
+        @DisplayName("영업시간 전에 주문을 하게 되면 예외를 반환한다")
         void notOpenTimeError() throws Exception {
             // given
             LocalDateTime localDateTime = LocalDateTime.of(2025, 1, 2, 8, 59, 59);
@@ -157,7 +154,6 @@ class OrderServiceTest {
             String productId1 = "product1";
             String userId = "userId";
             int orderCount1 = 2;
-            int orderCount2 = 3;
             int quantity = 10;
             List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1));
             cartProducts.forEach(cartProductRepository::save);
@@ -165,7 +161,7 @@ class OrderServiceTest {
             productClient.addData(createProduct(productId1, quantity));
 
             // when
-            assertThatThrownBy(() -> orderService.fcfsOrder(productId1, "addres", userId))
+            assertThatThrownBy(() -> orderService.fcfsOrder(productId1, orderCount1, "addres", userId))
                     .isInstanceOf(CustomApiException.class)
                     .hasMessage(ErrorMessage.NOT_OPEN_TIME.getMessage());
         }

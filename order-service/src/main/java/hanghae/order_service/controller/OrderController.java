@@ -44,7 +44,7 @@ public class OrderController {
     @PostMapping("/fcfs")
     public ResponseEntity<?> processFcfsOrder(@RequestHeader("userId") String userId,
                                               @RequestBody OrderFcfsCreateReqDto createReqDto, @RequestParam String address) {
-        Order order = orderService.fcfsOrder(createReqDto.productId(), address, userId);
+        Order order = orderService.fcfsOrder(createReqDto.productId(), createReqDto.orderCount(), address, userId);
         return new ResponseEntity<>(OrderRespDto.of(order),HttpStatus.CREATED);
     }
 

@@ -17,6 +17,7 @@ import hanghae.order_service.service.port.ProductClient;
 import hanghae.order_service.service.port.UuidRandomHolder;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,21 +58,6 @@ public class OrderService {
         String orderId = uuidRandomHolder.getRandomUuid();
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
 
-        List<OrderProduct> orderProducts = generateOrderProducts(userId, productIds);
-
-        Delivery delivery = Delivery.create(address, currentDate);
-        Order order = Order.create(userId, orderId, orderProducts, delivery, currentDate);
-
-        return orderRepository.save(order);
-    }
-
-    /**
-     * productId가 같으면 장바구니의 수량으로 바꾸기 orderItems는 Product-service에서 가져오기 때문에 장바구니 속 유저가 저장한 수량으로 바꿔서 해당 수량만큼 주문을 진행함
-     *
-     */
-    private List<OrderProduct> generateOrderProducts(String userId, List<String> productIds) {
-        LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
-
         Map<String, Integer> cartProducts = cartProductRepository.findByUserSelectedCart(userId, productIds)
                 .stream().collect(Collectors.toMap(CartProduct::productId, CartProduct::quantity));
 
@@ -79,14 +65,32 @@ public class OrderService {
             throw new CustomApiException(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage());
         }
 
-        ResponseDto<List<Product>> responseDto = productClient.processOrder(cartProducts);
+        List<OrderProduct> orderProducts = generateOrderProducts(cartProducts, currentDate);
+
+        Order order = generateOrder(address, userId, currentDate, orderId, orderProducts);
+
+        return orderRepository.save(order);
+    }
+
+    private Order generateOrder(String address, String userId, LocalDateTime currentDate, String orderId,
+                                  List<OrderProduct> orderProducts) {
+        Delivery delivery = Delivery.create(address, currentDate);
+        return Order.create(userId, orderId, orderProducts, delivery, currentDate);
+    }
+
+    /**
+     * productId가 같으면 장바구니의 수량으로 바꾸기 orderItems는 Product-service에서 가져오기 때문에 장바구니 속 유저가 저장한 수량으로 바꿔서 해당 수량만큼 주문을 진행함
+     *
+     */
+    private List<OrderProduct> generateOrderProducts(Map<String, Integer> value, LocalDateTime currentDate) {
+
+        ResponseDto<List<Product>> responseDto = productClient.processOrder(value);
         if (responseDto.code() == OrderConstant.ORDER_FAIL) {
-            throw new CustomApiException(responseDto.message());
+            throw new CustomApiException(ErrorMessage.OUT_OF_STOCK.getMessage());
         }
-        List<Product> data = responseDto.data();
-        return data.stream()
+        return responseDto.data().stream()
                 .map(i -> {
-                    Integer orderCount = cartProducts.get(i.productId());
+                    Integer orderCount = value.get(i.productId());
                     return OrderProduct.create( i.price(), orderCount, i.productId(), currentDate);
                 }).toList();
     }
@@ -95,14 +99,20 @@ public class OrderService {
      * 선착순 구매 선착순 구매는 오픈시간이 있고, 해당 오픈시간이 되지 않으면 구매할 수 없다
      */
     @Transactional
-    public Order fcfsOrder(String productId, String address, String userId) {
+    public Order fcfsOrder(String productId, int orderCount, String address, String userId) {
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
+        String orderId = uuidRandomHolder.getRandomUuid();
         LocalTime currentTime = currentDate.toLocalTime();
 
         if (currentTime.isBefore(OrderConstant.OPEN_TIME)) {
             throw new CustomApiException(ErrorMessage.NOT_OPEN_TIME.getMessage());
         }
-        return order(List.of(productId), address, userId);
+        Map<String, Integer> orders = new HashMap<>();
+        orders.put(productId, orderCount);
+        List<OrderProduct> orderProducts = generateOrderProducts(orders, currentDate);
+
+        Order order = generateOrder(address, userId, currentDate, orderId, orderProducts);
+        return orderRepository.save(order);
     }
 
     /**
