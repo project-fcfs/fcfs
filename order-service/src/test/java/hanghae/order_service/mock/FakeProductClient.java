@@ -6,6 +6,7 @@ import hanghae.order_service.service.port.ProductClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class FakeProductClient implements ProductClient {
@@ -38,7 +39,8 @@ public class FakeProductClient implements ProductClient {
         products.forEach(this::addData);
 
         boolean hasNegativeStock = products.stream().anyMatch(i -> i.quantity() < 0);
-        return hasNegativeStock ? new ResponseDto<>(-1, "fail", null) : new ResponseDto<>(1, "success", data);
+        return hasNegativeStock ? new ResponseDto<>(-1, "fail", null, HttpStatus.BAD_REQUEST)
+                : new ResponseDto<>(1, "success", data, HttpStatus.OK);
     }
 
     @Override
