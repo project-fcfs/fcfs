@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
@@ -24,7 +25,7 @@ public class ProductStockService {
         this.productRepository = productRepository;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Product> processOrder(List<OrderCreateReqDto> reqDtos) {
 
         List<String> productIds = reqDtos.stream().map(OrderCreateReqDto::productId).toList();
