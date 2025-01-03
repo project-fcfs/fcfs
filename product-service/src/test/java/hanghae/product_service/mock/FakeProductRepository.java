@@ -42,7 +42,7 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
-    public void saveAll(List<Product> products) {
-        products.forEach(this::save);
+    public List<Product> saveAll(List<Product> products) {
+        return products.stream().map(this::save).toList();
     }
 }

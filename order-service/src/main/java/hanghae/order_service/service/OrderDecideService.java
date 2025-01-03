@@ -58,7 +58,7 @@ public class OrderDecideService {
         List<String> productIds = completedOrder.orderProducts().stream().map(OrderProduct::productId).toList();
         String userId = order.userId();
 
-        cartProductRepository.clearItemsByOrder(productIds, userId);
+        cartProductRepository.removeCartItems(productIds, userId);
         return completedOrder;
     }
 

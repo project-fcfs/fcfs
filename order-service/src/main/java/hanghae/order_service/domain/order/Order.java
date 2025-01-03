@@ -69,8 +69,8 @@ public record Order(
     /**
      * 조회 로직
      */
-    public int getTotalPrice() {
-        return orderProducts.stream()
+    public Long getTotalPrice() {
+        return (long) orderProducts.stream()
                 .mapToInt(OrderProduct::getTotalPrice)
                 .sum();
     }

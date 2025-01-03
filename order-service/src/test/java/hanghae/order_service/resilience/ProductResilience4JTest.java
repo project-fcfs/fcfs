@@ -26,12 +26,13 @@ public class ProductResilience4JTest extends IntegrationResilienceTestSupport {
         // given
         String userId = "userId";
         String productId = "productId";
+        int count = 10;
         CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("circuitCheckProduct");
         circuitBreaker.transitionToOpenState();
 
         // then
         assertThat(circuitBreaker.getState()).isEqualByComparingTo(State.OPEN);
-        assertThatThrownBy(() -> cartService.add(userId, productId))
+        assertThatThrownBy(() -> cartService.add(userId, productId, count))
                 .isInstanceOf(CustomApiException.class)
                 .hasMessage(ErrorMessage.INVALID_PRODUCT.getMessage());
     }

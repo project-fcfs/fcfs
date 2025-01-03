@@ -34,7 +34,7 @@ public class OrderEntity {
     @Column(nullable = false)
     private String userId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String orderId;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)

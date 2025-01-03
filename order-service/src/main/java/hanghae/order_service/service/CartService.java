@@ -31,14 +31,15 @@ public class CartService {
     }
 
     /**
-     * 장바구니에 담는다 장바구니에 담을 때는 상품ID만 담고 수량을 1로 체크한다
+     * 장바구니에 담는다
+     * Product-Service에서 올바른 상품인지 확인하고 장바구니에 담는다
      */
     @Transactional
-    public void add(String userId, String productId) {
+    public void add(String userId, String productId, int count) {
         ResponseEntity<?> product = productClient.isValidProduct(productId);
         if (product.getStatusCode().is2xxSuccessful()) {
             Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> cartRepository.save(Cart.create(userId)));
-            cartProductRepository.save(CartProduct.create(productId, cart));
+            cartProductRepository.save(CartProduct.create(productId, count, cart));
         } else {
             throw new CustomApiException(ErrorMessage.INVALID_PRODUCT.getMessage());
         }
@@ -58,9 +59,8 @@ public class CartService {
      * 장바구니 속 상품을 지운다
      */
     @Transactional
-    public void deleteProduct(String userId, String productId) {
-        CartProduct cartProduct = getCartProducts(userId, productId);
-        cartProductRepository.removeCartItem(cartProduct);
+    public void deleteProduct(String userId, List<String> productIds) {
+        cartProductRepository.removeCartItems(productIds, userId);
     }
 
     /**

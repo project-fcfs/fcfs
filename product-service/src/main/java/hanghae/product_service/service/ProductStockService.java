@@ -1,9 +1,8 @@
 package hanghae.product_service.service;
 
+import hanghae.product_service.controller.req.OrderCreateReqDto;
 import hanghae.product_service.controller.req.OrderMessageReqDto;
 import hanghae.product_service.domain.product.Product;
-import hanghae.product_service.service.common.exception.CustomApiException;
-import hanghae.product_service.service.port.OrderProductMessage;
 import hanghae.product_service.service.port.ProductRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,36 +19,28 @@ public class ProductStockService {
 
     private static final Logger log = LoggerFactory.getLogger(ProductStockService.class);
     private final ProductRepository productRepository;
-    private final OrderProductMessage orderProductMessage;
 
-    public ProductStockService(ProductRepository productRepository, OrderProductMessage orderProductMessage) {
+    public ProductStockService(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.orderProductMessage = orderProductMessage;
     }
 
     @Transactional
-    public void processOrder(List<OrderMessageReqDto> reqDtos) {
+    public List<Product> processOrder(List<OrderCreateReqDto> reqDtos) {
 
-        List<String> productIds = reqDtos.stream().map(OrderMessageReqDto::productId).toList();
+        List<String> productIds = reqDtos.stream().map(OrderCreateReqDto::productId).toList();
         List<Product> products = productRepository.findAllByProductIds(productIds);
 
         Map<String, Product> productsById = products.stream().collect(Collectors.toMap(Product::productId, v -> v));
 
         List<Product> updatedProducts = new ArrayList<>();
-        try {
-            for (OrderMessageReqDto reqDto : reqDtos) {
-                Product product = productsById.get(reqDto.productId());
-                Product updatedProduct = product.removeStock(reqDto.orderCount());
-                updatedProducts.add(updatedProduct);
-            }
 
-            productRepository.saveAll(updatedProducts);
-            orderProductMessage.sendResult(1, "success", reqDtos.getFirst().orderId());
-        } catch (CustomApiException e) {
-            log.info("product save error {}", e.getMessage());
-            orderProductMessage.sendResult(-1, e.getMessage(), reqDtos.getFirst().orderId());
+        for (OrderCreateReqDto reqDto : reqDtos) {
+            Product product = productsById.get(reqDto.productId());
+            Product updatedProduct = product.removeStock(reqDto.orderCount());
+            updatedProducts.add(updatedProduct);
         }
 
+        return productRepository.saveAll(updatedProducts);
     }
 
     @Transactional
@@ -69,4 +60,5 @@ public class ProductStockService {
 
         productRepository.saveAll(updatedProducts);
     }
+
 }

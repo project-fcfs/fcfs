@@ -8,11 +8,12 @@ import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.domain.product.Product.ProductStatus;
-import hanghae.order_service.mock.FakeProductClient;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeCartRepository;
+import hanghae.order_service.mock.FakeProductClient;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,10 +40,11 @@ class CartServiceTest {
         // given
         String productId = "response";
         String userId = "user";
+        int count = 1;
         cartProductClient.addData(createProduct(productId));
 
         // when
-        cartService.add(userId, productId);
+        cartService.add(userId, productId, count);
         CartProduct result = cartProductRepository.findCartProduct(productId, userId).get();
 
         // then
@@ -57,14 +59,14 @@ class CartServiceTest {
     @DisplayName("유효하지 않은 상품을 장바구니에 담으려고 할 경우 예외가 발생한다")
     void putInvalidProduct() throws Exception {
         // then
-        assertThatThrownBy(() -> cartService.add("userId", "invalidProduct"))
+        assertThatThrownBy(() -> cartService.add("userId", "invalidProduct", 3))
                 .isInstanceOf(CustomApiException.class)
                 .hasMessage(ErrorMessage.INVALID_PRODUCT.getMessage());
     }
 
     @Nested
     @DisplayName("장바구니에 있는 상품의 수량을 업데이트할 수 있다")
-    class cartQuantityUpdate{
+    class cartQuantityUpdate {
 
         @Test
         @DisplayName("올바른 값을 입력하면 장바구니 수량을 업데이트 할 수 있다")
@@ -73,17 +75,17 @@ class CartServiceTest {
             String productId = "response";
             String userId = "user";
             int count = 5;
-            cartProductRepository.save(CartProduct.create(productId, Cart.create(userId)));
+            cartProductRepository.save(CartProduct.create(productId, count, Cart.create(userId)));
 
             // when
-            cartService.updateQuantity(userId,productId,count);
+            cartService.updateQuantity(userId, productId, count);
             CartProduct result = cartProductRepository.findCartProduct(productId, userId).get();
 
             // then
             assertAll(() -> {
                 assertThat(result.productId()).isEqualTo(productId);
                 assertThat(result.cart().userId()).isEqualTo(userId);
-                assertThat(result.quantity()).isEqualTo(count + 1);
+                assertThat(result.quantity()).isEqualTo(count * 2);
             });
         }
 
@@ -93,11 +95,12 @@ class CartServiceTest {
             // given
             String productId = "response";
             String userId = "user";
-            int count = -5;
-            cartProductRepository.save(CartProduct.create(productId, Cart.create(userId)));
+            int count = 1;
+            int updateCount = -5;
+            cartProductRepository.save(CartProduct.create(productId, count, Cart.create(userId)));
 
             // then
-            assertThatThrownBy(() -> cartService.updateQuantity(userId, productId, count))
+            assertThatThrownBy(() -> cartService.updateQuantity(userId, productId, updateCount))
                     .isInstanceOf(CustomApiException.class)
                     .hasMessage(ErrorMessage.OUT_OF_STOCK_CART.getMessage());
         }
@@ -105,7 +108,7 @@ class CartServiceTest {
 
     @Nested
     @DisplayName("장바구니에 있는 상품의 삭제할 수 있다")
-    class deleteCartProduct{
+    class deleteCartProduct {
 
         @Test
         @DisplayName("장바구니에 있는 상품을 지울 수 있다")
@@ -113,10 +116,11 @@ class CartServiceTest {
             // given
             String productId = "response";
             String userId = "user";
-            cartProductRepository.save(CartProduct.create(productId, Cart.create(userId)));
+            int count = 1;
+            cartProductRepository.save(CartProduct.create(productId, count, Cart.create(userId)));
 
             // when
-            cartService.deleteProduct(userId,productId);
+            cartService.deleteProduct(userId, List.of(productId));
             Optional<CartProduct> result = cartProductRepository.findCartProduct(productId, userId);
 
             // then
@@ -131,14 +135,14 @@ class CartServiceTest {
             String userId = "user";
 
             // then
-            assertThatThrownBy(() -> cartService.deleteProduct(userId, productId))
+            assertThatThrownBy(() -> cartService.deleteProduct(userId, List.of(productId)))
                     .isInstanceOf(CustomApiException.class)
                     .hasMessage(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage());
         }
     }
 
-    private Product createProduct(String productId){
-        return new Product("name",100,10,productId, ProductStatus.ACTIVE, null);
+    private Product createProduct(String productId) {
+        return new Product("name", 100, 10, productId, ProductStatus.ACTIVE, null);
     }
 
 }

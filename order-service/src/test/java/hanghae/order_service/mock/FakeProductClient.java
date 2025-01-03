@@ -1,10 +1,11 @@
 package hanghae.order_service.mock;
 
-import hanghae.order_service.domain.order.OrderProduct;
+import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.port.ProductClient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 
 public class FakeProductClient implements ProductClient {
@@ -25,23 +26,25 @@ public class FakeProductClient implements ProductClient {
     }
 
     @Override
+    public ResponseDto<List<Product>> processOrder(Map<String, Integer> cartProducts) {
+        List<Product> products = data.stream().map(i -> {
+            Integer orderCount = cartProducts.get(i.productId());
+            return i.convertCart(orderCount);
+        }).toList();
+
+        for (Product product : products) {
+            data.removeIf(i -> i.productId().equals(product.productId()));
+        }
+        products.forEach(this::addData);
+
+        boolean hasNegativeStock = products.stream().anyMatch(i -> i.quantity() < 0);
+        return hasNegativeStock ? new ResponseDto<>(-1, "fail", null) : new ResponseDto<>(1, "success", data);
+    }
+
+    @Override
     public ResponseEntity<List<Product>> getProducts(List<String> productIds) {
         List<Product> products = data.stream().filter(i -> productIds.contains(i.productId()))
                 .toList();
         return ResponseEntity.ok().body(products);
-    }
-
-    @Override
-    public ResponseEntity<?> removeStock(List<OrderProduct> orderProducts) {
-        List<Integer> updatedQuantities = orderProducts.stream()
-                .map(orderProduct -> data.stream()
-                        .filter(i -> i.productId().equals(orderProduct.productId()))
-                        .map(i -> i.quantity() - orderProduct.orderCount())
-                        .findFirst()
-                        .orElse(0))
-                .toList();
-
-        boolean hasNegativeStock = updatedQuantities.stream().anyMatch(quantity -> quantity < 0);
-        return hasNegativeStock ? ResponseEntity.badRequest().build() : ResponseEntity.ok().build();
     }
 }

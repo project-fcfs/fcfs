@@ -3,7 +3,7 @@ package hanghae.user_service.dummy;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
-@Component
+/*@Component
 public class DummyInit {
 
     private final InitService initService;
@@ -17,5 +17,5 @@ public class DummyInit {
         initService.dbInit();
     }
 
-}
+}*/
 

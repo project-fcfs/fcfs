@@ -8,6 +8,7 @@ import java.util.List;
 public record OrderRespDto(
         String orderId,
         OrderStatus orderStatus,
+        Long amount,
         LocalDateTime updatedAt,
         List<OrderProductRespDto> products
 ) {
@@ -16,6 +17,6 @@ public record OrderRespDto(
         List<OrderProductRespDto> orderProducts = order.orderProducts().stream()
                 .map(OrderProductRespDto::of)
                 .toList();
-        return new OrderRespDto(order.orderId(), order.orderStatus(), order.updatedAt(), orderProducts);
+        return new OrderRespDto(order.orderId(), order.orderStatus(), order.getTotalPrice(),order.updatedAt(), orderProducts);
     }
 }

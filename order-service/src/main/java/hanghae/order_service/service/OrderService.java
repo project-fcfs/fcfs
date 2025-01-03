@@ -1,9 +1,11 @@
 package hanghae.order_service.service;
 
+import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.order.Delivery;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderProduct;
+import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.common.util.OrderConstant;
@@ -18,13 +20,16 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 public class OrderService {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     private final OrderRepository orderRepository;
     private final CartProductRepository cartProductRepository;
     private final LocalDateTimeHolder localDateTimeHolder;
@@ -44,49 +49,25 @@ public class OrderService {
     }
 
     /**
-     * 장바구니 정보로 Product-service에서 가격, 정보 등을 가져온다
-     * 주문을 하면 Pending 상태로 저장된다
-     * Product-service로 orderId와 수량을 보내 재고여부를 판단하여 주문이 진행되거나 예외가 발생한다
+     * 장바구니 정보로 Product-service에서 가격, 정보 등을 가져온다 주문을 하면 Pending 상태로 저장된다 Product-service로 orderId와 수량을 보내 재고여부를 판단하여 주문이
+     * 진행되거나 예외가 발생한다
      */
     @Transactional
     public Order order(List<String> productIds, String address, String userId) {
         String orderId = uuidRandomHolder.getRandomUuid();
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
 
-        LocalTime currentTime = currentDate.toLocalTime();
-        if (currentTime.isBefore(OrderConstant.OPEN_TIME)) {
-            throw new CustomApiException(ErrorMessage.NOT_OPEN_TIME.getMessage());
-        }
-
         List<OrderProduct> orderProducts = generateOrderProducts(userId, productIds);
 
         Delivery delivery = Delivery.create(address, currentDate);
         Order order = Order.create(userId, orderId, orderProducts, delivery, currentDate);
 
-        ResponseEntity<?> response = productClient.removeStock(order.orderProducts());
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return orderRepository.save(order);
-        }
-        throw new CustomApiException(ErrorMessage.OUT_OF_STOCK.getMessage());
-    }
-
-    /**
-     * 선착순 구매
-     * 선착순 구매는 오픈시간이 있고, 해당 오픈시간이 되지 않으면 구매할 수 없다
-     */
-    @Transactional
-    public Order fcfsOrder(List<String> productIds, String address, String userId) {
-        LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
-        LocalTime currentTime = currentDate.toLocalTime();
-
-        if (currentTime.isBefore(OrderConstant.OPEN_TIME)) {
-            throw new CustomApiException(ErrorMessage.NOT_OPEN_TIME.getMessage());
-        }
-        return order(productIds, address, userId);
+        return orderRepository.save(order);
     }
 
     /**
      * productId가 같으면 장바구니의 수량으로 바꾸기 orderItems는 Product-service에서 가져오기 때문에 장바구니 속 유저가 저장한 수량으로 바꿔서 해당 수량만큼 주문을 진행함
+     *
      */
     private List<OrderProduct> generateOrderProducts(String userId, List<String> productIds) {
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
@@ -94,20 +75,38 @@ public class OrderService {
         Map<String, Integer> cartProducts = cartProductRepository.findByUserSelectedCart(userId, productIds)
                 .stream().collect(Collectors.toMap(CartProduct::productId, CartProduct::quantity));
 
-        if(cartProducts.isEmpty()) {
+        if (cartProducts.isEmpty()) {
             throw new CustomApiException(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage());
         }
 
-        return productClient.getProducts(productIds).getBody().stream()
-                .map(orderItem -> {
-                    Integer count = cartProducts.get(orderItem.productId());
-                    return OrderProduct.create(orderItem.price(), count, orderItem.productId(), currentDate);
+        ResponseDto<List<Product>> responseDto = productClient.processOrder(cartProducts);
+        if (responseDto.code() == OrderConstant.ORDER_FAIL) {
+            throw new CustomApiException(responseDto.message());
+        }
+        List<Product> data = responseDto.data();
+        return data.stream()
+                .map(i -> {
+                    Integer orderCount = cartProducts.get(i.productId());
+                    return OrderProduct.create( i.price(), orderCount, i.productId(), currentDate);
                 }).toList();
     }
 
     /**
-     * 주문취소 가능한지 확인하고 주문 취소하기
-     * 취소하고 원복하기
+     * 선착순 구매 선착순 구매는 오픈시간이 있고, 해당 오픈시간이 되지 않으면 구매할 수 없다
+     */
+    @Transactional
+    public Order fcfsOrder(String productId, String address, String userId) {
+        LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
+        LocalTime currentTime = currentDate.toLocalTime();
+
+        if (currentTime.isBefore(OrderConstant.OPEN_TIME)) {
+            throw new CustomApiException(ErrorMessage.NOT_OPEN_TIME.getMessage());
+        }
+        return order(List.of(productId), address, userId);
+    }
+
+    /**
+     * 주문취소 가능한지 확인하고 주문 취소하기 취소하고 원복하기
      */
     @Transactional
     public void cancel(String userId, String orderId) {

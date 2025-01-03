@@ -32,18 +32,13 @@ public class CartProductRepositoryImpl implements CartProductRepository {
     }
 
     @Override
-    public void removeCartItem(CartProduct cartProduct) {
-        jpaRepository.delete(CartProductEntity.fromModel(cartProduct));
-    }
-
-    @Override
     public List<CartProduct> findByUserSelectedCart(String userId, List<String> productIds) {
         return jpaRepository.findAllCartProduct(userId, productIds)
                 .stream().map(CartProductEntity::toModel).toList();
     }
 
     @Override
-    public void clearItemsByOrder(List<String> productIds, String userId) {
+    public void removeCartItems(List<String> productIds, String userId) {
         jpaRepository.deleteAllOrderProducts(productIds, userId);
     }
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,20 +17,20 @@ public class CustomExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(CustomExceptionHandler.class);
 
     @ExceptionHandler(CustomApiException.class)
-    public ResponseEntity<?> handleCustomApiException(CustomApiException e) {
+    public ResponseDto<?> handleCustomApiException(CustomApiException e) {
         log.info(e.getMessage());
-        return new ResponseEntity<>(new ResponseDto<>(-1, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        return ResponseDto.fail(e.getMessage(), null, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> validationException(MethodArgumentNotValidException e) {
+    public ResponseDto<?> validationException(MethodArgumentNotValidException e) {
         List<String> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(i -> i.getField() + ": " + i.getDefaultMessage())
                 .toList();
 
-        return new ResponseEntity<>(new ResponseDto<>(-1, INVALID_DATA_BIDING, errors),
+        return ResponseDto.fail(INVALID_DATA_BIDING, errors,
                 HttpStatus.BAD_REQUEST);
     }
 }

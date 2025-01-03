@@ -1,5 +1,8 @@
 package hanghae.order_service.controller;
 
+import hanghae.order_service.controller.req.CartCreateReqDto;
+import hanghae.order_service.controller.req.CartDeleteReqDto;
+import hanghae.order_service.controller.req.CartUpdateReqDto;
 import hanghae.order_service.controller.resp.ProductRespDto;
 import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.product.Product;
@@ -10,15 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/carts")
 public class CartController {
 
     private final CartService cartService;
@@ -27,33 +29,34 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @PostMapping("/{productId}")
-    public ResponseEntity<?> addCartProduct(@PathVariable("productId") String productId,
-                                         @RequestHeader("userId") String userId) {
-        cartService.add(userId,productId);
+    @PostMapping
+    public ResponseEntity<?> addCartProduct(@RequestHeader("userId") String userId,
+                                            @RequestBody CartCreateReqDto reqDto) {
+        cartService.add(userId, reqDto.productId(), reqDto.count());
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<?> deleteCartProduct(@PathVariable("productId") String productId,
-                                            @RequestHeader("userId") String userId) {
-        cartService.deleteProduct(userId,productId);
+    @DeleteMapping
+    public ResponseEntity<?> deleteCartProduct(@RequestHeader("userId") String userId,
+                                               @RequestBody List<CartDeleteReqDto> reqDto) {
+        List<String> productIds = reqDto.stream().map(CartDeleteReqDto::productId).toList();
+        cartService.deleteProduct(userId, productIds);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{productId}")
-    public ResponseEntity<?> updateCartProduct(@PathVariable("productId") String productId,
-                                               @RequestHeader("userId") String userId, @RequestParam("count") int count) {
-        cartService.updateQuantity(userId, productId, count);
+    @PatchMapping()
+    public ResponseEntity<?> updateCartProduct(@RequestHeader("userId") String userId,
+                                               @RequestBody CartUpdateReqDto reqDto) {
+        cartService.updateQuantity(userId, reqDto.productId(), reqDto.count());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/products")
-    public ResponseEntity<?> getCartProduct(@RequestHeader("userId") String userId) {
+    public ResponseDto<?> getCartProduct(@RequestHeader("userId") String userId) {
         List<Product> products = cartService.getCartProducts(userId);
         List<ProductRespDto> response = products.stream().map(ProductRespDto::of)
                 .toList();
 
-        return new ResponseEntity<>(new ResponseDto<>(1, "카트 상품", response), HttpStatus.OK);
+        return ResponseDto.success(response, HttpStatus.OK);
     }
 }

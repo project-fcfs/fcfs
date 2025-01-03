@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,26 +17,25 @@ public class CustomExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(CustomExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> validationException(MethodArgumentNotValidException e) {
+    public ResponseDto<?> validationException(MethodArgumentNotValidException e) {
         List<String> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(i -> i.getField() + ": " + i.getDefaultMessage())
                 .toList();
 
-        return new ResponseEntity<>(new ResponseDto<>(-1, INVALID_DATA_BIDING, errors),
-                HttpStatus.BAD_REQUEST);
+        return ResponseDto.fail(errors, INVALID_DATA_BIDING, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> illegalArgumentException(IllegalArgumentException e) {
+    public ResponseDto<?> illegalArgumentException(IllegalArgumentException e) {
         log.info(e.getMessage());
-        return new ResponseEntity<>(new ResponseDto<>(-1, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        return ResponseDto.fail(null, e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CustomApiException.class)
-    public ResponseEntity<?> customApiException(CustomApiException e) {
+    public ResponseDto<?> customApiException(CustomApiException e) {
         log.info(e.getMessage());
-        return new ResponseEntity<>(new ResponseDto<>(-1, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        return ResponseDto.fail(null, e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

@@ -1,7 +1,9 @@
 package hanghae.order_service.controller;
 
 import hanghae.order_service.controller.req.OrderCreateReqDto;
+import hanghae.order_service.controller.req.OrderFcfsCreateReqDto;
 import hanghae.order_service.controller.resp.OrderRespDto;
+import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.service.OrderService;
 import java.util.List;
@@ -33,7 +35,17 @@ public class OrderController {
     public ResponseEntity<?> processOrder(@RequestHeader("userId") String userId,
                                           @RequestBody OrderCreateReqDto createReqDto, @RequestParam String address) {
         Order order = orderService.order(createReqDto.productIds(), address, userId);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(OrderRespDto.of(order),HttpStatus.CREATED);
+    }
+
+    /**
+     * 선착순 구매는 구매하기 버튼으로만 구매할 수 있다
+     */
+    @PostMapping("/fcfs")
+    public ResponseEntity<?> processFcfsOrder(@RequestHeader("userId") String userId,
+                                              @RequestBody OrderFcfsCreateReqDto createReqDto, @RequestParam String address) {
+        Order order = orderService.fcfsOrder(createReqDto.productId(), address, userId);
+        return new ResponseEntity<>(OrderRespDto.of(order),HttpStatus.CREATED);
     }
 
     /**
@@ -60,11 +72,11 @@ public class OrderController {
      * 유저의 주문완료한 상품들을 가져온다
      */
     @GetMapping
-    public ResponseEntity<?> fetchAllUserOrders(@RequestHeader("userId") String userId) {
+    public ResponseDto<?> fetchAllUserOrders(@RequestHeader("userId") String userId) {
         List<Order> orders = orderService.getUserOrderHistory(userId);
 
         List<OrderRespDto> orderResponse = orders.stream().map(OrderRespDto::of).toList();
-        return new ResponseEntity<>(orderResponse, HttpStatus.OK);
+        return ResponseDto.success(orderResponse, HttpStatus.OK);
     }
 
 

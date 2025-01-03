@@ -125,22 +125,17 @@ class OrderServiceTest {
             LocalDateTime localDateTime = LocalDateTime.of(2025, 1, 2, 9, 0, 0);
             localDateTimeHolder.setLocalDateTime(localDateTime);
             String productId1 = "product1";
-            String productId2 = "product2";
             String userId = "userId";
             int orderCount1 = 2;
             int orderCount2 = 3;
             int quantity = 10;
-            List<String> productIds = List.of(productId1, productId2);
-            List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
-                    createCartProduct(2L, productId2, orderCount2));
+            List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1));
             cartProducts.forEach(cartProductRepository::save);
             orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
-            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
             productClient.addData(createProduct(productId1, quantity));
-            productClient.addData(createProduct(productId2, quantity));
 
             // when
-            Order result = orderService.fcfsOrder(productIds, "address", userId);
+            Order result = orderService.fcfsOrder(productId1, "address", userId);
 
             // then
             assertAll(() -> {
@@ -149,7 +144,7 @@ class OrderServiceTest {
                 assertThat(result.delivery().address()).isEqualTo("address");
                 assertThat(result.orderProducts()).hasSize(2)
                         .extracting(OrderProduct::productId, OrderProduct::orderCount)
-                        .containsExactlyInAnyOrder(Tuple.tuple(productId1, orderCount1), Tuple.tuple(productId2, orderCount2));
+                        .containsExactlyInAnyOrder(Tuple.tuple(productId1, orderCount1));
             });
         }
 
@@ -160,22 +155,17 @@ class OrderServiceTest {
             LocalDateTime localDateTime = LocalDateTime.of(2025, 1, 2, 8, 59, 59);
             localDateTimeHolder.setLocalDateTime(localDateTime);
             String productId1 = "product1";
-            String productId2 = "product2";
             String userId = "userId";
             int orderCount1 = 2;
             int orderCount2 = 3;
             int quantity = 10;
-            List<String> productIds = List.of(productId1, productId2);
-            List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
-                    createCartProduct(2L, productId2, orderCount2));
+            List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1));
             cartProducts.forEach(cartProductRepository::save);
             orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount1, productId1));
-            orderProductMessage.addProduct(FakeProduct.create("name", 100, orderCount2, productId2));
             productClient.addData(createProduct(productId1, quantity));
-            productClient.addData(createProduct(productId2, quantity));
 
             // when
-            assertThatThrownBy(() -> orderService.fcfsOrder(productIds, "addres", userId))
+            assertThatThrownBy(() -> orderService.fcfsOrder(productId1, "addres", userId))
                     .isInstanceOf(CustomApiException.class)
                     .hasMessage(ErrorMessage.NOT_OPEN_TIME.getMessage());
         }

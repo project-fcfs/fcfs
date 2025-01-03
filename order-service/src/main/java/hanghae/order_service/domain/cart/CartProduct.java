@@ -10,8 +10,8 @@ public record CartProduct(
         Cart cart
 ) {
 
-    public static CartProduct create(String productId, Cart cart) {
-        return new CartProduct(null, 1, productId, cart);
+    public static CartProduct create(String productId, int count, Cart cart) {
+        return new CartProduct(null, count, productId, cart);
     }
 
     public CartProduct updateCount(int count) {
