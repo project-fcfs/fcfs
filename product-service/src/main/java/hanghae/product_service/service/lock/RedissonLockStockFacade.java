@@ -1,9 +1,11 @@
 package hanghae.product_service.service.lock;
 
 import hanghae.product_service.controller.req.OrderCreateReqDto;
+import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.ProductStockService;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.redisson.RedissonMultiLock;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -22,20 +24,25 @@ public class RedissonLockStockFacade {
         this.productStockService = productStockService;
     }
 
-    public void decrease(List<OrderCreateReqDto> reqDtos) {
-        RLock lock = redissonClient.getLock(reqDtos.getFirst().productId());
+    public List<Product> decrease(List<OrderCreateReqDto> reqDtos) {
+        List<RLock> locks = reqDtos.stream()
+                .map(product -> redissonClient.getLock("lock:" + product.productId()))
+                .toList();
+        RLock[] lockArray = locks.toArray(new RLock[0]);
+
+        RedissonMultiLock multiLock = new RedissonMultiLock(lockArray);
 
         try{
-            boolean available = lock.tryLock(10, 1, TimeUnit.SECONDS);
+            boolean available = multiLock.tryLock(10, 5, TimeUnit.SECONDS);
             if(!available){
                 log.info("lock 획득 실패");
-                return;
+                return null;
             }
-            productStockService.processOrder(reqDtos);
+            return productStockService.processOrder(reqDtos);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
-            lock.unlock();
+            multiLock.unlock();
         }
     }
 }

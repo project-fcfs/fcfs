@@ -1,5 +1,6 @@
 package hanghae.order_service.service;
 
+import feign.FeignException;
 import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.order.Delivery;
@@ -83,8 +84,14 @@ public class OrderService {
      *
      */
     private List<OrderProduct> generateOrderProducts(Map<String, Integer> value, LocalDateTime currentDate) {
+        ResponseDto<List<Product>> responseDto;
 
-        ResponseDto<List<Product>> responseDto = productClient.processOrder(value);
+        try{
+            responseDto = productClient.processOrder(value);
+        }catch (FeignException e){
+            log.error(e.getMessage());
+            throw new CustomApiException(e.getMessage());
+        }
         if (responseDto.code() == OrderConstant.ORDER_FAIL) {
             throw new CustomApiException(ErrorMessage.OUT_OF_STOCK.getMessage());
         }

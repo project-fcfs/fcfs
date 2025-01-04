@@ -9,6 +9,8 @@ import hanghae.product_service.controller.resp.ResponseDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.ProductService;
 import hanghae.product_service.service.ProductStockService;
+import hanghae.product_service.service.lock.PessimisticLockStockService;
+import hanghae.product_service.service.lock.RedissonLockStockFacade;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -28,11 +30,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductController {
 
     private final ProductService productService;
-    private final ProductStockService productStockService;
+    private final PessimisticLockStockService pessimisticLockStockService;
+    private final RedissonLockStockFacade redissonLockStockFacade;
 
-    public ProductController(ProductService productService, ProductStockService productStockService) {
+    public ProductController(ProductService productService,
+                             PessimisticLockStockService pessimisticLockStockService,
+                             RedissonLockStockFacade redissonLockStockFacade) {
         this.productService = productService;
-        this.productStockService = productStockService;
+        this.pessimisticLockStockService = pessimisticLockStockService;
+        this.redissonLockStockFacade = redissonLockStockFacade;
     }
 
     @PostMapping("/create")
@@ -74,7 +80,7 @@ public class ProductController {
 
     @PostMapping("/order")
     public ResponseDto<?> processOrder(@RequestBody List<OrderCreateReqDto> dtos) {
-        List<Product> products = productStockService.processOrder(dtos);
+        List<Product> products = redissonLockStockFacade.decrease(dtos);
         List<ProductRespDto> response = products.stream().map(i -> ProductRespDto.of(i, null)).toList();
         return ResponseDto.success(response, HttpStatus.OK);
     }
