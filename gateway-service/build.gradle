@@ -41,6 +41,8 @@ dependencies {
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '3.4.0'
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	// https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus
+	implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.14.2'
 }
 
 dependencyManagement {
