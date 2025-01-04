@@ -42,6 +42,9 @@ dependencies {
 	// mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+	// https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus
+	implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.14.2'
+
 	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-config
 	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: '4.2.0'
 	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap
