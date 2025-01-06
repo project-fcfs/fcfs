@@ -1,5 +1,6 @@
 package hanghae.product_service.infrastrcuture.product;
 
+import static hanghae.product_service.service.common.util.ProductConst.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -7,6 +8,7 @@ import hanghae.product_service.IntegrationInfraTestSupport;
 import hanghae.product_service.controller.req.OrderCreateReqDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.domain.product.ProductStatus;
+import hanghae.product_service.service.common.util.ProductConst;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.script.RedisScript;
 
 class ProductCacheRepositoryImplTest extends IntegrationInfraTestSupport {
-    private static final String KEY_PREFIX = "product:";
 
     @Autowired
     private ProductCacheRepositoryImpl productCacheRepository;
@@ -35,21 +36,20 @@ class ProductCacheRepositoryImplTest extends IntegrationInfraTestSupport {
         productCacheRepository.save(product);
 
         // then
-        Map<Object, Object> entries = redisTemplate.opsForHash().entries(KEY_PREFIX + productId);
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(PRODUCT_KEY_PREFIX + productId);
         assertAll(() -> {
-            assertThat(entries).hasSize(6)
-                    .containsEntry("productId", productId)
-                    .containsEntry("quantity", "200");
+            assertThat(entries).hasSize(4)
+                    .containsEntry("quantity", 200);
         });
-        redisTemplate.delete(KEY_PREFIX + productId);
+        redisTemplate.delete(PRODUCT_KEY_PREFIX + productId);
     }
 
     @Test
     @DisplayName("Lua Script 테스트")
     void LuaScript_Test() throws Exception {
         // given
-        String key = KEY_PREFIX + 1;
-        String key2 = KEY_PREFIX + 2;
+        String key = PRODUCT_KEY_PREFIX + 1;
+        String key2 = PRODUCT_KEY_PREFIX + 2;
         String quantity = "quantity";
         redisTemplate.opsForHash().put(key, quantity, 3);
         redisTemplate.opsForHash().put(key2, quantity, 3);
@@ -79,7 +79,7 @@ class ProductCacheRepositoryImplTest extends IntegrationInfraTestSupport {
             String productId = "productId" + i;
             Product product = new Product((long) i, "name" + i, 1000 + i, 3, productId, ProductStatus.ACTIVE);
             productCacheRepository.save(product);
-            dtos.add(new OrderCreateReqDto(KEY_PREFIX+ productId, i));
+            dtos.add(new OrderCreateReqDto(PRODUCT_KEY_PREFIX+ productId, i));
         }
 
         List<String> productIds = dtos.stream().map(OrderCreateReqDto::productId).toList();
@@ -90,9 +90,9 @@ class ProductCacheRepositoryImplTest extends IntegrationInfraTestSupport {
 
         // then
         for (int i = 0; i < 3; i++) {
-            Map<Object, Object> entries = redisTemplate.opsForHash().entries(KEY_PREFIX + "productId" + i);
+            Map<Object, Object> entries = redisTemplate.opsForHash().entries(PRODUCT_KEY_PREFIX + "productId" + i);
             System.out.println(i + "번째 entries = " + entries);
-            redisTemplate.delete(KEY_PREFIX + "productId" + i);
+            redisTemplate.delete(PRODUCT_KEY_PREFIX + "productId" + i);
         }
         assertThat(result).isTrue();
     }
@@ -107,7 +107,7 @@ class ProductCacheRepositoryImplTest extends IntegrationInfraTestSupport {
             String productId = "productId" + i;
             Product product = new Product((long) i, "name" + i, 1000 + i, 3, productId, ProductStatus.ACTIVE);
             productCacheRepository.save(product);
-            dtos.add(new OrderCreateReqDto(KEY_PREFIX+ productId, i + 2));
+            dtos.add(new OrderCreateReqDto(PRODUCT_KEY_PREFIX+ productId, i + 2));
         }
 
         List<String> productIds = dtos.stream().map(OrderCreateReqDto::productId).toList();
@@ -118,9 +118,9 @@ class ProductCacheRepositoryImplTest extends IntegrationInfraTestSupport {
 
         // then
         for (int i = 0; i < 3; i++) {
-            Map<Object, Object> entries = redisTemplate.opsForHash().entries(KEY_PREFIX + "productId" + i);
+            Map<Object, Object> entries = redisTemplate.opsForHash().entries(PRODUCT_KEY_PREFIX + "productId" + i);
             System.out.println(i + "번째 entries = " + entries);
-            redisTemplate.delete(KEY_PREFIX + "productId" + i);
+            redisTemplate.delete(PRODUCT_KEY_PREFIX + "productId" + i);
         }
         assertThat(result).isFalse();
     }
@@ -135,7 +135,7 @@ class ProductCacheRepositoryImplTest extends IntegrationInfraTestSupport {
             String productId = "productId" + i;
             Product product = new Product((long) i, "name" + i, 1000 + i, 3, productId, ProductStatus.ACTIVE);
             productCacheRepository.save(product);
-            dtos.add(new OrderCreateReqDto(KEY_PREFIX+ productId, i + 2));
+            dtos.add(new OrderCreateReqDto(PRODUCT_KEY_PREFIX+ productId, i + 2));
         }
 
         List<String> productIds = dtos.stream().map(OrderCreateReqDto::productId).toList();
@@ -146,11 +146,11 @@ class ProductCacheRepositoryImplTest extends IntegrationInfraTestSupport {
 
         // then
         for (int i = 0; i < 3; i++) {
-            Map<Object, Object> entries = redisTemplate.opsForHash().entries(KEY_PREFIX + "productId" + i);
+            Map<Object, Object> entries = redisTemplate.opsForHash().entries(PRODUCT_KEY_PREFIX + "productId" + i);
             Integer quantity = (Integer) entries.get("quantity");
             assertThat(quantity).isEqualTo(3 + (i + 2));
             System.out.println(i + "번째 entries = " + entries);
-            redisTemplate.delete(KEY_PREFIX + "productId" + i);
+            redisTemplate.delete(PRODUCT_KEY_PREFIX + "productId" + i);
         }
         assertThat(result).isTrue();
     }

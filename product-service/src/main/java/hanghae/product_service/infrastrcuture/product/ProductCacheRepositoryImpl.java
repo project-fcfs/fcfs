@@ -1,5 +1,7 @@
 package hanghae.product_service.infrastrcuture.product;
 
+import static hanghae.product_service.service.common.util.ProductConst.PRODUCT_KEY_PREFIX;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.product_service.domain.product.Product;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class ProductCacheRepositoryImpl implements ProductCacheRepository {
-    private static final String PRODUCT_KEY_PREFIX = "product:";
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
     private final RedisScript<Boolean> removeStockScript;
