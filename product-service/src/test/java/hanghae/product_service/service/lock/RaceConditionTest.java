@@ -50,7 +50,7 @@ class RaceConditionTest extends IntegrationInfraTestSupport {
         for (int i = 0; i < threadCount; i++) {
             es.submit(() -> {
                 try {
-                    List<Product> products = pessimisticLockStockService.processPessimistic(List.of(request));
+                    List<Product> products = pessimisticLockStockService.processOrder(List.of(request));
                 } finally {
                     latch.countDown();
                 }
@@ -116,7 +116,7 @@ class RaceConditionTest extends IntegrationInfraTestSupport {
         for (int i = 0; i < threadCount; i++) {
             es.submit(() -> {
                 try {
-                    redissonLockStockFacade.decrease(List.of(request));
+                    redissonLockStockFacade.processOrder(List.of(request));
                 } finally {
                     latch.countDown();
                 }

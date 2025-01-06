@@ -44,8 +44,8 @@ public class ProductStockService {
         return productRepository.saveAll(updatedProducts);
     }
 
-    @Transactional
-    public void restoreQuantity(List<OrderMessageReqDto> reqDtos) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<Product> restoreQuantity(List<OrderMessageReqDto> reqDtos) {
         List<String> productIds = reqDtos.stream().map(OrderMessageReqDto::productId).toList();
         List<Product> products = productRepository.findAllByProductIds(productIds);
 
@@ -59,7 +59,7 @@ public class ProductStockService {
             updatedProducts.add(updatedProduct);
         }
 
-        productRepository.saveAll(updatedProducts);
+        return productRepository.saveAll(updatedProducts);
     }
 
 }

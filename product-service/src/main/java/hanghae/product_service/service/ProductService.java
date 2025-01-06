@@ -29,6 +29,9 @@ public class ProductService {
         this.imageFileService = imageFileService;
     }
 
+    /**
+     * 상품 생성
+     */
     @Transactional
     public ProductRespDto create(String name, int price, int quantity, FileInfo fileInfo) {
         Product product = Product.create(name, price, quantity, uuidRandomHolder.getRandomUUID());
@@ -38,27 +41,42 @@ public class ProductService {
         return ProductRespDto.of(savedProduct, imageFile);
     }
 
-    public ProductRespDto getProduct(String productUid) {
-        Product product = fetchProductById(productUid);
+    /**
+     * productId로 하나의 상품을 찾고 해당 상품의 썸네일과 함께 반환한다
+     */
+    public ProductRespDto getProduct(String productId) {
+        Product product = fetchProductById(productId);
         ImageFile imageFile = imageFileService.getImageFile(product.id());
         return ProductRespDto.of(product, imageFile);
     }
 
+    /**
+     * productId로 하나의 상품을 찾고 없으면 예외를 반환한다
+     */
     private Product fetchProductById(String productId) {
         return productRepository.findProductById(productId).orElseThrow(() ->
                 new CustomApiException(ErrorMessage.NOT_FOUND_PRODUCT.getMessage()));
     }
 
+    /**
+     * DB에 모든 Product를 반환한다
+     */
     public List<ProductRespDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return assembleProductAndImage(products);
     }
 
+    /**
+     * 여러 Product들을 ProductIds로 찾는다
+     */
     public List<ProductRespDto> getProductByIds(List<String> ids) {
         List<Product> products = productRepository.findAllByProductIds(ids);
         return assembleProductAndImage(products);
     }
 
+    /**
+     * 여러 Product에 맞는 이미지 썸네일을 찾아서 같이 반환한다
+     */
     private List<ProductRespDto> assembleProductAndImage(List<Product> products) {
         List<Long> productIds = products.stream().map(Product::id).toList();
         List<ImageFile> imageFiles = imageFileService.getAllInProductId(productIds);

@@ -1,6 +1,7 @@
 package hanghae.product_service.service.lock;
 
 import hanghae.product_service.controller.req.OrderCreateReqDto;
+import hanghae.product_service.controller.req.OrderMessageReqDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.port.StockRepository;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class PessimisticLockStockService {
     }
 
     @Transactional
-    public List<Product> processPessimistic(List<OrderCreateReqDto> reqDtos) {
+    public List<Product> processOrder(List<OrderCreateReqDto> reqDtos) {
 
         List<String> productIds = reqDtos.stream().map(OrderCreateReqDto::productId).toList();
         List<Product> products = stockRepository.findAllByProductIdsWithPessimistic(productIds);
@@ -36,7 +37,25 @@ public class PessimisticLockStockService {
             updatedProducts.add(updatedProduct);
         }
 
-        List<Product> products1 = stockRepository.saveAll(updatedProducts);
-        return products1;
+        return stockRepository.saveAll(updatedProducts);
     }
+
+    @Transactional
+    public List<Product> restoreQuantity(List<OrderMessageReqDto> reqDtos) {
+        List<String> productIds = reqDtos.stream().map(OrderMessageReqDto::productId).toList();
+        List<Product> products = stockRepository.findAllByProductIdsWithPessimistic(productIds);
+
+        Map<String, Product> productsById = products.stream().collect(Collectors.toMap(Product::productId, v -> v));
+
+        List<Product> updatedProducts = new ArrayList<>();
+
+        for (OrderMessageReqDto reqDto : reqDtos) {
+            Product product = productsById.get(reqDto.productId());
+            Product updatedProduct = product.addStock(reqDto.orderCount());
+            updatedProducts.add(updatedProduct);
+        }
+
+        return stockRepository.saveAll(updatedProducts);
+    }
+
 }

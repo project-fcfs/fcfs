@@ -8,7 +8,6 @@ import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.controller.resp.ResponseDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.ProductService;
-import hanghae.product_service.service.ProductStockService;
 import hanghae.product_service.service.lock.PessimisticLockStockService;
 import hanghae.product_service.service.lock.RedissonLockStockFacade;
 import java.io.IOException;
@@ -80,7 +79,7 @@ public class ProductController {
 
     @PostMapping("/order")
     public ResponseDto<?> processOrder(@RequestBody List<OrderCreateReqDto> dtos) {
-        List<Product> products = redissonLockStockFacade.decrease(dtos);
+        List<Product> products = redissonLockStockFacade.processOrder(dtos);
         List<ProductRespDto> response = products.stream().map(i -> ProductRespDto.of(i, null)).toList();
         return ResponseDto.success(response, HttpStatus.OK);
     }
