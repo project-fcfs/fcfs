@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.product_service.controller.req.StockUpdateReqDto;
-import hanghae.product_service.service.ProductStockService;
 import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.util.ErrorMessage;
+import hanghae.product_service.service.lock.PessimisticLockStockService;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +17,12 @@ import org.springframework.stereotype.Component;
 public class KafkaMessageConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaMessageConsumer.class);
-    private final ProductStockService productStockService;
+    private final PessimisticLockStockService pessimisticLockStockService;
     private final ObjectMapper mapper;
 
-    public KafkaMessageConsumer(ProductStockService productStockService, ObjectMapper mapper) {
-        this.productStockService = productStockService;
+    public KafkaMessageConsumer(PessimisticLockStockService pessimisticLockStockService,
+                                ObjectMapper mapper) {
+        this.pessimisticLockStockService = pessimisticLockStockService;
         this.mapper = mapper;
     }
 
@@ -29,7 +30,14 @@ public class KafkaMessageConsumer {
     public void productOrderRestore(String message) {
         log.info("fcfs_order_restore {}", message);
         List<StockUpdateReqDto> orderMessages = convertToRequest(message);
-        productStockService.restoreQuantity(orderMessages);
+        pessimisticLockStockService.restoreQuantity(orderMessages);
+    }
+
+    @KafkaListener(topics = "fcfs_order_remove", groupId = "product-group")
+    public void productOrderProcess(String message) {
+        log.info("fcfs_order_remove {}", message);
+        List<StockUpdateReqDto> orderMessages = convertToRequest(message);
+        pessimisticLockStockService.processOrder(orderMessages);
     }
 
     private List<StockUpdateReqDto> convertToRequest(String value) {
