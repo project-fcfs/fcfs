@@ -5,11 +5,11 @@ import hanghae.product_service.service.port.UUIDRandomHolder;
 public class FakeUuidRandomHolder implements UUIDRandomHolder {
     private String value;
 
-    public void setValue(String value) {
+    public FakeUuidRandomHolder(String value) {
         this.value = value;
     }
 
-    public FakeUuidRandomHolder(String value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

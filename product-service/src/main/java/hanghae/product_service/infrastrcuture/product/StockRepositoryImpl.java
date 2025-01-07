@@ -15,7 +15,7 @@ public class StockRepositoryImpl implements StockRepository {
     }
 
     @Override
-    public List<Product> findAllByProductIdsWithPessimistic(List<String> ids) {
+    public List<Product> findAllByProductIdsWithPessimistic(List<Long> ids) {
         return jpaRepository.findAllByProductIdsWithPessimistic(ids)
                 .stream().map(ProductEntity::toModel).toList();
     }

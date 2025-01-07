@@ -1,6 +1,6 @@
 package hanghae.product_service.service.lock;
 
-import hanghae.product_service.controller.req.OrderCreateReqDto;
+import hanghae.product_service.controller.req.StockUpdateReqDto;
 import hanghae.product_service.infrastrcuture.product.NamedLockTemplate;
 import hanghae.product_service.service.ProductStockService;
 import java.util.List;
@@ -19,7 +19,7 @@ public class NamedLockStockFacade {
     }
 
     @Transactional
-    public void namedLockStock(List<OrderCreateReqDto> reqDtos) {
+    public void namedLockStock(List<StockUpdateReqDto> reqDtos) {
 
         namedLockTemplate.executeWithLock("lock", 3, () -> productStockService.processOrder(reqDtos));
 

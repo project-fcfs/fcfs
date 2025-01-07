@@ -16,7 +16,7 @@ public class FakeProductRepository implements ProductRepository {
         if (product.id() == null || product.id() == 0L) {
             Product newProduct = new Product(counter.incrementAndGet(),
                     product.name(), product.price(), product.quantity(),
-                    product.productId(), product.productStatus());
+                    product.type(), product.productStatus());
             data.add(newProduct);
             return newProduct;
         } else {
@@ -27,8 +27,8 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
-    public Optional<Product> findProductById(String uid) {
-        return data.stream().filter(i -> i.productId().equals(uid)).findFirst();
+    public Optional<Product> findProductById(Long id) {
+        return data.stream().filter(i -> i.id().equals(id)).findFirst();
     }
 
     @Override
@@ -37,8 +37,8 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAllByProductIds(List<String> ids) {
-        return data.stream().filter(i -> ids.contains(i.productId())).toList();
+    public List<Product> findAllByProductIds(List<Long> ids) {
+        return data.stream().filter(i -> ids.contains(i.id())).toList();
     }
 
     @Override

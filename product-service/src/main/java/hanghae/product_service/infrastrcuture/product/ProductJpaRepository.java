@@ -10,12 +10,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long> {
-    Optional<ProductEntity> findByProductId(String productId);
-
-    @Query("select p from ProductEntity p where p.productId in :productIds")
-    List<ProductEntity> findAllByProductIds(@Param("productIds") List<String> productIds);
+    @Query("select p from ProductEntity p where p.id in :productIds")
+    List<ProductEntity> findAllByProductIds(@Param("productIds") List<Long> productIds);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select p from ProductEntity p where p.productId in :productIds")
-    List<ProductEntity> findAllByProductIdsWithPessimistic(@Param("productIds") List<String> ids);
+    @Query("select p from ProductEntity p where p.id in :productIds")
+    List<ProductEntity> findAllByProductIdsWithPessimistic(@Param("productIds") List<Long> ids);
 }

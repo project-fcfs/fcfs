@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import hanghae.product_service.IntegrationInfraTestSupport;
 import hanghae.product_service.controller.req.ProductCreateReqDto;
 import hanghae.product_service.domain.product.Product;
+import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.service.port.ProductRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ class ProductControllerTest extends IntegrationInfraTestSupport {
     @DisplayName("API를 호출해 상품을 저장할 수 있다")
     void canSaveProduct() throws Exception {
         // given
-        ProductCreateReqDto request = new ProductCreateReqDto("product", 1000, 10);
+        ProductCreateReqDto request = new ProductCreateReqDto("product", 1000, 10, ProductType.BASIC);
         MockMultipartFile reqDtoPart = createFile(request);
         MockMultipartFile filePart = createFile();
 
@@ -46,14 +47,14 @@ class ProductControllerTest extends IntegrationInfraTestSupport {
     @DisplayName("API를 호출해 저장한 상품을 조회할 수 있다")
     void canFindProduct() throws Exception {
         // given
-        String uid = "random";
+        ProductType type = ProductType.BASIC;
         String name = "product";
         int price = 1000;
         int quantity = 10;
-        productRepository.save(Product.create(name, price, quantity, uid));
+        productRepository.save(Product.create(name, price, quantity, type));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/products/{id}", uid))
+        ResultActions resultActions = mockMvc.perform(get("/products/{id}", 1))
                 .andDo(print());
 
         // then
@@ -76,7 +77,7 @@ class ProductControllerTest extends IntegrationInfraTestSupport {
 
     private MockMultipartFile createFile(ProductCreateReqDto request) throws JsonProcessingException {
         return new MockMultipartFile("createReqDto", "reqDto.json", MediaType.APPLICATION_JSON_VALUE,
-                om.writeValueAsBytes(request));
+                mapper.writeValueAsBytes(request));
     }
 
 }

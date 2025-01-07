@@ -42,7 +42,7 @@ class ProductTest {
     }
 
     private Product createProduct(String name, int quantity) {
-        return new Product(1L, name, 10, quantity, "random", ProductStatus.ACTIVE);
+        return new Product(1L, name, 10, quantity, ProductType.BASIC, ProductStatus.ACTIVE);
     }
 
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.domain.product.ProductStatus;
+import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.service.port.ProductCacheRepository;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class ProductCacheRepositoryImpl implements ProductCacheRepository {
     @Override
     public void save(Product product) {
         Map<String, String> productMap = convertToMap(product);
-        String key = PRODUCT_KEY_PREFIX + product.productId();
+        String key = PRODUCT_KEY_PREFIX + product.id();
         redisTemplate.opsForHash().putAll(key, productMap);
         redisTemplate.opsForHash().put(key, "quantity", product.quantity());
     }
@@ -62,10 +63,12 @@ public class ProductCacheRepositoryImpl implements ProductCacheRepository {
             String name,
             int price,
             int quantity,
+            ProductType type,
             ProductStatus productStatus
     ) {
         public static RedisProduct of(Product product){
             return new RedisProduct(product.name(), product.price(), product.quantity(),
+                    product.type(),
                     product.productStatus());
         }
     }

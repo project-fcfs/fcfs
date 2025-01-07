@@ -21,7 +21,7 @@ public class IntegrationInfraTestSupport {
     protected MockMvc mockMvc;
 
     @Autowired
-    protected ObjectMapper om;
+    protected ObjectMapper mapper;
 
     @Autowired
     protected RedisTemplate<String, Object> redisTemplate;

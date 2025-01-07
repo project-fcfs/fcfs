@@ -2,7 +2,7 @@ package hanghae.product_service.controller;
 
 import hanghae.product_service.controller.common.MultipartUtil;
 import hanghae.product_service.controller.req.FileInfo;
-import hanghae.product_service.controller.req.OrderCreateReqDto;
+import hanghae.product_service.controller.req.StockUpdateReqDto;
 import hanghae.product_service.controller.req.ProductCreateReqDto;
 import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.controller.resp.ResponseDto;
@@ -47,13 +47,13 @@ public class ProductController {
         MultipartUtil.validateImageFile(file);
         FileInfo fileInfo = toFileInfo(file);
         ProductRespDto productRespDto = productService.create(reqDto.name(), reqDto.price(), reqDto.quantity(),
-                fileInfo);
+                reqDto.type(), fileInfo);
 
         return new ResponseEntity<>(productRespDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseDto<?> getProduct(@PathVariable("id") String productId) {
+    public ResponseDto<?> getProduct(@PathVariable("id") Long productId) {
         ProductRespDto productRespDto = productService.getProduct(productId);
         return ResponseDto.success(productRespDto, HttpStatus.OK);
     }
@@ -72,13 +72,13 @@ public class ProductController {
     }
 
     @GetMapping("/cart")
-    public ResponseDto<?> fetchCartProducts(@RequestParam("ids") List<String> ids) {
+    public ResponseDto<?> fetchCartProducts(@RequestParam("ids") List<Long> ids) {
         List<ProductRespDto> dtos = productService.getProductByIds(ids);
         return ResponseDto.success(dtos, HttpStatus.OK);
     }
 
     @PostMapping("/order")
-    public ResponseDto<?> processOrder(@RequestBody List<OrderCreateReqDto> dtos) {
+    public ResponseDto<?> processOrder(@RequestBody List<StockUpdateReqDto> dtos) {
         List<Product> products = redissonLockStockFacade.processOrder(dtos);
         List<ProductRespDto> response = products.stream().map(i -> ProductRespDto.of(i, null)).toList();
         return ResponseDto.success(response, HttpStatus.OK);

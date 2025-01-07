@@ -8,13 +8,13 @@ public record Product(
         String name,
         int price,
         int quantity,
-        String productId,
+        ProductType type,
         ProductStatus productStatus
 ) {
 
-    public static Product create(String name, int price, int quantity, String productId) {
-        return new Product(null, name, price, quantity, productId,
-                ProductStatus.ACTIVE);
+    public static Product create(String name, int price, int quantity, ProductType type) {
+        return new Product(null, name, price, quantity,
+                type, ProductStatus.ACTIVE);
     }
 
     public Product removeStock(int count) {
@@ -36,6 +36,6 @@ public record Product(
     }
 
     private Product withUpdatedStock(int remainingQuantity, ProductStatus status) {
-        return new Product(this.id, this.name, this.price, remainingQuantity, this.productId, status);
+        return new Product(id, name, price, remainingQuantity, type, status);
     }
 }

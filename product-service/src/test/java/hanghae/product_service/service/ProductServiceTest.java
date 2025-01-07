@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.domain.product.ProductStatus;
+import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.mock.FakeImageFileRepository;
 import hanghae.product_service.mock.FakeProductRepository;
 import hanghae.product_service.mock.FakeUuidRandomHolder;
@@ -26,11 +27,10 @@ class ProductServiceTest {
 
     @BeforeEach
     void setUp() {
-        uuidRandomHolder = new FakeUuidRandomHolder("random");
         FakeImageFileRepository imageFileRepository = new FakeImageFileRepository();
         ImageFileService imageFileService = new ImageFileService(imageFileRepository, uuidRandomHolder);
         productRepository = new FakeProductRepository();
-        productService = new ProductService(productRepository, uuidRandomHolder, imageFileService);
+        productService = new ProductService(productRepository, imageFileService);
     }
 
     @Test
@@ -40,12 +40,11 @@ class ProductServiceTest {
         String name = "result";
         int price = 1000;
         int quantity = 100;
-        String productId = "create";
-        uuidRandomHolder.setValue(productId);
+        ProductType type = ProductType.BASIC;
 
         // when
-        productService.create(name,price,quantity,null);
-        Product result = productRepository.findProductById(productId).get();
+        productService.create(name,price,quantity, type, null);
+        Product result = productRepository.findProductById(1L).get();
 
         // then
         assertAll(() -> {
@@ -53,7 +52,7 @@ class ProductServiceTest {
             assertThat(result.name()).isEqualTo(name);
             assertThat(result.price()).isEqualTo(price);
             assertThat(result.quantity()).isEqualTo(quantity);
-            assertThat(result.productId()).isEqualTo(productId);
+            assertThat(result.type()).isEqualTo(type);
         });
     }
 
@@ -61,18 +60,16 @@ class ProductServiceTest {
     @DisplayName("저장한 상품을 조회할 수 있다")
     void canFindProduct() throws Exception {
         // given
-        String productId = "find";
-        uuidRandomHolder.setValue(productId);
-        productService.create("product",1000,1000,null);
+        productService.create("product",1000,1000,ProductType.BASIC,null);
 
         // when
-        ProductRespDto result = productService.getProduct(productId);
+        ProductRespDto result = productService.getProduct(1L);
 
         // then
         assertAll(() -> {
             assertThat(result).isNotNull();
             assertThat(result.name()).isEqualTo("product");
-            assertThat(result.productId()).isEqualTo(productId);
+            assertThat(result.price()).isEqualTo(1000);
         });
     }
 
@@ -83,7 +80,7 @@ class ProductServiceTest {
         String productId = "test";
 
         // then
-        assertThatThrownBy(() -> productService.getProduct(productId))
+        assertThatThrownBy(() -> productService.getProduct(2L))
                 .isInstanceOf(CustomApiException.class)
                 .hasMessage(ErrorMessage.NOT_FOUND_PRODUCT.getMessage());
     }
@@ -92,40 +89,40 @@ class ProductServiceTest {
     @DisplayName("저장되어 있는 모든 상품들을 가져올 수 있다")
     void canGetAllProducts() throws Exception {
         // given
-        productRepository.save(createProduct("name1", 100, "productId1"));
-        productRepository.save(createProduct("name2", 200, "productId2"));
+        productRepository.save(createProduct("name1", 100, ProductType.BASIC));
+        productRepository.save(createProduct("name2", 200, ProductType.BASIC));
 
         // when
         List<ProductRespDto> results = productService.getAllProducts();
 
         // then
         assertThat(results).hasSize(2)
-                .extracting(ProductRespDto::name, ProductRespDto::price, ProductRespDto::productId)
-                .containsExactlyInAnyOrder(Tuple.tuple("name1", 100, "productId1"),
-                        Tuple.tuple("name2", 200, "productId2"));
+                .extracting(ProductRespDto::name, ProductRespDto::price, ProductRespDto::type)
+                .containsExactlyInAnyOrder(Tuple.tuple("name1", 100, ProductType.BASIC),
+                        Tuple.tuple("name2", 200, ProductType.BASIC));
     }
 
     @Test
     @DisplayName("Id List를 토대로 Product를 가져올 수 있다")
     void canGetAllProductsById() throws Exception {
         // given
-        String productId1 = "productId1";
-        String productId2 = "productId2";
-        productRepository.save(createProduct("name1", 100, productId1));
-        productRepository.save(createProduct("name2", 200, productId2));
+        ProductType type = ProductType.BASIC;
+        ProductType type2 = ProductType.LIMITED;
+        productRepository.save(createProduct("name1", 100, type));
+        productRepository.save(createProduct("name2", 200, type2));
 
         // when
-        List<ProductRespDto> results = productService.getProductByIds(List.of(productId1, productId2));
+        List<ProductRespDto> results = productService.getProductByIds(List.of(1L, 2L));
 
         // then
         assertThat(results).hasSize(2)
-                .extracting(ProductRespDto::name, ProductRespDto::price, ProductRespDto::productId)
-                .containsExactlyInAnyOrder(Tuple.tuple("name1", 100, "productId1"),
-                        Tuple.tuple("name2", 200, "productId2"));
+                .extracting(ProductRespDto::name, ProductRespDto::price, ProductRespDto::type)
+                .containsExactlyInAnyOrder(Tuple.tuple("name1", 100, type),
+                        Tuple.tuple("name2", 200, type2));
 
     }
 
-    private Product createProduct(String name, int price, String productId){
-        return new Product(null, name, price, 10, productId, ProductStatus.ACTIVE);
+    private Product createProduct(String name, int price, ProductType type){
+        return new Product(null, name, price, 10, type, ProductStatus.ACTIVE);
     }
 }

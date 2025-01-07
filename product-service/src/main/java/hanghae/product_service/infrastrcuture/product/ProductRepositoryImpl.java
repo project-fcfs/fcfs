@@ -20,8 +20,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Optional<Product> findProductById(String productId) {
-        return jpaRepository.findByProductId(productId).map(ProductEntity::toModel);
+    public Optional<Product> findProductById(Long productId) {
+        return jpaRepository.findById(productId).map(ProductEntity::toModel);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAllByProductIds(List<String> ids) {
+    public List<Product> findAllByProductIds(List<Long> ids) {
         return jpaRepository.findAllByProductIds(ids).stream().map(ProductEntity::toModel).toList();
     }
 

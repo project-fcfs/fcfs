@@ -1,7 +1,6 @@
 package hanghae.product_service.service.lock;
 
-import hanghae.product_service.controller.req.OrderCreateReqDto;
-import hanghae.product_service.controller.req.OrderMessageReqDto;
+import hanghae.product_service.controller.req.StockUpdateReqDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.port.StockRepository;
 import java.util.ArrayList;
@@ -22,16 +21,12 @@ public class PessimisticLockStockService {
     }
 
     @Transactional
-    public List<Product> processOrder(List<OrderCreateReqDto> reqDtos) {
-
-        List<String> productIds = reqDtos.stream().map(OrderCreateReqDto::productId).toList();
-        List<Product> products = stockRepository.findAllByProductIdsWithPessimistic(productIds);
-
-        Map<String, Product> productsById = products.stream().collect(Collectors.toMap(Product::productId, v -> v));
+    public List<Product> processOrder(List<StockUpdateReqDto> reqDtos) {
+        Map<Long, Product> productsById = getProductsByIdMap(reqDtos);
 
         List<Product> updatedProducts = new ArrayList<>();
 
-        for (OrderCreateReqDto reqDto : reqDtos) {
+        for (StockUpdateReqDto reqDto : reqDtos) {
             Product product = productsById.get(reqDto.productId());
             Product updatedProduct = product.removeStock(reqDto.orderCount());
             updatedProducts.add(updatedProduct);
@@ -41,21 +36,25 @@ public class PessimisticLockStockService {
     }
 
     @Transactional
-    public List<Product> restoreQuantity(List<OrderMessageReqDto> reqDtos) {
-        List<String> productIds = reqDtos.stream().map(OrderMessageReqDto::productId).toList();
-        List<Product> products = stockRepository.findAllByProductIdsWithPessimistic(productIds);
-
-        Map<String, Product> productsById = products.stream().collect(Collectors.toMap(Product::productId, v -> v));
+    public List<Product> restoreQuantity(List<StockUpdateReqDto> reqDtos) {
+        Map<Long, Product> productsById = getProductsByIdMap(reqDtos);
 
         List<Product> updatedProducts = new ArrayList<>();
 
-        for (OrderMessageReqDto reqDto : reqDtos) {
+        for (StockUpdateReqDto reqDto : reqDtos) {
             Product product = productsById.get(reqDto.productId());
             Product updatedProduct = product.addStock(reqDto.orderCount());
             updatedProducts.add(updatedProduct);
         }
 
         return stockRepository.saveAll(updatedProducts);
+    }
+
+    private Map<Long, Product> getProductsByIdMap(List<StockUpdateReqDto> reqDtos) {
+        List<Long> productIds = reqDtos.stream().map(StockUpdateReqDto::productId).toList();
+        List<Product> products = stockRepository.findAllByProductIdsWithPessimistic(productIds);
+
+        return products.stream().collect(Collectors.toMap(Product::id, v -> v));
     }
 
 }

@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface StockRepository {
 
-    List<Product> findAllByProductIdsWithPessimistic(List<String> ids);
+    List<Product> findAllByProductIdsWithPessimistic(List<Long> ids);
     List<Product> saveAll(List<Product> products);
 }

@@ -1,7 +1,6 @@
 package hanghae.product_service.service.lock;
 
-import hanghae.product_service.controller.req.OrderCreateReqDto;
-import hanghae.product_service.controller.req.OrderMessageReqDto;
+import hanghae.product_service.controller.req.StockUpdateReqDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.ProductStockService;
 import java.util.List;
@@ -27,7 +26,7 @@ public class RedissonLockStockFacade {
     }
 
     @Transactional
-    public List<Product> processOrder(List<OrderCreateReqDto> reqDtos) {
+    public List<Product> processOrder(List<StockUpdateReqDto> reqDtos) {
         List<RLock> locks = reqDtos.stream()
                 .map(product -> redissonClient.getLock("lock:" + product.productId()))
                 .toList();
@@ -50,7 +49,7 @@ public class RedissonLockStockFacade {
     }
 
     @Transactional
-    public List<Product> restoreQuantity(List<OrderMessageReqDto> reqDtos) {
+    public List<Product> restoreQuantity(List<StockUpdateReqDto> reqDtos) {
         List<RLock> locks = reqDtos.stream()
                 .map(product -> redissonClient.getLock("lock:" + product.productId()))
                 .toList();

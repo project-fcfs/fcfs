@@ -4,6 +4,7 @@ import hanghae.product_service.controller.req.FileInfo;
 import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.domain.imagefile.ImageFile;
 import hanghae.product_service.domain.product.Product;
+import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.util.ErrorMessage;
 import hanghae.product_service.service.port.ProductRepository;
@@ -19,13 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final UUIDRandomHolder uuidRandomHolder;
     private final ImageFileService imageFileService;
 
-    public ProductService(ProductRepository productRepository,
-                          UUIDRandomHolder uuidRandomHolder, ImageFileService imageFileService) {
+    public ProductService(ProductRepository productRepository, ImageFileService imageFileService) {
         this.productRepository = productRepository;
-        this.uuidRandomHolder = uuidRandomHolder;
         this.imageFileService = imageFileService;
     }
 
@@ -33,8 +31,8 @@ public class ProductService {
      * 상품 생성
      */
     @Transactional
-    public ProductRespDto create(String name, int price, int quantity, FileInfo fileInfo) {
-        Product product = Product.create(name, price, quantity, uuidRandomHolder.getRandomUUID());
+    public ProductRespDto create(String name, int price, int quantity, ProductType productType, FileInfo fileInfo) {
+        Product product = Product.create(name, price, quantity, productType);
 
         Product savedProduct = productRepository.save(product);
         ImageFile imageFile = imageFileService.upload(savedProduct, fileInfo);
@@ -44,7 +42,7 @@ public class ProductService {
     /**
      * productId로 하나의 상품을 찾고 해당 상품의 썸네일과 함께 반환한다
      */
-    public ProductRespDto getProduct(String productId) {
+    public ProductRespDto getProduct(Long productId) {
         Product product = fetchProductById(productId);
         ImageFile imageFile = imageFileService.getImageFile(product.id());
         return ProductRespDto.of(product, imageFile);
@@ -53,7 +51,7 @@ public class ProductService {
     /**
      * productId로 하나의 상품을 찾고 없으면 예외를 반환한다
      */
-    private Product fetchProductById(String productId) {
+    private Product fetchProductById(Long productId) {
         return productRepository.findProductById(productId).orElseThrow(() ->
                 new CustomApiException(ErrorMessage.NOT_FOUND_PRODUCT.getMessage()));
     }
@@ -69,7 +67,7 @@ public class ProductService {
     /**
      * 여러 Product들을 ProductIds로 찾는다
      */
-    public List<ProductRespDto> getProductByIds(List<String> ids) {
+    public List<ProductRespDto> getProductByIds(List<Long> ids) {
         List<Product> products = productRepository.findAllByProductIds(ids);
         return assembleProductAndImage(products);
     }

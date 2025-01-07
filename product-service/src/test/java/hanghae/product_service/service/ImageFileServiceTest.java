@@ -7,6 +7,7 @@ import hanghae.product_service.controller.req.FileInfo;
 import hanghae.product_service.domain.imagefile.ImageFile;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.domain.product.ProductStatus;
+import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.mock.FakeImageFileRepository;
 import hanghae.product_service.mock.FakeUuidRandomHolder;
 import java.nio.charset.StandardCharsets;
@@ -75,8 +76,8 @@ class ImageFileServiceTest {
         });
     }
 
-    private Product createProduct(long id, String product){
-        return new Product(id, product, 10, 10, "random", ProductStatus.ACTIVE);
+    private Product createProduct(long id, String name){
+        return new Product(id, name, 10, 10, ProductType.BASIC, ProductStatus.ACTIVE);
     }
 
     private MockMultipartFile createFile(String originalFilename){
