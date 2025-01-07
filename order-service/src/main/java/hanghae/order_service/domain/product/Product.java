@@ -5,7 +5,7 @@ public record Product(
         int price,
         int quantity,
         String productId,
-        ProductStatus productStatus,
+        ProductStatus status,
         String imageUrl
 ) {
     public enum ProductStatus {
@@ -19,6 +19,6 @@ public record Product(
     }
 
     public Product convertCart(int quantity){
-        return new Product(name, price, quantity, productId, productStatus, imageUrl);
+        return new Product(name, price, quantity, productId, status, imageUrl);
     }
 }

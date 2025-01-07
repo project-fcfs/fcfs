@@ -16,4 +16,5 @@ public record ResponseDto<T>(
     public static <T> ResponseDto<?> fail(String message, T data, HttpStatus httpStatus) {
         return new ResponseDto<>(-1, message, data, httpStatus);
     }
+
 }

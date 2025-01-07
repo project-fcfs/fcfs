@@ -3,8 +3,11 @@ package hanghae.order_service.infrastructure.product;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.product.Product;
+import hanghae.order_service.service.common.exception.CustomApiException;
+import hanghae.order_service.service.common.util.ProductConverter;
 import hanghae.order_service.service.port.ProductClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -30,7 +33,7 @@ public interface ProductClientImpl extends ProductClient {
     @GetMapping("/products/{id}")
     @Retry(name = "retryCheckProduct", fallbackMethod = "badCheckFallbackMethod")
     @CircuitBreaker(name = "circuitCheckProduct", fallbackMethod = "badCheckFallbackMethod")
-    ResponseEntity<ResponseDto<?>> isValidProduct(@PathVariable("id") String productId);
+    ResponseDto<?> isValidProduct(@PathVariable("id") String productId);
 
     default ResponseEntity<?> badCheckFallbackMethod(String productId, Throwable t) {
         log.error("Bad Check fallback error {}, id -> {}", t.getMessage(), productId);
@@ -52,15 +55,19 @@ public interface ProductClientImpl extends ProductClient {
         List<RequestOrder> request = cartProducts.entrySet().stream()
                 .map(i -> new RequestOrder(i.getKey(), i.getValue()))
                 .toList();
-        ResponseDto<?> responseDto = removeStock(request);
-        if(responseDto.code() == -1){
-            return new ResponseDto<>(responseDto.code(), responseDto.message(), null, responseDto.httpStatus());
-        }
-        List<ProductFeignResponse> responses = new ObjectMapper().convertValue(responseDto.data(),
-                new TypeReference<List<ProductFeignResponse>>() {});
+        try {
+            ResponseDto<?> response = removeStock(request);
+            if (response.code() == -1) {
+                return new ResponseDto<>(response.code(), response.message(), null, response.httpStatus());
+            }
+            List<ProductFeignResponse> data = ProductConverter.convertProductResponse(response.data());
 
-        List<Product> products = responses.stream().map(ProductFeignResponse::toModel).toList();
-        return new ResponseDto<>(responseDto.code(), responseDto.message(), products, responseDto.httpStatus());
+            List<Product> products = data.stream().map(ProductFeignResponse::toModel).toList();
+            return new ResponseDto<>(response.code(), response.message(), products, response.httpStatus());
+        } catch (FeignException e) {
+            throw new CustomApiException(e.getMessage(), e);
+        }
+
     }
 
     default ResponseDto<?> processOrderCircuitFallbackMethod(List<RequestOrder> requestOrders, Throwable t) {
@@ -76,18 +83,23 @@ public interface ProductClientImpl extends ProductClient {
     @GetMapping("/products/cart")
     @Retry(name = "retryGetProduct", fallbackMethod = "getIdsRetryFallbackMethod")
     @CircuitBreaker(name = "circuitGetProduct", fallbackMethod = "getIdsCircuitFallbackMethod")
-    ResponseEntity<List<ProductFeignResponse>> getProductsByIds(@RequestParam("ids") List<String> productIds);
+    ResponseDto<?> getProductsByIds(@RequestParam("ids") List<String> productIds);
 
     @Override
-    default ResponseEntity<List<Product>> getProducts(List<String> productIds) {
+    default ResponseDto<List<Product>> getProducts(List<String> productIds) {
 
-        ResponseEntity<List<ProductFeignResponse>> productsResponse = getProductsByIds(productIds);
-        List<ProductFeignResponse> data = productsResponse.getBody();
+        try {
+            ResponseDto<?> response = getProductsByIds(productIds);
 
-        List<Product> products = data.stream().map(ProductFeignResponse::toModel).toList();
-        log.debug("getProducts: {}", products);
+            List<ProductFeignResponse> data = ProductConverter.convertProductResponse(response.data());
 
-        return new ResponseEntity<>(products, productsResponse.getStatusCode());
+            List<Product> products = data.stream().map(ProductFeignResponse::toModel).toList();
+
+            return new ResponseDto<>(response.code(), response.message(), products, response.httpStatus());
+        } catch (FeignException e) {
+            throw new CustomApiException(e.getMessage(), e);
+        }
+
     }
 
     default ResponseEntity<?> getIdsCircuitFallbackMethod(List<String> productIds, Throwable t) {

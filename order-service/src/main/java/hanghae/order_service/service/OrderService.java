@@ -1,6 +1,5 @@
 package hanghae.order_service.service;
 
-import feign.FeignException;
 import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.order.Delivery;
@@ -74,31 +73,25 @@ public class OrderService {
     }
 
     private Order generateOrder(String address, String userId, LocalDateTime currentDate, String orderId,
-                                  List<OrderProduct> orderProducts) {
+                                List<OrderProduct> orderProducts) {
         Delivery delivery = Delivery.create(address, currentDate);
         return Order.create(userId, orderId, orderProducts, delivery, currentDate);
     }
 
     /**
      * productId가 같으면 장바구니의 수량으로 바꾸기 orderItems는 Product-service에서 가져오기 때문에 장바구니 속 유저가 저장한 수량으로 바꿔서 해당 수량만큼 주문을 진행함
-     *
      */
     private List<OrderProduct> generateOrderProducts(Map<String, Integer> value, LocalDateTime currentDate) {
-        ResponseDto<List<Product>> responseDto;
 
-        try{
-            responseDto = productClient.processOrder(value);
-        }catch (FeignException e){
-            log.error(e.getMessage());
-            throw new CustomApiException(e.getMessage());
-        }
+        ResponseDto<List<Product>> responseDto = productClient.processOrder(value);
+
         if (responseDto.code() == OrderConstant.ORDER_FAIL) {
             throw new CustomApiException(ErrorMessage.OUT_OF_STOCK.getMessage());
         }
         return responseDto.data().stream()
                 .map(i -> {
                     Integer orderCount = value.get(i.productId());
-                    return OrderProduct.create( i.price(), orderCount, i.productId(), currentDate);
+                    return OrderProduct.create(i.price(), orderCount, i.productId(), currentDate);
                 }).toList();
     }
 

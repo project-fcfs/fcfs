@@ -1,17 +1,18 @@
 package hanghae.order_service.service;
 
+import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.util.OrderConstant;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.CartRepository;
 import hanghae.order_service.service.port.ProductClient;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,13 +32,12 @@ public class CartService {
     }
 
     /**
-     * 장바구니에 담는다
-     * Product-Service에서 올바른 상품인지 확인하고 장바구니에 담는다
+     * 장바구니에 담는다 Product-Service에서 올바른 상품인지 확인하고 장바구니에 담는다
      */
     @Transactional
     public void add(String userId, String productId, int count) {
-        ResponseEntity<?> product = productClient.isValidProduct(productId);
-        if (product.getStatusCode().is2xxSuccessful()) {
+        ResponseDto<?> response = productClient.isValidProduct(productId);
+        if (response.code() == OrderConstant.ORDER_SUCCESS) {
             Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> cartRepository.save(Cart.create(userId)));
             cartProductRepository.save(CartProduct.create(productId, count, cart));
         } else {
@@ -79,10 +79,10 @@ public class CartService {
         List<String> productIds = cartProducts.stream()
                 .map(CartProduct::productId)
                 .toList();
-        ResponseEntity<List<Product>> productsResponse = productClient.getProducts(productIds);
+        ResponseDto<List<Product>> response = productClient.getProducts(productIds);
 
-        if (productsResponse.getStatusCode().is2xxSuccessful()) {
-            List<Product> products = productsResponse.getBody();
+        if (response.code() == OrderConstant.ORDER_SUCCESS) {
+            List<Product> products = response.data();
 
             Map<String, Product> map = products.stream()
                     .collect(Collectors.toMap(Product::productId, v -> v));

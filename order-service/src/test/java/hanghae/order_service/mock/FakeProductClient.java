@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 public class FakeProductClient implements ProductClient {
 
@@ -18,12 +17,12 @@ public class FakeProductClient implements ProductClient {
     }
 
     @Override
-    public ResponseEntity<?> isValidProduct(String productId) {
+    public ResponseDto<?> isValidProduct(String productId) {
         return data.stream()
                 .filter(i -> i.productId().equals(productId))
                 .findFirst()
-                .map(product -> ResponseEntity.ok().build())
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .map(product -> ResponseDto.success(null, HttpStatus.OK))
+                .orElseGet(() -> new ResponseDto<>(-1, "fail", null, HttpStatus.BAD_REQUEST));
     }
 
     @Override
@@ -44,9 +43,9 @@ public class FakeProductClient implements ProductClient {
     }
 
     @Override
-    public ResponseEntity<List<Product>> getProducts(List<String> productIds) {
+    public ResponseDto<List<Product>> getProducts(List<String> productIds) {
         List<Product> products = data.stream().filter(i -> productIds.contains(i.productId()))
                 .toList();
-        return ResponseEntity.ok().body(products);
+        return new ResponseDto<>(1, "success", products, HttpStatus.OK);
     }
 }
