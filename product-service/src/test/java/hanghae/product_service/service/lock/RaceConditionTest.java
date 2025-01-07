@@ -108,7 +108,6 @@ class RaceConditionTest extends IntegrationInfraTestSupport {
 
     @Test
     @DisplayName("Redisson 락 동시성 테스트")
-    @Disabled
     void RedissonLockTest() throws Exception {
         // given
         long startTime = System.currentTimeMillis();

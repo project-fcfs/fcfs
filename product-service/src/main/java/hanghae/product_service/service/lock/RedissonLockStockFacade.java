@@ -11,7 +11,6 @@ import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class RedissonLockStockFacade {
@@ -25,18 +24,17 @@ public class RedissonLockStockFacade {
         this.productStockService = productStockService;
     }
 
-    @Transactional
     public List<Product> processOrder(List<StockUpdateReqDto> reqDtos) {
         List<RLock> locks = reqDtos.stream()
                 .map(product -> redissonClient.getLock("lock:" + product.productId()))
                 .toList();
         RLock[] lockArray = locks.toArray(new RLock[0]);
 
-        RedissonMultiLock multiLock = new RedissonMultiLock(lockArray);
+        RedissonMultiLock lock = new RedissonMultiLock(lockArray);
 
-        try{
-            boolean available = multiLock.tryLock(10, 5, TimeUnit.SECONDS);
-            if(!available){
+        try {
+            boolean available = lock.tryLock(10, 5, TimeUnit.SECONDS);
+            if (!available) {
                 log.info("lock 획득 실패");
                 return null;
             }
@@ -44,11 +42,10 @@ public class RedissonLockStockFacade {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
-            multiLock.unlock();
+            lock.unlock();
         }
     }
 
-    @Transactional
     public List<Product> restoreQuantity(List<StockUpdateReqDto> reqDtos) {
         List<RLock> locks = reqDtos.stream()
                 .map(product -> redissonClient.getLock("lock:" + product.productId()))
@@ -57,9 +54,9 @@ public class RedissonLockStockFacade {
 
         RedissonMultiLock multiLock = new RedissonMultiLock(lockArray);
 
-        try{
+        try {
             boolean available = multiLock.tryLock(10, 5, TimeUnit.SECONDS);
-            if(!available){
+            if (!available) {
                 log.info("lock 획득 실패");
                 return null;
             }

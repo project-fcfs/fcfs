@@ -7,4 +7,7 @@ public interface StockRepository {
 
     List<Product> findAllByProductIdsWithPessimistic(List<Long> ids);
     List<Product> saveAll(List<Product> products);
+
+    void getLock(List<String> key);
+    void releaseLock(List<String> key);
 }

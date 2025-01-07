@@ -16,4 +16,12 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from ProductEntity p where p.id in :productIds")
     List<ProductEntity> findAllByProductIdsWithPessimistic(@Param("productIds") List<Long> ids);
+
+    // 여러 키에 대해 락을 획득하는 쿼리
+    @Query(value = "SELECT get_lock(:keys, 3000)", nativeQuery = true)
+    void getLocks(List<String> keys);
+
+    // 여러 키에 대해 락을 해제하는 쿼리
+    @Query(value = "SELECT release_lock(:keys)", nativeQuery = true)
+    void releaseLocks(List<String> keys);
 }

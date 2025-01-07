@@ -25,4 +25,14 @@ public class StockRepositoryImpl implements StockRepository {
         List<ProductEntity> entities = products.stream().map(ProductEntity::fromModel).toList();
         return jpaRepository.saveAll(entities).stream().map(ProductEntity::toModel).toList();
     }
+
+    @Override
+    public void getLock(List<String> key) {
+        jpaRepository.getLocks(key);
+    }
+
+    @Override
+    public void releaseLock(List<String> key) {
+        jpaRepository.releaseLocks(key);
+    }
 }

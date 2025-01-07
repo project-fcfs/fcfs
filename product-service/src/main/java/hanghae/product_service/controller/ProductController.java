@@ -79,7 +79,7 @@ public class ProductController {
 
     @PostMapping("/order")
     public ResponseDto<?> processOrder(@RequestBody List<StockUpdateReqDto> dtos) {
-        List<Product> products = redissonLockStockFacade.processOrder(dtos);
+        List<Product> products = pessimisticLockStockService.processOrder(dtos);
         List<ProductRespDto> response = products.stream().map(i -> ProductRespDto.of(i, null)).toList();
         return ResponseDto.success(response, HttpStatus.OK);
     }

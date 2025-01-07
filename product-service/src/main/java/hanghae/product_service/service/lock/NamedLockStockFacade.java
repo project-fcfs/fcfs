@@ -1,27 +1,31 @@
 package hanghae.product_service.service.lock;
 
 import hanghae.product_service.controller.req.StockUpdateReqDto;
-import hanghae.product_service.infrastrcuture.product.NamedLockTemplate;
+import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.ProductStockService;
+import hanghae.product_service.service.port.StockRepository;
 import java.util.List;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class NamedLockStockFacade {
 
-    private final NamedLockTemplate namedLockTemplate;
+    private final StockRepository stockRepository;
     private final ProductStockService productStockService;
 
-    public NamedLockStockFacade(NamedLockTemplate namedLockTemplate, ProductStockService productStockService) {
-        this.namedLockTemplate = namedLockTemplate;
+    public NamedLockStockFacade(StockRepository stockRepository, ProductStockService productStockService) {
+        this.stockRepository = stockRepository;
         this.productStockService = productStockService;
     }
 
-    @Transactional
-    public void namedLockStock(List<StockUpdateReqDto> reqDtos) {
-
-        namedLockTemplate.executeWithLock("lock", 3, () -> productStockService.processOrder(reqDtos));
-
+    public List<Product> namedLockStock(List<StockUpdateReqDto> reqDtos) {
+        List<String> productIds = reqDtos.stream()
+                .map(i -> String.valueOf(i.productId())).toList();
+        try {
+            stockRepository.getLock(productIds);
+            return productStockService.processOrder(reqDtos);
+        } finally {
+            stockRepository.releaseLock(productIds);
+        }
     }
 }

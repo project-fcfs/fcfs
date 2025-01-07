@@ -6,7 +6,7 @@ import hanghae.product_service.domain.product.ProductStatus;
 import hanghae.product_service.domain.product.ProductType;
 
 public record ProductRespDto(
-        Long id,
+        Long productId,
         String name,
         int price,
         int quantity,
