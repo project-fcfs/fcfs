@@ -53,6 +53,8 @@ dependencies {
 	implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.14.2'
 	// https://mvnrepository.com/artifact/io.github.openfeign/feign-micrometer
 	implementation group: 'io.github.openfeign', name: 'feign-micrometer', version: '13.5'
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 dependencyManagement {
