@@ -55,14 +55,6 @@ dependencies {
 	implementation group: 'io.github.openfeign', name: 'feign-micrometer', version: '13.5'
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-	// https://mvnrepository.com/artifact/org.testcontainers/testcontainers
-	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.20.4'
-	// https://mvnrepository.com/artifact/org.testcontainers/junit-jupiter
-	testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.20.4'
-
-
-
 }
 
 dependencyManagement {
