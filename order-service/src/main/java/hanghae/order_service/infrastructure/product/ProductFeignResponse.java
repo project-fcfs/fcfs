@@ -1,9 +1,9 @@
 package hanghae.order_service.infrastructure.product;
 
-import static hanghae.order_service.domain.product.Product.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hanghae.order_service.domain.product.Product;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record ProductFeignResponse(
         Long productId,
         String name,
@@ -11,7 +11,7 @@ public record ProductFeignResponse(
         Integer quantity
 ) {
 
-    public Product toModel(){
+    public Product toModel() {
         return new Product(productId, name, price, quantity);
     }
 }
