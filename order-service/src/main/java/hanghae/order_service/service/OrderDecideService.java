@@ -55,7 +55,7 @@ public class OrderDecideService {
      */
     private Order processCompleteOrder(Order order, LocalDateTime currentDate) {
         Order completedOrder = order.completeOrder(currentDate);
-        List<String> productIds = completedOrder.orderProducts().stream().map(OrderProduct::productId).toList();
+        List<Long> productIds = completedOrder.orderProducts().stream().map(OrderProduct::productId).toList();
         String userId = order.userId();
 
         cartProductRepository.removeCartItems(productIds, userId);

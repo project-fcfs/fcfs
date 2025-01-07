@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.product.Product;
-import hanghae.order_service.domain.product.Product.ProductStatus;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeCartRepository;
 import hanghae.order_service.mock.FakeProductClient;
@@ -38,7 +37,7 @@ class CartServiceTest {
     @DisplayName("상품을 장바구니에 저장할 수 있다")
     void canAddShop() throws Exception {
         // given
-        String productId = "response";
+        Long productId = 1L;
         String userId = "user";
         int count = 1;
         cartProductClient.addData(createProduct(productId));
@@ -59,7 +58,7 @@ class CartServiceTest {
     @DisplayName("유효하지 않은 상품을 장바구니에 담으려고 할 경우 예외가 발생한다")
     void putInvalidProduct() throws Exception {
         // then
-        assertThatThrownBy(() -> cartService.add("userId", "invalidProduct", 3))
+        assertThatThrownBy(() -> cartService.add("userId", 3L, 3))
                 .isInstanceOf(CustomApiException.class)
                 .hasMessage(ErrorMessage.INVALID_PRODUCT.getMessage());
     }
@@ -72,7 +71,7 @@ class CartServiceTest {
         @DisplayName("올바른 값을 입력하면 장바구니 수량을 업데이트 할 수 있다")
         void canUpdateCartProduct() throws Exception {
             // given
-            String productId = "response";
+            Long productId = 1L;
             String userId = "user";
             int count = 5;
             cartProductRepository.save(CartProduct.create(productId, count, Cart.create(userId)));
@@ -93,7 +92,7 @@ class CartServiceTest {
         @DisplayName("장바구니 수량보다 많이 양을 빼려고 하면 예외를 반환한다")
         void outOfStockCartProduct() throws Exception {
             // given
-            String productId = "response";
+            Long productId = 1L;
             String userId = "user";
             int count = 1;
             int updateCount = -5;
@@ -114,7 +113,7 @@ class CartServiceTest {
         @DisplayName("장바구니에 있는 상품을 지울 수 있다")
         void canUpdateCartProduct() throws Exception {
             // given
-            String productId = "response";
+            Long productId = 1L;
             String userId = "user";
             int count = 1;
             cartProductRepository.save(CartProduct.create(productId, count, Cart.create(userId)));
@@ -128,8 +127,8 @@ class CartServiceTest {
         }
     }
 
-    private Product createProduct(String productId) {
-        return new Product("name", 100, 10, productId, ProductStatus.ACTIVE, null);
+    private Product createProduct(Long productId) {
+        return new Product(productId, "name", 100, 10);
     }
 
 }

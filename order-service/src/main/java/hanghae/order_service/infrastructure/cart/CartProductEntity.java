@@ -21,12 +21,12 @@ public class CartProductEntity {
     @Column(nullable = false)
     private int count;
     @Column(nullable = false, unique = true)
-    private String productId;
+    private Long productId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private CartEntity cartEntity;
 
-    public CartProductEntity(Long id, int count, String productId, CartEntity cartEntity) {
+    public CartProductEntity(Long id, int count, Long productId, CartEntity cartEntity) {
         this.id = id;
         this.count = count;
         this.productId = productId;

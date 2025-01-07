@@ -16,7 +16,7 @@ public class FakeProductRepository implements ProductRepository {
         if (product.id() == null || product.id() == 0L) {
             Product newProduct = new Product(counter.incrementAndGet(),
                     product.name(), product.price(), product.quantity(),
-                    product.type(), product.productStatus());
+                    product.type(), product.status());
             data.add(newProduct);
             return newProduct;
         } else {

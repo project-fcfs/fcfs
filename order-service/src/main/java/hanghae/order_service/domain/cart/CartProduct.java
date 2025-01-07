@@ -6,11 +6,11 @@ import hanghae.order_service.service.common.util.ErrorMessage;
 public record CartProduct(
         Long id,
         int quantity,
-        String productId,
+        Long productId,
         Cart cart
 ) {
 
-    public static CartProduct create(String productId, int count, Cart cart) {
+    public static CartProduct create(Long productId, int count, Cart cart) {
         return new CartProduct(null, count, productId, cart);
     }
 

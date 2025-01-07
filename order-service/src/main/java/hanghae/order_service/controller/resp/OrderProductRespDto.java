@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 public record OrderProductRespDto(
         int orderPrice,
         int orderCount,
-        String productId,
+        Long productId,
         LocalDateTime createdAt
 ) {
     public static OrderProductRespDto of(OrderProduct orderProduct) {

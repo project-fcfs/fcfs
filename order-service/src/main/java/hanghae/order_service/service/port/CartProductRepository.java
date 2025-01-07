@@ -7,11 +7,11 @@ import java.util.Optional;
 public interface CartProductRepository {
     void save(CartProduct cartProduct);
 
-    Optional<CartProduct> findCartProduct(String productId, String userId);
+    Optional<CartProduct> findCartProduct(Long productId, String userId);
 
     List<CartProduct> findAllByUserId(String userId);
 
-    List<CartProduct> findByUserSelectedCart(String userId, List<String> productIds);
+    List<CartProduct> findByUserSelectedCart(String userId, List<Long> productIds);
 
-    void removeCartItems(List<String> productIds, String userId);
+    void removeCartItems(List<Long> productIds, String userId);
 }

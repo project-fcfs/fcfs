@@ -17,7 +17,7 @@ public record ProductRespDto(
     public static ProductRespDto of(Product product, ImageFile imageFile) {
         return new ProductRespDto(
                 product.id(), product.name(), product.price(), product.quantity(),
-                product.type(), product.productStatus(),
+                product.type(), product.status(),
                 imageFile == null ? null : imageFile.storeFileName()
         );
     }

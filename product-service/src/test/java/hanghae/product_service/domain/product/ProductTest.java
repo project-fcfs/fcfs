@@ -38,7 +38,7 @@ class ProductTest {
         Product result = product.removeStock(orderCount);
 
         // then
-        assertThat(result.productStatus()).isEqualByComparingTo(ProductStatus.SOLD_OUT);
+        assertThat(result.status()).isEqualByComparingTo(ProductStatus.SOLD_OUT);
     }
 
     private Product createProduct(String name, int quantity) {

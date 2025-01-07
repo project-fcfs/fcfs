@@ -7,9 +7,9 @@ import java.util.Map;
 
 public interface ProductClient {
 
-    ResponseDto<?> isValidProduct(String productId);
+    Boolean isValidProduct(Long productId);
 
-    ResponseDto<List<Product>> processOrder(Map<String, Integer> cartProducts);
+    ResponseDto<List<Product>> processOrder(Map<Long, Integer> cartProducts);
 
-    ResponseDto<List<Product>> getProducts(List<String> productIds);
+    List<Product> getProducts(List<Long> productIds);
 }

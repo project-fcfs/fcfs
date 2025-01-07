@@ -9,7 +9,7 @@ public record Product(
         int price,
         int quantity,
         ProductType type,
-        ProductStatus productStatus
+        ProductStatus status
 ) {
 
     public static Product create(String name, int price, int quantity, ProductType type) {
@@ -28,7 +28,7 @@ public record Product(
 
     public Product addStock(int count) {
         int remainingQuantity = quantity + count;
-        ProductStatus status = this.productStatus;
+        ProductStatus status = this.status;
         if (quantity == 0) {
             status = ProductStatus.ACTIVE;
         }

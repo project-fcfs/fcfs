@@ -74,7 +74,7 @@ class OrderDecideServiceTest {
             // given
             String userId = "userId";
             String orderId = "orderId";
-            String productId = "productId";
+            Long productId = 1L;
             int quantity = 10;
             int orderCount = 5;
             saveCartProduct(quantity, productId, userId);
@@ -101,11 +101,11 @@ class OrderDecideServiceTest {
 
     }
 
-    private OrderProduct createOrderProduct(int orderCount, String productId) {
+    private OrderProduct createOrderProduct(int orderCount, Long productId) {
         return OrderProduct.create(100, orderCount, productId, LocalDateTime.now());
     }
 
-    private void saveCartProduct(int quantity, String productId, String userId) {
+    private void saveCartProduct(int quantity, Long productId, String userId) {
         cartProductRepository.save(new CartProduct(null, quantity, productId, Cart.create(userId)));
     }
 

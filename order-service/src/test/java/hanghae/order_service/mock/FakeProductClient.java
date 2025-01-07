@@ -17,16 +17,13 @@ public class FakeProductClient implements ProductClient {
     }
 
     @Override
-    public ResponseDto<?> isValidProduct(String productId) {
+    public Boolean isValidProduct(Long productId) {
         return data.stream()
-                .filter(i -> i.productId().equals(productId))
-                .findFirst()
-                .map(product -> ResponseDto.success(null, HttpStatus.OK))
-                .orElseGet(() -> new ResponseDto<>(-1, "fail", null, HttpStatus.BAD_REQUEST));
+                .anyMatch(i -> i.productId().equals(productId));
     }
 
     @Override
-    public ResponseDto<List<Product>> processOrder(Map<String, Integer> cartProducts) {
+    public ResponseDto<List<Product>> processOrder(Map<Long, Integer> cartProducts) {
         List<Product> products = data.stream().map(i -> {
             Integer orderCount = cartProducts.get(i.productId());
             return i.convertCart(i.quantity() - orderCount);
@@ -43,9 +40,8 @@ public class FakeProductClient implements ProductClient {
     }
 
     @Override
-    public ResponseDto<List<Product>> getProducts(List<String> productIds) {
-        List<Product> products = data.stream().filter(i -> productIds.contains(i.productId()))
+    public List<Product> getProducts(List<Long> productIds) {
+        return data.stream().filter(i -> productIds.contains(i.productId()))
                 .toList();
-        return new ResponseDto<>(1, "success", products, HttpStatus.OK);
     }
 }

@@ -6,7 +6,6 @@ import hanghae.product_service.IntegrationInfraTestSupport;
 import hanghae.product_service.controller.req.StockUpdateReqDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.domain.product.ProductType;
-import hanghae.product_service.service.common.util.ProductConst;
 import hanghae.product_service.service.port.ProductRepository;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -149,7 +148,7 @@ class RaceConditionTest extends IntegrationInfraTestSupport {
         int threadCount = 100;
         ExecutorService es = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);
-        String productId = ProductConst.PRODUCT_KEY_PREFIX + "1";
+        String productId =  env.getProperty("redis.product.prefix")+ "1";
         redisTemplate.opsForHash().put(productId, "quantity", threadCount);
         StockUpdateReqDto request = new StockUpdateReqDto(1L, 1);
 

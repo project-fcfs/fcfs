@@ -12,7 +12,6 @@ import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.domain.order.OrderStatus;
 import hanghae.order_service.domain.product.Product;
-import hanghae.order_service.domain.product.Product.ProductStatus;
 import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeLocalDateTimeHolder;
 import hanghae.order_service.mock.FakeOrderProductMessage;
@@ -54,18 +53,18 @@ class OrderServiceTest {
 
     @Nested
     @DisplayName("일반 주문 시에 상품의 재고에 따라 주문 성공, 실패가 된다")
-    class processOrder{
+    class processOrder {
         @Test
         @DisplayName("주문을 하면 장바구니에 있는 상품을 가져와서 주문을 한다")
         void createOrder() throws Exception {
             // given
-            String productId1 = "product1";
-            String productId2 = "product2";
+            Long productId1 = 1L;
+            Long productId2 = 2L;
             String userId = "userId";
             int orderCount1 = 2;
             int orderCount2 = 3;
             int quantity = 10;
-            List<String> productIds = List.of(productId1, productId2);
+            List<Long> productIds = List.of(productId1, productId2);
             List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
                     createCartProduct(2L, productId2, orderCount2));
             cartProducts.forEach(cartProductRepository::save);
@@ -84,7 +83,8 @@ class OrderServiceTest {
                 assertThat(result.delivery().address()).isEqualTo("address");
                 assertThat(result.orderProducts()).hasSize(2)
                         .extracting(OrderProduct::productId, OrderProduct::orderCount)
-                        .containsExactlyInAnyOrder(Tuple.tuple(productId1, orderCount1), Tuple.tuple(productId2, orderCount2));
+                        .containsExactlyInAnyOrder(Tuple.tuple(productId1, orderCount1),
+                                Tuple.tuple(productId2, orderCount2));
             });
         }
 
@@ -92,13 +92,13 @@ class OrderServiceTest {
         @DisplayName("주문을 했는데 재고가 없으면 예외를 반환한다")
         void processOrderOutOfStock() throws Exception {
             // given
-            String productId1 = "product1";
-            String productId2 = "product2";
+            Long productId1 = 1L;
+            Long productId2 = 2L;
             String userId = "userId";
             int orderCount1 = 2;
             int orderCount2 = 3;
             int quantity = 1;
-            List<String> productIds = List.of(productId1, productId2);
+            List<Long> productIds = List.of(productId1, productId2);
             List<CartProduct> cartProducts = List.of(createCartProduct(1L, productId1, orderCount1),
                     createCartProduct(2L, productId2, orderCount2));
             cartProducts.forEach(cartProductRepository::save);
@@ -116,7 +116,7 @@ class OrderServiceTest {
 
     @Nested
     @DisplayName("선착순 구매는 주문시간 여부에 따라 주문 성공, 실패가 된다")
-    class processFcfs{
+    class processFcfs {
 
         @Test
         @DisplayName("영업시간 내에 주문을 하게 되면 주문이 가능하다")
@@ -124,7 +124,7 @@ class OrderServiceTest {
             // given
             LocalDateTime localDateTime = LocalDateTime.of(2025, 1, 2, 9, 0, 0);
             localDateTimeHolder.setLocalDateTime(localDateTime);
-            String productId1 = "product1";
+            Long productId1 = 1L;
             String userId = "userId";
             int orderCount1 = 2;
             int quantity = 10;
@@ -132,7 +132,7 @@ class OrderServiceTest {
             productClient.addData(createProduct(productId1, quantity));
 
             // when
-            Order result = orderService.fcfsOrder(productId1, orderCount1,"address", userId);
+            Order result = orderService.fcfsOrder(productId1, orderCount1, "address", userId);
 
             // then
             assertAll(() -> {
@@ -151,7 +151,7 @@ class OrderServiceTest {
             // given
             LocalDateTime localDateTime = LocalDateTime.of(2025, 1, 2, 8, 59, 59);
             localDateTimeHolder.setLocalDateTime(localDateTime);
-            String productId1 = "product1";
+            Long productId1 = 1L;
             String userId = "userId";
             int orderCount1 = 2;
             int quantity = 10;
@@ -172,7 +172,7 @@ class OrderServiceTest {
     @DisplayName("장바구니 속 상품이 없다면 예외를 반환한다")
     void emptyCartProductError() throws Exception {
         // given
-        String productId = "product1";
+        Long productId = 3L;
 
         // then
         assertThatThrownBy(() -> orderService.order(List.of(productId), "address", "userId"))
@@ -186,7 +186,7 @@ class OrderServiceTest {
         // given
         String userId = "userId";
         String orderId = "orderId";
-        String productId = "productId";
+        Long productId = 3L;
         int quantity = 10;
         int orderCount = 5;
         OrderProduct orderProduct = createOrderProduct(orderCount, productId);
@@ -250,8 +250,8 @@ class OrderServiceTest {
         });
     }
 
-    private Product createProduct(String productId, int quantity) {
-        return new Product("name", 100, quantity, productId, ProductStatus.ACTIVE, null);
+    private Product createProduct(Long productId, int quantity) {
+        return new Product(productId, "name", 100, quantity);
     }
 
     private Order createOrder(OrderStatus orderStatus, DeliveryStatus deliveryStatus, String userId, String orderId,
@@ -264,11 +264,11 @@ class OrderServiceTest {
         return new Delivery(1L, "address", deliveryStatus, LocalDateTime.now(), LocalDateTime.now());
     }
 
-    private CartProduct createCartProduct(long id, String productId, int quantity) {
+    private CartProduct createCartProduct(long id, Long productId, int quantity) {
         return new CartProduct(id, quantity, productId, Cart.create("userId"));
     }
 
-    private OrderProduct createOrderProduct(int orderCount, String productId) {
+    private OrderProduct createOrderProduct(int orderCount, Long productId) {
         return OrderProduct.create(100, orderCount, productId, LocalDateTime.now());
     }
 }

@@ -35,7 +35,7 @@ public class FakeOrderProductMessage implements OrderProductMessage {
         });
     }
 
-    public FakeProduct getProductById(String productId) {
+    public FakeProduct getProductById(Long productId) {
         return data.stream().filter(product -> product.getProductId().equals(productId)).findFirst().get();
     }
 

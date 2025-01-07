@@ -24,7 +24,7 @@ public class OrderProductEntity {
     @Column(nullable = false)
     private int orderCount;
     @Column(nullable = false)
-    private String productId;
+    private Long productId;
     @Column(nullable = false)
     private LocalDateTime createdAt;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,7 +34,7 @@ public class OrderProductEntity {
     protected OrderProductEntity() {
     }
 
-    public OrderProductEntity(Long id, int orderPrice, int orderCount, String productId,
+    public OrderProductEntity(Long id, int orderPrice, int orderCount, Long productId,
                               LocalDateTime createdAt, OrderEntity order) {
         this.id = id;
         this.orderPrice = orderPrice;

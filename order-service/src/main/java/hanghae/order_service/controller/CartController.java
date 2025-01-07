@@ -39,7 +39,7 @@ public class CartController {
     @DeleteMapping
     public ResponseEntity<?> deleteCartProduct(@RequestHeader("userId") String userId,
                                                @RequestBody List<CartDeleteReqDto> reqDto) {
-        List<String> productIds = reqDto.stream().map(CartDeleteReqDto::productId).toList();
+        List<Long> productIds = reqDto.stream().map(CartDeleteReqDto::productId).toList();
         cartService.deleteProduct(userId, productIds);
         return ResponseEntity.ok().build();
     }

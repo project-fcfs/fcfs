@@ -15,7 +15,7 @@ public interface CartProductJpaRepository extends JpaRepository<CartProductEntit
             and cp.productId in :productIds
             """)
     List<CartProductEntity> findAllCartProduct(@Param("userId") String userId,
-                                               @Param("productIds") List<String> productIds);
+                                               @Param("productIds") List<Long> productIds);
 
     @Query("""
             select cp from CartProductEntity cp
@@ -23,7 +23,7 @@ public interface CartProductJpaRepository extends JpaRepository<CartProductEntit
             where c.userId = :userId
             and cp.productId = :productId
             """)
-    Optional<CartProductEntity> findProductByProductAndUser(@Param("productId") String productId,
+    Optional<CartProductEntity> findProductByProductAndUser(@Param("productId") Long productId,
                                                             @Param("userId") String userId);
 
     @Query("""
@@ -39,5 +39,5 @@ public interface CartProductJpaRepository extends JpaRepository<CartProductEntit
             where cp.cartEntity.userId = :userId
             and cp.productId in :productIds
             """)
-    void deleteAllOrderProducts(@Param("productIds") List<String> productIds, @Param("userId") String userId);
+    void deleteAllOrderProducts(@Param("productIds") List<Long> productIds, @Param("userId") String userId);
 }

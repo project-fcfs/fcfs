@@ -5,16 +5,16 @@ public class FakeProduct {
     private String name;
     private int price;
     private int quantity;
-    private String productId;
+    private Long productId;
 
-    public FakeProduct(String name, int price, int quantity, String productId) {
+    public FakeProduct(String name, int price, int quantity, Long productId) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.productId = productId;
     }
 
-    public static FakeProduct create(String name, int price, int quantity, String productId) {
+    public static FakeProduct create(String name, int price, int quantity, Long productId) {
         return new FakeProduct(name, price, quantity, productId);
     }
 
@@ -42,7 +42,7 @@ public class FakeProduct {
         return quantity;
     }
 
-    public String getProductId() {
+    public Long getProductId() {
         return productId;
     }
 }

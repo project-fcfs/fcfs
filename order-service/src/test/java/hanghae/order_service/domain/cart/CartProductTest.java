@@ -14,7 +14,7 @@ class CartProductTest {
     void cartProductQuantityUnder0Error() throws Exception {
         // given
         int quantity = 10;
-        CartProduct cartProduct = new CartProduct(1L, quantity, "productId", Cart.create("userId"));
+        CartProduct cartProduct = new CartProduct(1L, quantity, 1L, Cart.create("userId"));
         int orderCount = -10;
 
         // then

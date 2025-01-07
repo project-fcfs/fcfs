@@ -1,12 +1,11 @@
 package hanghae.order_service.infrastructure.product;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.common.exception.CustomApiException;
+import hanghae.order_service.service.common.util.OrderConstant;
 import hanghae.order_service.service.common.util.ProductConverter;
 import hanghae.order_service.service.port.ProductClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -29,19 +28,29 @@ public interface ProductClientImpl extends ProductClient {
 
     Logger log = LoggerFactory.getLogger(ProductClientImpl.class);
 
-    @Override
     @GetMapping("/products/{id}")
     @Retry(name = "retryCheckProduct", fallbackMethod = "badCheckFallbackMethod")
     @CircuitBreaker(name = "circuitCheckProduct", fallbackMethod = "badCheckFallbackMethod")
-    ResponseDto<?> isValidProduct(@PathVariable("id") String productId);
+    ResponseDto<?> checkProduct(@PathVariable("id") Long productId);
 
-    default ResponseEntity<?> badCheckFallbackMethod(String productId, Throwable t) {
+    @Override
+    default Boolean isValidProduct(Long productId) {
+        try {
+            ResponseDto<?> response = checkProduct(productId);
+            return response.code() == OrderConstant.ORDER_SUCCESS;
+        } catch (FeignException e) {
+            throw new CustomApiException(e.getMessage(), e);
+        }
+
+    }
+
+    default ResponseEntity<?> badCheckFallbackMethod(Long productId, Throwable t) {
         log.error("Bad Check fallback error {}, id -> {}", t.getMessage(), productId);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    default ResponseEntity<?> badGetFallbackMethod(List<String> productIds, Throwable t) {
-        log.error("Bad Get fallback method error {} ids -> {}", t.getMessage(), productIds);
+    default ResponseEntity<?> badGetFallbackMethod(Long productId, Throwable t) {
+        log.error("Bad Get fallback method error {} ids -> {}", t.getMessage(), productId);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
@@ -51,7 +60,7 @@ public interface ProductClientImpl extends ProductClient {
     ResponseDto<?> removeStock(@RequestBody List<RequestOrder> requestOrders);
 
     @Override
-    default ResponseDto<List<Product>> processOrder(Map<String, Integer> cartProducts) {
+    default ResponseDto<List<Product>> processOrder(Map<Long, Integer> cartProducts) {
         List<RequestOrder> request = cartProducts.entrySet().stream()
                 .map(i -> new RequestOrder(i.getKey(), i.getValue()))
                 .toList();
@@ -83,38 +92,36 @@ public interface ProductClientImpl extends ProductClient {
     @GetMapping("/products/cart")
     @Retry(name = "retryGetProduct", fallbackMethod = "getIdsRetryFallbackMethod")
     @CircuitBreaker(name = "circuitGetProduct", fallbackMethod = "getIdsCircuitFallbackMethod")
-    ResponseDto<?> getProductsByIds(@RequestParam("ids") List<String> productIds);
+    ResponseDto<?> getProductsByIds(@RequestParam("ids") List<Long> productIds);
 
     @Override
-    default ResponseDto<List<Product>> getProducts(List<String> productIds) {
+    default List<Product> getProducts(List<Long> productIds) {
 
         try {
             ResponseDto<?> response = getProductsByIds(productIds);
 
             List<ProductFeignResponse> data = ProductConverter.convertProductResponse(response.data());
 
-            List<Product> products = data.stream().map(ProductFeignResponse::toModel).toList();
-
-            return new ResponseDto<>(response.code(), response.message(), products, response.httpStatus());
+            return data.stream().map(ProductFeignResponse::toModel).toList();
         } catch (FeignException e) {
             throw new CustomApiException(e.getMessage(), e);
         }
 
     }
 
-    default ResponseEntity<?> getIdsCircuitFallbackMethod(List<String> productIds, Throwable t) {
+    default ResponseEntity<?> getIdsCircuitFallbackMethod(List<Long> productIds, Throwable t) {
         log.error("get Ids circuit fallback error {}, request -> {}", t.getMessage(), productIds);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    default ResponseEntity<?> getIdsRetryFallbackMethod(List<String> productIds, Throwable t) {
+    default ResponseEntity<?> getIdsRetryFallbackMethod(List<Long> productIds, Throwable t) {
         log.error("get Ids retry fallback method error {} request -> {}", t.getMessage(), productIds);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 
     record RequestOrder(
-            String productId,
+            Long productId,
             Integer orderCount
     ) {
     }

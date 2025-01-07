@@ -1,24 +1,13 @@
 package hanghae.order_service.domain.product;
 
 public record Product(
+        Long productId,
         String name,
         int price,
-        int quantity,
-        String productId,
-        ProductStatus status,
-        String imageUrl
+        int quantity
 ) {
-    public enum ProductStatus {
-        ACTIVE("재고 있음"), SOLD_OUT("품절"), INACTIVE("비활성화");
-
-        private final String description;
-
-        ProductStatus(String description) {
-            this.description = description;
-        }
-    }
 
     public Product convertCart(int quantity){
-        return new Product(name, price, quantity, productId, status, imageUrl);
+        return new Product(productId,name, price, quantity);
     }
 }

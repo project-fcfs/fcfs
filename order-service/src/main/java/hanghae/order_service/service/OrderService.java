@@ -54,11 +54,11 @@ public class OrderService {
      * 진행되거나 예외가 발생한다
      */
     @Transactional
-    public Order order(List<String> productIds, String address, String userId) {
+    public Order order(List<Long> productIds, String address, String userId) {
         String orderId = uuidRandomHolder.getRandomUuid();
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
 
-        Map<String, Integer> cartProducts = cartProductRepository.findByUserSelectedCart(userId, productIds)
+        Map<Long, Integer> cartProducts = cartProductRepository.findByUserSelectedCart(userId, productIds)
                 .stream().collect(Collectors.toMap(CartProduct::productId, CartProduct::quantity));
 
         if (cartProducts.isEmpty()) {
@@ -81,7 +81,7 @@ public class OrderService {
     /**
      * productId가 같으면 장바구니의 수량으로 바꾸기 orderItems는 Product-service에서 가져오기 때문에 장바구니 속 유저가 저장한 수량으로 바꿔서 해당 수량만큼 주문을 진행함
      */
-    private List<OrderProduct> generateOrderProducts(Map<String, Integer> value, LocalDateTime currentDate) {
+    private List<OrderProduct> generateOrderProducts(Map<Long, Integer> value, LocalDateTime currentDate) {
 
         ResponseDto<List<Product>> responseDto = productClient.processOrder(value);
 
@@ -99,7 +99,7 @@ public class OrderService {
      * 선착순 구매 선착순 구매는 오픈시간이 있고, 해당 오픈시간이 되지 않으면 구매할 수 없다
      */
     @Transactional
-    public Order fcfsOrder(String productId, int orderCount, String address, String userId) {
+    public Order fcfsOrder(Long productId, int orderCount, String address, String userId) {
         LocalDateTime currentDate = localDateTimeHolder.getCurrentDate();
         String orderId = uuidRandomHolder.getRandomUuid();
         LocalTime currentTime = currentDate.toLocalTime();
@@ -107,7 +107,7 @@ public class OrderService {
         if (currentTime.isBefore(OrderConstant.OPEN_TIME)) {
             throw new CustomApiException(ErrorMessage.NOT_OPEN_TIME.getMessage());
         }
-        Map<String, Integer> orders = new HashMap<>();
+        Map<Long, Integer> orders = new HashMap<>();
         orders.put(productId, orderCount);
         List<OrderProduct> orderProducts = generateOrderProducts(orders, currentDate);
 

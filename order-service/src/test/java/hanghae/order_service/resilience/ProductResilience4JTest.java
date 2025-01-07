@@ -25,7 +25,7 @@ public class ProductResilience4JTest extends IntegrationResilienceTestSupport {
     void getProductCircuitBreakerOpen() throws Exception {
         // given
         String userId = "userId";
-        String productId = "productId";
+        Long productId = 1L;
         int count = 10;
         CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("circuitCheckProduct");
         circuitBreaker.transitionToOpenState();

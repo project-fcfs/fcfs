@@ -81,7 +81,7 @@ class OrderSchedulerTest {
     @DisplayName("반품 신청 후 하루가 지나면 반품이 되고 재고에 반영이 된다")
     void canRefundAndStock() throws Exception {
         // given
-        String productId = "productId";
+        Long productId = 1L;
         int quantity = 15;
         int orderCount = 12;
         orderProductMessage.addProduct(FakeProduct.create("name", 100, quantity, productId));
@@ -109,7 +109,7 @@ class OrderSchedulerTest {
         return deliveryRepository.save(delivery);
     }
 
-    private void saveOrder(LocalDateTime updatedAt, OrderStatus orderStatus, int orderCount, String productId) {
+    private void saveOrder(LocalDateTime updatedAt, OrderStatus orderStatus, int orderCount, Long productId) {
         OrderProduct orderProduct = createOrderProduct(orderCount, productId);
         Delivery delivery = saveDelivery(LocalDateTime.now(), DeliveryStatus.CANCELED);
         Order order = new Order(null, orderStatus, "userId", "orderId", List.of(orderProduct),
@@ -117,7 +117,7 @@ class OrderSchedulerTest {
         orderRepository.save(order);
     }
 
-    private OrderProduct createOrderProduct(int orderCount, String productId) {
+    private OrderProduct createOrderProduct(int orderCount, Long productId) {
         return new OrderProduct(1L, 1000, orderCount, productId,
                 LocalDateTime.now(), null);
     }

@@ -35,26 +35,26 @@ public class ProductEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ProductStatus productStatus;
+    private ProductStatus status;
 
     protected ProductEntity() {
     }
 
-    public ProductEntity(Long id, String name, int price, int quantity, ProductType type, ProductStatus productStatus) {
+    public ProductEntity(Long id, String name, int price, int quantity, ProductType type, ProductStatus status) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.type = type;
-        this.productStatus = productStatus;
+        this.status = status;
     }
 
     public static ProductEntity fromModel(Product product) {
         return new ProductEntity(product.id(), product.name(), product.price(),
-                product.quantity(), product.type(), product.productStatus());
+                product.quantity(), product.type(), product.status());
     }
 
     public Product toModel() {
-        return new Product(id, name, price, quantity, type, productStatus);
+        return new Product(id, name, price, quantity, type, status);
     }
 }

@@ -25,7 +25,7 @@ public class FakeCartProductRepository implements CartProductRepository {
     }
 
     @Override
-    public Optional<CartProduct> findCartProduct(String productId, String userId) {
+    public Optional<CartProduct> findCartProduct(Long productId, String userId) {
         return data.stream().filter(i -> i.productId().equals(productId))
                 .filter(i -> i.cart().userId().equals(userId)).findFirst();
     }
@@ -36,14 +36,14 @@ public class FakeCartProductRepository implements CartProductRepository {
     }
 
     @Override
-    public List<CartProduct> findByUserSelectedCart(String userId, List<String> productIds) {
+    public List<CartProduct> findByUserSelectedCart(String userId, List<Long> productIds) {
         return data.stream().filter(i -> i.cart().userId().equals(userId))
                 .filter(i -> productIds.contains(i.productId()))
                 .toList();
     }
 
     @Override
-    public void removeCartItems(List<String> productIds, String userId) {
+    public void removeCartItems(List<Long> productIds, String userId) {
         data.removeIf(i ->
                 i.cart().userId().equals(userId) &&
                         productIds.contains(i.productId())
