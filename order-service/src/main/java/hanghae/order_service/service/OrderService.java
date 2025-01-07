@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class OrderService {
 
-    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     private final OrderRepository orderRepository;
     private final CartProductRepository cartProductRepository;
     private final LocalDateTimeHolder localDateTimeHolder;
@@ -88,11 +85,14 @@ public class OrderService {
         if (responseDto.code() == OrderConstant.ORDER_FAIL) {
             throw new CustomApiException(ErrorMessage.OUT_OF_STOCK.getMessage());
         }
-        return responseDto.data().stream()
+        List<OrderProduct> orderProducts = responseDto.data().stream()
                 .map(i -> {
                     Integer orderCount = value.get(i.productId());
                     return OrderProduct.create(i.price(), orderCount, i.productId(), currentDate);
                 }).toList();
+        // todo 레디스에서 재고감소 시에는 DB에도 재고감소 이벤트를 발송해야한다 안쓰면 삭제
+        orderProductMessage.removeStock(orderProducts);
+        return orderProducts;
     }
 
     /**
@@ -110,8 +110,6 @@ public class OrderService {
         Map<Long, Integer> orders = new HashMap<>();
         orders.put(productId, orderCount);
         List<OrderProduct> orderProducts = generateOrderProducts(orders, currentDate);
-        // todo 레디스에서 재고감소 시에는 DB에도 재고감소 이벤트를 발송해야한다 안쓰면 삭제
-        orderProductMessage.removeStock(orderProducts);
 
         Order order = generateOrder(address, userId, currentDate, orderId, orderProducts);
         return orderRepository.save(order);
