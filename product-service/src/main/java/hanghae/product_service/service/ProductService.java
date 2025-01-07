@@ -7,6 +7,7 @@ import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.util.ErrorMessage;
+import hanghae.product_service.service.port.ProductCacheRepository;
 import hanghae.product_service.service.port.ProductRepository;
 import hanghae.product_service.service.port.UUIDRandomHolder;
 import java.util.List;
@@ -20,10 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductCacheRepository productCacheRepository;
     private final ImageFileService imageFileService;
 
-    public ProductService(ProductRepository productRepository, ImageFileService imageFileService) {
+    public ProductService(ProductRepository productRepository, ProductCacheRepository productCacheRepository, ImageFileService imageFileService) {
         this.productRepository = productRepository;
+        this.productCacheRepository = productCacheRepository;
         this.imageFileService = imageFileService;
     }
 
@@ -35,6 +38,7 @@ public class ProductService {
         Product product = Product.create(name, price, quantity, productType);
 
         Product savedProduct = productRepository.save(product);
+        productCacheRepository.save(savedProduct);
         ImageFile imageFile = imageFileService.upload(savedProduct, fileInfo);
         return ProductRespDto.of(savedProduct, imageFile);
     }

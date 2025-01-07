@@ -24,19 +24,18 @@ public class LuaStockService {
         this.productKeyPrefix = productKeyPrefix;
     }
 
-
+    @Transactional
     public List<Product> processOrder(List<StockUpdateReqDto> reqDtos) {
-
         return pessimisticLockStockService.processOrder(reqDtos);
     }
 
-
+    @Transactional
     public List<Product> restoreQuantity(List<StockUpdateReqDto> reqDtos) {
         List<String> productIds = reqDtos.stream().map(i -> productKeyPrefix + i.productId()).toList();
         List<String> orderCounts = reqDtos.stream().map(i -> String.valueOf(i.orderCount())).toList();
 
         productCacheRepository.restoreStock(productIds, orderCounts);
-        return pessimisticLockStockService.processOrder(reqDtos);
+        return pessimisticLockStockService.restoreQuantity(reqDtos);
     }
 
 }

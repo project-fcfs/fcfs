@@ -9,6 +9,7 @@ import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.domain.product.ProductStatus;
 import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.mock.FakeImageFileRepository;
+import hanghae.product_service.mock.FakeProductCacheRepository;
 import hanghae.product_service.mock.FakeProductRepository;
 import hanghae.product_service.mock.FakeUuidRandomHolder;
 import hanghae.product_service.service.common.exception.CustomApiException;
@@ -24,13 +25,15 @@ class ProductServiceTest {
     private ProductService productService;
     private FakeUuidRandomHolder uuidRandomHolder;
     private FakeProductRepository productRepository;
+    private FakeProductCacheRepository productCacheRepository;
 
     @BeforeEach
     void setUp() {
+        productCacheRepository = new FakeProductCacheRepository();
         FakeImageFileRepository imageFileRepository = new FakeImageFileRepository();
         ImageFileService imageFileService = new ImageFileService(imageFileRepository, uuidRandomHolder);
         productRepository = new FakeProductRepository();
-        productService = new ProductService(productRepository, imageFileService);
+        productService = new ProductService(productRepository, productCacheRepository, imageFileService);
     }
 
     @Test
