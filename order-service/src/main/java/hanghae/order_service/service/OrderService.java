@@ -110,6 +110,8 @@ public class OrderService {
         Map<Long, Integer> orders = new HashMap<>();
         orders.put(productId, orderCount);
         List<OrderProduct> orderProducts = generateOrderProducts(orders, currentDate);
+        // todo 레디스에서 재고감소 시에는 DB에도 재고감소 이벤트를 발송해야한다 안쓰면 삭제
+        orderProductMessage.removeStock(orderProducts);
 
         Order order = generateOrder(address, userId, currentDate, orderId, orderProducts);
         return orderRepository.save(order);

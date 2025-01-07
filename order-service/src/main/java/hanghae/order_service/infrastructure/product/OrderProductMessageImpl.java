@@ -30,9 +30,9 @@ public class OrderProductMessageImpl implements OrderProductMessage {
     }
 
     @Override
-    public void removeStock(List<OrderProduct> orderProducts, String orderId) {
+    public void removeStock(List<OrderProduct> orderProducts) {
         List<OrderMessage> orderMessages = orderProducts.stream()
-                .map(i -> new OrderMessage(i.productId(), i.orderCount(), orderId)).toList();
+                .map(i -> new OrderMessage(i.productId(), i.orderCount())).toList();
         String message = convertOrderMessage(orderMessages);
         kafkaTemplate.send(removeTopic, message);
     }
@@ -40,7 +40,7 @@ public class OrderProductMessageImpl implements OrderProductMessage {
     @Override
     public void restoreStock(List<OrderProduct> orderProducts) {
         List<OrderMessage> orderMessages = orderProducts.stream()
-                .map(i -> new OrderMessage(i.productId(), i.orderCount(), null)).toList();
+                .map(i -> new OrderMessage(i.productId(), i.orderCount())).toList();
         String message = convertOrderMessage(orderMessages);
         kafkaTemplate.send(restoreTopic, message);
     }

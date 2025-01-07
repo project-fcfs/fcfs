@@ -14,7 +14,7 @@ public class FakeOrderProductMessage implements OrderProductMessage {
     }
 
     @Override
-    public void removeStock(List<OrderProduct> orderProducts, String orderId) {
+    public void removeStock(List<OrderProduct> orderProducts) {
         data.forEach(product -> {
             orderProducts.forEach(orderProduct -> {
                 if (product.getProductId().equals(orderProduct.productId())) {

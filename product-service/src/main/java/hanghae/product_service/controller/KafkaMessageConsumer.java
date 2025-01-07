@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.product_service.controller.req.StockUpdateReqDto;
 import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.util.ErrorMessage;
+import hanghae.product_service.service.lock.LuaStockService;
 import hanghae.product_service.service.lock.PessimisticLockStockService;
 import java.util.List;
 import org.slf4j.Logger;
@@ -18,11 +19,14 @@ public class KafkaMessageConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaMessageConsumer.class);
     private final PessimisticLockStockService pessimisticLockStockService;
+    private final LuaStockService luaStockService;
     private final ObjectMapper mapper;
 
     public KafkaMessageConsumer(PessimisticLockStockService pessimisticLockStockService,
+                                LuaStockService luaStockService,
                                 ObjectMapper mapper) {
         this.pessimisticLockStockService = pessimisticLockStockService;
+        this.luaStockService = luaStockService;
         this.mapper = mapper;
     }
 
@@ -30,14 +34,14 @@ public class KafkaMessageConsumer {
     public void productOrderRestore(String message) {
         log.info("fcfs_order_restore {}", message);
         List<StockUpdateReqDto> orderMessages = convertToRequest(message);
-        pessimisticLockStockService.restoreQuantity(orderMessages);
+        luaStockService.restoreQuantity(orderMessages);
     }
 
     @KafkaListener(topics = "fcfs_order_remove", groupId = "product-group")
     public void productOrderProcess(String message) {
         log.info("fcfs_order_remove {}", message);
         List<StockUpdateReqDto> orderMessages = convertToRequest(message);
-        pessimisticLockStockService.processOrder(orderMessages);
+        luaStockService.processOrder(orderMessages);
     }
 
     private List<StockUpdateReqDto> convertToRequest(String value) {

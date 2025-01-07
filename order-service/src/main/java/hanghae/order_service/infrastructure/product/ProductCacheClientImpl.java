@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.common.util.OrderConstant;
+import hanghae.order_service.service.port.ProductClient;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
@@ -20,7 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductCacheClientImpl {
+@Primary
+public class ProductCacheClientImpl implements ProductClient {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisScript<Boolean> removeStockScript;
@@ -37,12 +40,13 @@ public class ProductCacheClientImpl {
         this.productKeyPrefix = productKeyPrefix;
     }
 
-
+    @Override
     public Boolean isValidProduct(Long productId) {
         String key = productKeyPrefix + productId;
         return redisTemplate.hasKey(key);
     }
 
+    @Override
     public ResponseDto<List<Product>> processOrder(Map<Long, Integer> orderProducts) {
         List<String> productIds = new LinkedList<>();
         List<String> orderCounts = new LinkedList<>();
@@ -61,6 +65,7 @@ public class ProductCacheClientImpl {
         return new ResponseDto<>(OrderConstant.ORDER_SUCCESS, "success", products, HttpStatus.OK);
     }
 
+    @Override
     public List<Product> getProducts(List<Long> productIds) {
         List<Product> products = new ArrayList<>();
         List<Object> pipelineResults = redisTemplate.executePipelined(new RedisCallback<Object>() {

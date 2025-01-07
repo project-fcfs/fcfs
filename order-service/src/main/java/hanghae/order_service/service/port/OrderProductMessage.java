@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface OrderProductMessage {
 
-    void removeStock(List<OrderProduct> orderProducts, String orderId);
+    void removeStock(List<OrderProduct> orderProducts);
 
     void restoreStock(List<OrderProduct> orderProducts);
 }
