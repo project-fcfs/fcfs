@@ -29,8 +29,14 @@ public class CustomExceptionHandler {
                 .stream()
                 .map(i -> i.getField() + ": " + i.getDefaultMessage())
                 .toList();
-
+        log.info(errors.toString());
         return ResponseDto.fail(INVALID_DATA_BIDING, errors,
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseDto<?> handleException(Exception e) {
+        log.error(e.getMessage());
+        return ResponseDto.fail(e.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

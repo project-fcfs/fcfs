@@ -26,7 +26,7 @@ public class KafkaMessageConsumer {
 
     @KafkaListener(topics = "fcfs-order", groupId = "order-group")
     public void orderConfirm(String message) {
-        log.info(message);
+        log.debug(message);
         OrderDecideReqDto response = convertToConfirm(message);
         orderDecideService.decideOrder(response.code, response.orderId());
     }
