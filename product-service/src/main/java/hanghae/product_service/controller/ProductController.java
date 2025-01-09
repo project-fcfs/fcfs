@@ -8,6 +8,7 @@ import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.controller.resp.ResponseDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.ProductService;
+import hanghae.product_service.service.lock.NamedLockStockFacade;
 import hanghae.product_service.service.lock.PessimisticLockStockService;
 import hanghae.product_service.service.lock.RedissonLockStockFacade;
 import java.io.IOException;
@@ -31,13 +32,15 @@ public class ProductController {
     private final ProductService productService;
     private final PessimisticLockStockService pessimisticLockStockService;
     private final RedissonLockStockFacade redissonLockStockFacade;
+    private final NamedLockStockFacade namedLockStockFacade;
 
     public ProductController(ProductService productService,
                              PessimisticLockStockService pessimisticLockStockService,
-                             RedissonLockStockFacade redissonLockStockFacade) {
+                             RedissonLockStockFacade redissonLockStockFacade, NamedLockStockFacade namedLockStockFacade) {
         this.productService = productService;
         this.pessimisticLockStockService = pessimisticLockStockService;
         this.redissonLockStockFacade = redissonLockStockFacade;
+        this.namedLockStockFacade = namedLockStockFacade;
     }
 
     @PostMapping("/create")
@@ -79,7 +82,7 @@ public class ProductController {
 
     @PostMapping("/order")
     public ResponseDto<?> processOrder(@RequestBody List<StockUpdateReqDto> dtos) {
-        List<Product> products = pessimisticLockStockService.processOrder(dtos);
+        List<Product> products = namedLockStockFacade.processOrder(dtos);
         List<ProductRespDto> response = products.stream().map(i -> ProductRespDto.of(i, null)).toList();
         return ResponseDto.success(response, HttpStatus.OK);
     }

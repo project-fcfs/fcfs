@@ -89,7 +89,7 @@ class RaceConditionTest extends IntegrationInfraTestSupport {
         for (int i = 0; i < threadCount; i++) {
             es.submit(() -> {
                 try {
-                    namedLockStockFacade.namedLockStock(List.of(request));
+                    namedLockStockFacade.processOrder(List.of(request));
                 } finally {
                     latch.countDown();
                 }

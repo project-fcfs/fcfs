@@ -18,7 +18,18 @@ public class NamedLockStockFacade {
         this.productStockService = productStockService;
     }
 
-    public List<Product> namedLockStock(List<StockUpdateReqDto> reqDtos) {
+    public List<Product> processOrder(List<StockUpdateReqDto> reqDtos) {
+        List<String> productIds = reqDtos.stream()
+                .map(i -> String.valueOf(i.productId())).toList();
+        try {
+            stockRepository.getLock(productIds);
+            return productStockService.processOrder(reqDtos);
+        } finally {
+            stockRepository.releaseLock(productIds);
+        }
+    }
+
+    public List<Product> restoreQuantity(List<StockUpdateReqDto> reqDtos) {
         List<String> productIds = reqDtos.stream()
                 .map(i -> String.valueOf(i.productId())).toList();
         try {
