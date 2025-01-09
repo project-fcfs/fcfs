@@ -11,6 +11,7 @@ import hanghae.user_service.service.UserService;
 import hanghae.user_service.service.security.model.LoginUser;
 import hanghae.user_service.service.security.model.PrincipalDetails;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,5 +50,11 @@ public class UserController {
         LoginUser loginUser = principal.getLoginUser();
         User user = userService.getUser(loginUser.id());
         return new ResponseEntity<>(UserInfoRespDto.of(user), HttpStatus.OK);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<?> getUsers(){
+        List<User> users = userService.getUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

@@ -6,15 +6,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class DummyInit {
 
-    private final InitService initService;
+    private final InitService0 initService0;
 
-    public DummyInit(InitService initService) {
-        this.initService = initService;
+    public DummyInit(InitService0 initService0) {
+        this.initService0 = initService0;
     }
 
-    @PostConstruct
+
+//    @PostConstruct
     public void testInit() {
-        initService.dbInit();
+        initService0.dbInit1();
     }
 
 }

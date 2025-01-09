@@ -2,6 +2,7 @@ package hanghae.user_service.infrastructure.user;
 
 import hanghae.user_service.domain.user.User;
 import hanghae.user_service.service.port.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -33,5 +34,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findById(Long id) {
         return jpaRepository.findById(id).map(UserEntity::toModel);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return jpaRepository.findAll().stream().map(UserEntity::toModel).toList();
     }
 }

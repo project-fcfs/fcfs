@@ -7,6 +7,7 @@ import hanghae.user_service.service.port.LocalDateTimeHolder;
 import hanghae.user_service.service.port.PersonalDataEncryptor;
 import hanghae.user_service.service.port.UUIDRandomHolder;
 import hanghae.user_service.service.port.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,5 +63,10 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomApiException(ErrorMessage.NOT_FOUND_USER.getMessage()));
         return decodeUserInfo(user);
+    }
+
+    public List<User> getUsers(){
+        return userRepository.findAll().stream()
+                .map(this::decodeUserInfo).toList();
     }
 }
