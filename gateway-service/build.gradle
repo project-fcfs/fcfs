@@ -42,7 +42,9 @@ dependencies {
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	// https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus
-	implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.14.2'
+	implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.14.2'\
+	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webflux-ui
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webflux-ui', version: '2.8.2'
 }
 
 dependencyManagement {
