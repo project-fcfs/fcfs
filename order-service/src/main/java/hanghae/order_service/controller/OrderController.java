@@ -1,5 +1,6 @@
 package hanghae.order_service.controller;
 
+import hanghae.order_service.controller.docs.OrderControllerDocs;
 import hanghae.order_service.controller.req.OrderCreateReqDto;
 import hanghae.order_service.controller.req.OrderFcfsCreateReqDto;
 import hanghae.order_service.controller.resp.OrderRespDto;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/orders")
 @RestController
-public class OrderController {
+public class OrderController implements OrderControllerDocs {
 
     private final OrderService orderService;
 

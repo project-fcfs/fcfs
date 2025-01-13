@@ -7,13 +7,18 @@ import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.util.ErrorMessage;
 import hanghae.order_service.service.port.OrderProductMessage;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrderProductMessageImpl implements OrderProductMessage {
 
+    private static final Logger log = LoggerFactory.getLogger(OrderProductMessageImpl.class);
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final String removeTopic;
     private final String restoreTopic;
@@ -42,7 +47,14 @@ public class OrderProductMessageImpl implements OrderProductMessage {
         List<OrderMessage> orderMessages = orderProducts.stream()
                 .map(i -> new OrderMessage(i.productId(), i.orderCount())).toList();
         String message = convertOrderMessage(orderMessages);
-        kafkaTemplate.send(restoreTopic, message);
+        CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send(restoreTopic, message);
+        send.thenAccept(result -> {
+            log.info("Message sent successfully to topic: {} at offset {}", result.getRecordMetadata().topic(),
+                    result.getRecordMetadata().offset());
+        }).exceptionally(ex -> {
+            log.error("Failed to send message to topic {}, message {}", restoreTopic, message);
+            throw new CustomApiException("Failed to send message to topic " + restoreTopic, ex);
+        });
     }
 
     private String convertOrderMessage(List<OrderMessage> orderMessages) {

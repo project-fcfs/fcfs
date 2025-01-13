@@ -1,5 +1,6 @@
 package hanghae.order_service.controller;
 
+import hanghae.order_service.controller.docs.CartControllerDocs;
 import hanghae.order_service.controller.req.CartCreateReqDto;
 import hanghae.order_service.controller.req.CartDeleteReqDto;
 import hanghae.order_service.controller.req.CartUpdateReqDto;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/carts")
-public class CartController {
+public class CartController implements CartControllerDocs {
 
     private final CartService cartService;
 

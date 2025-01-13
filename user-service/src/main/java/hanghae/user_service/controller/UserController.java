@@ -11,12 +11,6 @@ import hanghae.user_service.service.UserFacade;
 import hanghae.user_service.service.UserService;
 import hanghae.user_service.service.security.model.LoginUser;
 import hanghae.user_service.service.security.model.PrincipalDetails;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -31,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
-public class UserController implements UserControllerDocs{
+public class UserController implements UserControllerDocs {
 
     private final UserFacade userFacade;
     private final AuthenticationService authenticationService;
