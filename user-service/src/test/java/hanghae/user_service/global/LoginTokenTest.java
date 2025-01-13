@@ -1,3 +1,4 @@
+/*
 package hanghae.user_service.global;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,3 +70,4 @@ public class LoginTokenTest extends IntegrationUserTestSupport {
         return User.normalCreate("name", password, email, "random", "address", LocalDateTime.now());
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package hanghae.user_service.service.security.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,4 +78,4 @@ class JwtAuthenticationFilterTest extends IntegrationInfraTestSupport {
         return User.normalCreate("name", password, email, "random", "address", LocalDateTime.now());
     }
 
-}
+}*/

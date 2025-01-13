@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+/*@SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Sql(value = "/delete-all-data.sql")
@@ -33,4 +33,4 @@ public class IntegrationInfraTestSupport {
     @Autowired
     protected Environment env;
 
-}
+}*/

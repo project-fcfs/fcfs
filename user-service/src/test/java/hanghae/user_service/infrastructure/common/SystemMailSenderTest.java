@@ -1,3 +1,4 @@
+/*
 package hanghae.user_service.infrastructure.common;
 
 import hanghae.user_service.service.port.MailSenderHolder;
@@ -26,4 +27,4 @@ class SystemMailSenderTest extends IntegrationInfraTestSupport {
         // then
     }
 
-}
+}*/

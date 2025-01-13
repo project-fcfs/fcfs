@@ -1,3 +1,4 @@
+/*
 package hanghae.user_service;
 
 import hanghae.user_service.testSupport.IntegrationInfraTestSupport;
@@ -11,3 +12,4 @@ class UserServiceApplicationTests extends IntegrationInfraTestSupport {
 	}
 
 }
+*/

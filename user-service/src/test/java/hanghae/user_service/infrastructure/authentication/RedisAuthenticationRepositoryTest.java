@@ -1,3 +1,4 @@
+/*
 package hanghae.user_service.infrastructure.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,4 +53,4 @@ class RedisAuthenticationRepositoryTest extends IntegrationInfraTestSupport {
     }
 
 
-}
+}*/

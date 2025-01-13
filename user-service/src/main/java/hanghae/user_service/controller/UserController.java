@@ -2,6 +2,7 @@ package hanghae.user_service.controller;
 
 import hanghae.user_service.controller.req.UserAuthCodeReqDto;
 import hanghae.user_service.controller.req.UserCreateReqDto;
+import hanghae.user_service.controller.resp.ResponseDto;
 import hanghae.user_service.controller.resp.UserCreateRespDto;
 import hanghae.user_service.controller.resp.UserInfoRespDto;
 import hanghae.user_service.domain.user.User;
@@ -34,26 +35,27 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@Valid @RequestBody UserCreateReqDto reqDto) {
+    public ResponseDto<?> signUp(@Valid @RequestBody UserCreateReqDto reqDto) {
         User user = userFacade.register(reqDto);
-        return new ResponseEntity<>(UserCreateRespDto.of(user), HttpStatus.CREATED);
+        UserCreateRespDto response = UserCreateRespDto.of(user);
+        return new ResponseDto<>(1, "success", response);
     }
 
     @PostMapping("/authcode")
-    public ResponseEntity<?> sendAuthCode(@Valid @RequestBody UserAuthCodeReqDto reqDto){
+    public ResponseEntity<?> sendAuthCode(@Valid @RequestBody UserAuthCodeReqDto reqDto) {
         authenticationService.send(reqDto.email());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/user/mypage")
-    public ResponseEntity<?> getMyPage(@AuthenticationPrincipal PrincipalDetails principal){
+    public ResponseEntity<?> getMyPage(@AuthenticationPrincipal PrincipalDetails principal) {
         LoginUser loginUser = principal.getLoginUser();
         User user = userService.getUser(loginUser.id());
         return new ResponseEntity<>(UserInfoRespDto.of(user), HttpStatus.OK);
     }
 
     @GetMapping("/users")
-    public ResponseEntity<?> getUsers(){
+    public ResponseEntity<?> getUsers() {
         List<User> users = userService.getUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
