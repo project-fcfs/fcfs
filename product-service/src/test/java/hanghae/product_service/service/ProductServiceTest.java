@@ -90,13 +90,13 @@ class ProductServiceTest {
 
     @Test
     @DisplayName("저장되어 있는 모든 상품들을 가져올 수 있다")
-    void canGetAllProducts() throws Exception {
+    void canGetNormalProducts() throws Exception {
         // given
         productRepository.save(createProduct("name1", 100, ProductType.BASIC));
         productRepository.save(createProduct("name2", 200, ProductType.BASIC));
 
         // when
-        List<ProductRespDto> results = productService.getAllProducts();
+        List<ProductRespDto> results = productService.getNormalProducts(0L, 10);
 
         // then
         assertThat(results).hasSize(2)
@@ -107,7 +107,7 @@ class ProductServiceTest {
 
     @Test
     @DisplayName("Id List를 토대로 Product를 가져올 수 있다")
-    void canGetAllProductsById() throws Exception {
+    void canGetNormalProductsById() throws Exception {
         // given
         ProductType type = ProductType.BASIC;
         ProductType type2 = ProductType.LIMITED;

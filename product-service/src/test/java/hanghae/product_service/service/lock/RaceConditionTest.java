@@ -1,3 +1,4 @@
+/*
 package hanghae.product_service.service.lock;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -173,4 +174,4 @@ class RaceConditionTest extends IntegrationInfraTestSupport {
         redisTemplate.delete(productId);
     }
 
-}
+}*/

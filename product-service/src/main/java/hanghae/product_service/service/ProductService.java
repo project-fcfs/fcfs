@@ -9,10 +9,15 @@ import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.util.ErrorMessage;
 import hanghae.product_service.service.port.ProductCacheRepository;
 import hanghae.product_service.service.port.ProductRepository;
-import hanghae.product_service.service.port.UUIDRandomHolder;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +25,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ProductService {
 
+
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
     private final ProductRepository productRepository;
     private final ProductCacheRepository productCacheRepository;
     private final ImageFileService imageFileService;
 
-    public ProductService(ProductRepository productRepository, ProductCacheRepository productCacheRepository, ImageFileService imageFileService) {
+    public ProductService(ProductRepository productRepository, ProductCacheRepository productCacheRepository,
+                          ImageFileService imageFileService) {
         this.productRepository = productRepository;
         this.productCacheRepository = productCacheRepository;
         this.imageFileService = imageFileService;
@@ -61,10 +69,22 @@ public class ProductService {
     }
 
     /**
-     * DB에 모든 Product를 반환한다
+     * DB에 모든 일반 Product를 반환한다
      */
-    public List<ProductRespDto> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+    /*@Cacheable(cacheNames = "getProducts", key = "'products:cursor:' + #cursor + ':size:' + #size",
+            cacheManager = "productCacheManager")*/
+    public List<ProductRespDto> getNormalProducts(Long cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by("id").ascending());
+        List<Product> products = productRepository.findAllByType(cursor, ProductType.BASIC, pageable);
+        return assembleProductAndImage(products);
+    }
+
+    /**
+     * DB에 모든 선착순 Product를 반환한다
+     */
+    public List<ProductRespDto> getFcfsProducts(Long cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by("id").ascending());
+        List<Product> products = productRepository.findAllByType(cursor, ProductType.LIMITED, pageable);
         return assembleProductAndImage(products);
     }
 

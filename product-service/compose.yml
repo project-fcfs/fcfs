@@ -1,9 +1,0 @@
-services:
-  product-db:
-    container_name: test_db
-    image: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: fcfsProduct
-    ports:
-      - 4000:3306

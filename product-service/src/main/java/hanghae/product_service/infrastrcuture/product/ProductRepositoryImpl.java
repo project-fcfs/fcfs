@@ -1,9 +1,11 @@
 package hanghae.product_service.infrastrcuture.product;
 
 import hanghae.product_service.domain.product.Product;
+import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.service.port.ProductRepository;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -25,8 +27,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAll() {
-        return jpaRepository.findAll().stream().map(ProductEntity::toModel).toList();
+    public List<Product> findAllByType(Long cursor,ProductType type, Pageable pageable) {
+        return jpaRepository.findAllByType(cursor,type, pageable).stream().map(ProductEntity::toModel).toList();
     }
 
     @Override

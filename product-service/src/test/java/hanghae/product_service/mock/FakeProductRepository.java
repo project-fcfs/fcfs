@@ -1,11 +1,13 @@
 package hanghae.product_service.mock;
 
 import hanghae.product_service.domain.product.Product;
+import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.service.port.ProductRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.data.domain.Pageable;
 
 public class FakeProductRepository implements ProductRepository {
     private List<Product> data = new ArrayList<>();
@@ -32,8 +34,8 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAll() {
-        return data;
+    public List<Product> findAllByType(Long cursor, ProductType type, Pageable pageable) {
+        return data.stream().filter(i -> i.type().equals(type)).toList();
     }
 
     @Override

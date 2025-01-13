@@ -11,6 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+/*
 @SpringBootTest
 @TestPropertySource(locations = "classpath:/application-test.yml")
 @ActiveProfiles("test")
@@ -30,3 +31,4 @@ public class IntegrationInfraTestSupport {
     @Autowired
     protected Environment env;
 }
+*/

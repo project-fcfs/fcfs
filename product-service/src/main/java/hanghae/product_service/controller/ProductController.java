@@ -69,8 +69,16 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseDto<?> getProducts() {
-        List<ProductRespDto> dtos = productService.getAllProducts();
+    public ResponseDto<?> getProducts(@RequestParam(value = "cursor", defaultValue = "0") Long cursor,
+                                      @RequestParam(value = "size", defaultValue = "10") int size) {
+        List<ProductRespDto> dtos = productService.getNormalProducts(cursor, size);
+        return ResponseDto.success(dtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/fcfs")
+    public ResponseDto<?> getFcfsProducts(@RequestParam(value = "cursor", defaultValue = "0") Long cursor,
+                                          @RequestParam(value = "size", defaultValue = "10") int size) {
+        List<ProductRespDto> dtos = productService.getFcfsProducts(cursor, size);
         return ResponseDto.success(dtos, HttpStatus.OK);
     }
 
@@ -82,7 +90,7 @@ public class ProductController {
 
     @PostMapping("/order")
     public ResponseDto<?> processOrder(@RequestBody List<StockUpdateReqDto> dtos) {
-        List<Product> products = namedLockStockFacade.processOrder(dtos);
+        List<Product> products = pessimisticLockStockService.processOrder(dtos);
         List<ProductRespDto> response = products.stream().map(i -> ProductRespDto.of(i, null)).toList();
         return ResponseDto.success(response, HttpStatus.OK);
     }
