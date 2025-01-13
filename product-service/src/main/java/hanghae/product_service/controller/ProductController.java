@@ -8,6 +8,7 @@ import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.controller.resp.ResponseDto;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.service.ProductService;
+import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.lock.NamedLockStockFacade;
 import hanghae.product_service.service.lock.PessimisticLockStockService;
 import hanghae.product_service.service.lock.RedissonLockStockFacade;
@@ -27,7 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/products")
-public class ProductController {
+public class ProductController implements ProductControllerDocs{
 
     private final ProductService productService;
     private final PessimisticLockStockService pessimisticLockStockService;
@@ -46,7 +47,7 @@ public class ProductController {
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestPart("createReqDto") ProductCreateReqDto reqDto,
                                            @RequestPart(value = "file", required = false) MultipartFile file)
-            throws IOException {
+    {
         MultipartUtil.validateImageFile(file);
         FileInfo fileInfo = toFileInfo(file);
         ProductRespDto productRespDto = productService.create(reqDto.name(), reqDto.price(), reqDto.quantity(),
@@ -61,11 +62,15 @@ public class ProductController {
         return ResponseDto.success(productRespDto, HttpStatus.OK);
     }
 
-    private FileInfo toFileInfo(MultipartFile file) throws IOException {
+    private FileInfo toFileInfo(MultipartFile file) {
         if (file == null) {
             return null;
         }
-        return FileInfo.create(file);
+        try{
+            return FileInfo.create(file);
+        }catch (IOException e){
+            throw new CustomApiException(e.getMessage());
+        }
     }
 
     @GetMapping
@@ -83,7 +88,7 @@ public class ProductController {
     }
 
     @GetMapping("/cart")
-    public ResponseDto<?> fetchCartProducts(@RequestParam("ids") List<Long> ids) {
+    public ResponseDto<?> fetchProductsById(@RequestParam("ids") List<Long> ids) {
         List<ProductRespDto> dtos = productService.getProductByIds(ids);
         return ResponseDto.success(dtos, HttpStatus.OK);
     }
