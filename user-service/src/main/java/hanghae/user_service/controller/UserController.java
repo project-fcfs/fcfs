@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "User Controller", description = "일반 사용자 서비스를 위한 API 컨트롤러입니다.")
+
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController implements UserControllerDocs{
 
     private final UserFacade userFacade;
     private final AuthenticationService authenticationService;
@@ -43,11 +43,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "회원가입 API", description = "회원 가입을 처리하는 API입니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원 가입 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
-    })
     @PostMapping("/signup")
     public ResponseDto<?> signUp(@Valid @RequestBody UserCreateReqDto reqDto) {
         User user = userFacade.register(reqDto);
@@ -55,28 +50,12 @@ public class UserController {
         return new ResponseDto<>(1, "success", response);
     }
 
-    @Operation(
-            summary = "인증 코드 전송 API",
-            description = "사용자 이메일로 인증 코드를 전송합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "인증 코드 전송 성공"),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
-            }
-    )
     @PostMapping("/authcode")
     public ResponseEntity<?> sendAuthCode(@Valid @RequestBody UserAuthCodeReqDto reqDto) {
         authenticationService.send(reqDto.email());
         return ResponseEntity.ok().build();
     }
 
-    @Operation(
-            summary = "마이페이지 조회 API",
-            description = "로그인한 사용자의 마이페이지 정보를 조회합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "조회 성공"),
-                    @ApiResponse(responseCode = "401", description = "인증 실패")
-            }
-    )
     @GetMapping("/user/mypage")
     public ResponseEntity<?> getMyPage(@AuthenticationPrincipal PrincipalDetails principal) {
         LoginUser loginUser = principal.getLoginUser();
@@ -84,18 +63,6 @@ public class UserController {
         return new ResponseEntity<>(UserInfoRespDto.of(user), HttpStatus.OK);
     }
 
-    @Operation(
-            summary = "사용자 목록 조회 API",
-            description = "시스템에 등록된 모든 사용자의 목록을 조회합니다.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "조회 성공",
-                            content = @Content(schema = @Schema(implementation = User.class))
-                    ),
-                    @ApiResponse(responseCode = "403", description = "접근 권한 없음")
-            }
-    )
     @GetMapping("/users")
     public ResponseEntity<?> getUsers() {
         List<User> users = userService.getUsers();
