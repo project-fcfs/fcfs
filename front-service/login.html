@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - FCFS 쇼핑몰</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <header id="header"></header> <!-- 헤더를 JavaScript로 불러올 부분 -->
+    <main>
+        <h2>로그인</h2>
+        <form id="login-form">
+            <input type="email" name="email" required placeholder="이메일">
+            <input type="password" name="password" required placeholder="비밀번호">
+            <button type="submit">로그인</button>
+        </form>
+        <div id="toast" class="toast"></div> <!-- 성공 메시지를 보여줄 공간 -->
+    </main>
+    <footer>
+        <p>&copy; 2025 FCFS 쇼핑몰. All rights reserved.</p>
+    </footer>
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/login.js"></script> <!-- 로그인 처리 스크립트 -->
+</body>
+</html>

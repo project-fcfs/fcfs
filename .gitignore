@@ -4,3 +4,4 @@ appli*.properties
 .env
 **/bootst*.yml
 /db/
+**/Dockerfile

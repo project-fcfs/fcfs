@@ -1,0 +1,19 @@
+#user-details, #order-list {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+#order-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#order-list li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 3px;
+}

@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 최소 높이를 100vh로 설정하여 전체 화면을 채움 */
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+}
+
+main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex: 1; /* main 요소가 남은 공간을 차지하도록 설정 */
+}
+
+footer {
+    background-color: #333; /* 푸터 배경색 */
+    color: white; /* 푸터 글자색 */
+    text-align: center; /* 중앙 정렬 */
+    padding: 1rem; /* 패딩 추가 */
+}
+
+.btn {
+    display: inline-block;
+    background: #333;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background: #555;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+.btn, .product-card, .cart-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn:hover, .product-card:hover, .cart-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+

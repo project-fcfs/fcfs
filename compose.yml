@@ -1,89 +1,103 @@
 services:
-  user-db:
-    image: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${USER_DB_PASSWORD}
-      MYSQL_DATABASE: ${USER_DB_NAME}
-    volumes:
-      - ${USER_DATA_PATH}:/var/lib/mysql
-    ports:
-      - ${USER_DB_BINDING_PORT}:3306
+  config-server:
+    build: ./config-server/.
+    container_name: config-server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://config-server:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 1G       # 최대 메모리 1GB
+          cpus: '1.0'      # 최대 CPU 1개
   
-  product-db:
-    image: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: fcfsProduct
-    volumes:
-      - ${PRODUCT_DATA_PATH}:/var/lib/mysql
+  eureka-server:
+    build: ./eureka-server/.
+    container_name: eureka-server
     ports:
-      - ${PRODUCT_DB_BINDING_PORT}:3306
-
-  order-db:
-    image: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${ORDER_DB_PASSWORD}
-      MYSQL_DATABASE: ${ORDER_DB_NAME}
-    volumes:
-      - ${ORDER_DATA_PATH}:/var/lib/mysql
-    ports:
-      - ${ORDER_DB_BINDING_PORT}:3306
-      
-  payment-db:
-    image: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${PAYMENT_DB_PASSWORD}
-      MYSQL_DATABASE: ${PAYMENT_DB_NAME}
-    volumes:
-      - ${PAYMENT_DATA_PATH}:/var/lib/mysql
-    ports:
-      - ${PAYMENT_DB_BINDING_PORT}:3306
-
-  cache-server:
-    image: redis/redis-stack-server:6.2.6-v17
-    volumes:
-      - ${REDIS_DATA_PATH}:/data
-      - ${REDIS_CONFIG_PATH}:/usr/local/etc/redis/redis.conf
-    ports:
-      - ${REDIS_BINDING_PORT}:${REIDS_PORT}
+      - 8761:8761
+    deploy:
+      resources:
+        limits:
+          memory: 1G       # 최대 메모리 1GB
+          cpus: '1.0'      # 최대 CPU 1개
   
-  zipkin:
-    image: openzipkin/zipkin
-    ports:
-      - 9411:9411
-  
-  kafka:
-    image: 'bitnami/kafka:latest'
-    container_name: kafka
+  gateway-server:
+    build: ./gateway-service/.
+    container_name: gateway-server
     environment:
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:29092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-    volumes:
-      - ${KAFKA_DATA_PATH}:/bitnami/kafka
+      - SPRING_CLOUD_CONFIG_URI=${SPRING_CLOUD_CONFIG_URI}
+      - "eureka.client.service-url.default_zone=${EUREKA_URI}"
     ports:
-      - 9092:9092
-      - 9093:9093
-      - 29092:29092
-  
-  grafana:
-    image: grafana/grafana
-    ports:
-      - 3000:3000
-    volumes:
-      - ./db/grafana:/var/lib/grafana
+      - 8000:8000
     depends_on:
-      - prometheus
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G       # 최대 메모리 1GB
+          cpus: '1.0'      # 최대 CPU 1개
+ 
+  user-server:
+    build: ./user-service/.
+    container_name: user-service
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=${SPRING_CLOUD_CONFIG_URI}
+      - "eureka.client.service-url.default_zone=${EUREKA_URI}"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G       # 최대 메모리 1GB
+          cpus: '1.0'      # 최대 CPU 1개
   
-  prometheus:
-    image: prom/prometheus
-    volumes:
-      - ./db/prometheus/config:/etc/prometheus
-      - ./db/promotheus/config:/prometheus/data
-      - ./db/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - 9090:9090
+  payment-server:
+    build: ./payment-service/.
+    container_name: payment-service
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=${SPRING_CLOUD_CONFIG_URI}
+      - "eureka.client.service-url.default_zone=${EUREKA_URI}"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G       # 최대 메모리 1GB
+          cpus: '1.0'      # 최대 CPU 1개
+
+  product-server:
+    build: ./product-service/.
+    container_name: product-service
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=${SPRING_CLOUD_CONFIG_URI}
+      - "eureka.client.service-url.default_zone=${EUREKA_URI}"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G       # 최대 메모리 1GB
+          cpus: '1.0'      # 최대 CPU 1개
+
+  order-server:
+    build: ./order-service/.
+    container_name: order-service
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=${SPRING_CLOUD_CONFIG_URI}
+      - "eureka.client.service-url.default_zone=${EUREKA_URI}"
+      - TZ=Asia/Seoul
+    depends_on:
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G       # 최대 메모리 1GB
+          cpus: '1.0'      # 최대 CPU 1개
