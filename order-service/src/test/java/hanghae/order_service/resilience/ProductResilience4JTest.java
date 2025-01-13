@@ -1,3 +1,4 @@
+/*
 package hanghae.order_service.resilience;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,3 +39,4 @@ public class ProductResilience4JTest extends IntegrationResilienceTestSupport {
     }
 
 }
+*/

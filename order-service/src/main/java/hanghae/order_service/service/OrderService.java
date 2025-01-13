@@ -90,8 +90,8 @@ public class OrderService {
                     Integer orderCount = value.get(i.productId());
                     return OrderProduct.create(i.price(), orderCount, i.productId(), currentDate);
                 }).toList();
-        /*// todo 레디스에서 재고감소 시에는 DB에도 재고감소 이벤트를 발송해야한다 안쓰면 삭제
-        orderProductMessage.removeStock(orderProducts);*/
+        // todo 레디스에서 재고감소 시에는 DB에도 재고감소 이벤트를 발송해야한다 안쓰면 삭제
+        orderProductMessage.removeStock(orderProducts);
         return orderProducts;
     }
 

@@ -44,7 +44,7 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping()
+    @PatchMapping
     public ResponseEntity<?> updateCartProduct(@RequestHeader("userId") String userId,
                                                @RequestBody CartUpdateReqDto reqDto) {
         cartService.updateQuantity(userId, reqDto.productId(), reqDto.count());

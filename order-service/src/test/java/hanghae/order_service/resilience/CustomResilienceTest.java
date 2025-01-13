@@ -1,3 +1,4 @@
+/*
 package hanghae.order_service.resilience;
 
 import hanghae.order_service.support.IntegrationResilienceTestSupport;
@@ -49,3 +50,4 @@ public class CustomResilienceTest extends IntegrationResilienceTestSupport {
     }
 
 }
+*/

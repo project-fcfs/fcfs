@@ -21,8 +21,8 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-//@Component
-//@Primary
+@Component
+@Primary
 public class ProductCacheClientImpl implements ProductClient {
 
     private final RedisTemplate<String, Object> redisTemplate;

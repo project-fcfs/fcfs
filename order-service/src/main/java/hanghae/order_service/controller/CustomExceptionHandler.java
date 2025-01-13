@@ -36,7 +36,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseDto<?> handleException(Exception e) {
-        log.error(e.getMessage());
+        log.error(e.getMessage() + e.getCause());
         return ResponseDto.fail(e.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
