@@ -55,8 +55,8 @@ public interface ProductClientImpl extends ProductClient {
     }
 
     @PostMapping("/products/order")
-    @Retry(name = "retryGetProduct", fallbackMethod = "processOrderRetryFallbackMethod")
-    @CircuitBreaker(name = "circuitGetProduct", fallbackMethod = "processOrderCircuitFallbackMethod")
+    @Retry(name = "retryRemoveStock", fallbackMethod = "processOrderRetryFallbackMethod")
+    @CircuitBreaker(name = "circuitRemoveStock", fallbackMethod = "processOrderCircuitFallbackMethod")
     ResponseDto<?> removeStock(@RequestBody List<RequestOrder> requestOrders);
 
     @Override
