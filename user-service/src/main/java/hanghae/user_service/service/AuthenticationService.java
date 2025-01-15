@@ -3,7 +3,7 @@ package hanghae.user_service.service;
 import static hanghae.user_service.service.common.util.UserConstant.AUTH_PREFIX;
 
 import hanghae.user_service.service.common.exception.CustomApiException;
-import hanghae.user_service.service.common.util.ErrorMessage;
+import hanghae.user_service.service.common.exception.ErrorCode;
 import hanghae.user_service.service.port.AuthCodeHolder;
 import hanghae.user_service.service.port.AuthenticationRepository;
 import hanghae.user_service.service.port.MailSenderHolder;
@@ -33,7 +33,7 @@ public class AuthenticationService {
     public void verifyCode(String email, String authCode) {
         String key = generateKey(email);
         if (!authenticationRepository.existsCode(key, authCode)) {
-            throw new CustomApiException(ErrorMessage.INVALID_AUTH_TOKEN.getMessage());
+            throw new CustomApiException(ErrorCode.INVALID_AUTH_TOKEN, email);
         }
     }
 

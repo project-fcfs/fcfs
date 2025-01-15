@@ -38,10 +38,10 @@ public class UserController implements UserControllerDocs {
     }
 
     @PostMapping("/signup")
-    public ResponseDto<?> signUp(@Valid @RequestBody UserCreateReqDto reqDto) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody UserCreateReqDto reqDto) {
         User user = userFacade.register(reqDto);
         UserCreateRespDto response = UserCreateRespDto.of(user);
-        return new ResponseDto<>(1, "success", response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/authcode")
@@ -54,7 +54,8 @@ public class UserController implements UserControllerDocs {
     public ResponseEntity<?> getMyPage(@AuthenticationPrincipal PrincipalDetails principal) {
         LoginUser loginUser = principal.getLoginUser();
         User user = userService.getUser(loginUser.id());
-        return new ResponseEntity<>(UserInfoRespDto.of(user), HttpStatus.OK);
+        UserInfoRespDto response = UserInfoRespDto.of(user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/users")

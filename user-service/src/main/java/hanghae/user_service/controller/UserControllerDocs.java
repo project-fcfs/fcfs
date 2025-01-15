@@ -21,7 +21,7 @@ public interface UserControllerDocs {
             @ApiResponse(responseCode = "200", description = "회원 가입 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     })
-    ResponseDto<?> signUp(UserCreateReqDto reqDto);
+    ResponseEntity<?> signUp(UserCreateReqDto reqDto);
 
 
     @Operation(summary = "인증 코드 전송 API", description = "사용자 이메일로 인증 코드를 전송합니다.")

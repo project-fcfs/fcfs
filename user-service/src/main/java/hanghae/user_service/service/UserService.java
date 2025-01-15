@@ -2,7 +2,7 @@ package hanghae.user_service.service;
 
 import hanghae.user_service.domain.user.User;
 import hanghae.user_service.service.common.exception.CustomApiException;
-import hanghae.user_service.service.common.util.ErrorMessage;
+import hanghae.user_service.service.common.exception.ErrorCode;
 import hanghae.user_service.service.port.LocalDateTimeHolder;
 import hanghae.user_service.service.port.PersonalDataEncryptor;
 import hanghae.user_service.service.port.UUIDRandomHolder;
@@ -48,7 +48,7 @@ public class UserService {
         String encodeEmail = personalDataEncryptor.encodeData(email);
         Optional<User> _user = userRepository.findByEmail(encodeEmail);
         if (_user.isPresent()) {
-            throw new CustomApiException(ErrorMessage.DUPLICATE_EMAIL_ERROR.getMessage());
+            throw new CustomApiException(ErrorCode.DUPLICATE_USER_EMAIL, email);
         }
     }
 
@@ -61,11 +61,11 @@ public class UserService {
 
     public User getUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new CustomApiException(ErrorMessage.NOT_FOUND_USER.getMessage()));
+                .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_USER_ID, String.valueOf(id)));
         return decodeUserInfo(user);
     }
 
-    public List<User> getUsers(){
+    public List<User> getUsers() {
         return userRepository.findAll().stream()
                 .map(this::decodeUserInfo).toList();
     }

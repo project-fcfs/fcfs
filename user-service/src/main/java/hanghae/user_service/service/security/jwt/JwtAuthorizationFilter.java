@@ -1,9 +1,9 @@
 package hanghae.user_service.service.security.jwt;
 
-import static hanghae.user_service.service.common.util.ErrorMessage.INVALID_JWT_TOKEN;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import hanghae.user_service.domain.user.User;
+import hanghae.user_service.service.common.exception.ErrorCode;
 import hanghae.user_service.service.port.UserRepository;
 import hanghae.user_service.service.security.model.LoginUser;
 import hanghae.user_service.service.security.model.PrincipalDetails;
@@ -45,7 +45,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 if (!jwtProcess.isExpired(token)) {
                     String userId = jwtProcess.getUserId(token);
                     User user = userRepository.findByUserId(userId)
-                            .orElseThrow(() -> new AccessDeniedException(INVALID_JWT_TOKEN.getMessage()));
+                            .orElseThrow(() -> new AccessDeniedException(ErrorCode.INVALID_JWT_TOKEN.getMessage()));
 
                     PrincipalDetails principalDetails = new PrincipalDetails(LoginUser.create(user));
 

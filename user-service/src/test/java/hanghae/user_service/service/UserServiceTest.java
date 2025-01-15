@@ -11,7 +11,7 @@ import hanghae.user_service.mock.FakePersonalDataEncryptor;
 import hanghae.user_service.mock.FakeUUIDRandomHolder;
 import hanghae.user_service.mock.FakeUserRepository;
 import hanghae.user_service.service.common.exception.CustomApiException;
-import hanghae.user_service.service.common.util.ErrorMessage;
+import hanghae.user_service.service.common.exception.ErrorCode;
 import hanghae.user_service.service.port.LocalDateTimeHolder;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,6 +73,6 @@ class UserServiceTest {
         // then
         assertThatThrownBy(() -> userService.checkDuplicateEmail(email))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.DUPLICATE_EMAIL_ERROR.getMessage());
+                .hasMessage(ErrorCode.DUPLICATE_USER_EMAIL.getMessage());
     }
 }

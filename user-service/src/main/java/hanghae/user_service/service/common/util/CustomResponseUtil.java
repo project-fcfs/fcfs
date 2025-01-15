@@ -1,7 +1,9 @@
 package hanghae.user_service.service.common.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hanghae.user_service.controller.resp.ErrorResponse;
 import hanghae.user_service.controller.resp.ResponseDto;
+import hanghae.user_service.service.common.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +30,8 @@ public class CustomResponseUtil {
     public static void fail(HttpServletResponse response, String message, HttpStatus status) {
         try {
             ObjectMapper om = new ObjectMapper();
-            ResponseDto<Object> responseDto = new ResponseDto<>(-1, message, null);
-            String responseBody = om.writeValueAsString(responseDto);
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.LOGIN_FAIL);
+            String responseBody = om.writeValueAsString(errorResponse);
             response.setStatus(status.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(responseBody);

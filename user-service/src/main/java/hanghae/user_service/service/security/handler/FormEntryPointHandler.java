@@ -1,7 +1,7 @@
 package hanghae.user_service.service.security.handler;
 
+import hanghae.user_service.service.common.exception.ErrorCode;
 import hanghae.user_service.service.common.util.CustomResponseUtil;
-import hanghae.user_service.service.common.util.ErrorMessage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +14,7 @@ public class FormEntryPointHandler implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-        String message = ErrorMessage.MUST_LOGIN_REQUIRED.getMessage();
+        String message = ErrorCode.MUST_LOGIN_REQUIRED.getMessage();
 
         CustomResponseUtil.fail(response, message, HttpStatus.UNAUTHORIZED);
     }

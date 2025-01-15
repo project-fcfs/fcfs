@@ -8,8 +8,7 @@ import hanghae.user_service.mock.FakeAuthCodeHolder;
 import hanghae.user_service.mock.FakeAuthenticationRepository;
 import hanghae.user_service.mock.FakeMailSenderHolder;
 import hanghae.user_service.service.common.exception.CustomApiException;
-import hanghae.user_service.service.common.util.ErrorMessage;
-import hanghae.user_service.service.common.util.UserConstant;
+import hanghae.user_service.service.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,6 +69,6 @@ class AuthenticationServiceTest {
         // then
         assertThatThrownBy(() -> authenticationService.verifyCode(email, "test"))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.INVALID_AUTH_TOKEN.getMessage());
+                .hasMessage(ErrorCode.INVALID_AUTH_TOKEN.getMessage());
     }
 }

@@ -1,11 +1,21 @@
 package hanghae.user_service.service.common.exception;
 
+import hanghae.user_service.controller.resp.ErrorResponse;
+
 public class CustomApiException extends RuntimeException{
-    public CustomApiException(String message) {
-        super(message);
+    private final ErrorResponse errorResponse;
+
+    public CustomApiException(ErrorCode errorCode, String value) {
+        super(errorCode.getMessage());
+        this.errorResponse = ErrorResponse.of(errorCode, value);
     }
 
-    public CustomApiException(String message, Throwable cause) {
-        super(message, cause);
+    public CustomApiException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode.getMessage(), cause);
+        this.errorResponse = ErrorResponse.of(errorCode, null);
+    }
+
+    public ErrorResponse getErrorResponse() {
+        return errorResponse;
     }
 }

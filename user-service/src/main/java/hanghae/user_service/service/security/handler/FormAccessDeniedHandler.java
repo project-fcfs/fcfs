@@ -1,7 +1,7 @@
 package hanghae.user_service.service.security.handler;
 
+import hanghae.user_service.service.common.exception.ErrorCode;
 import hanghae.user_service.service.common.util.CustomResponseUtil;
-import hanghae.user_service.service.common.util.ErrorMessage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +15,6 @@ public class FormAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        CustomResponseUtil.fail(response, ErrorMessage.ERROR_ACCESS_DENIED.getMessage(), HttpStatus.FORBIDDEN);
+        CustomResponseUtil.fail(response, ErrorCode.ERROR_ACCESS_DENIED.getMessage(), HttpStatus.FORBIDDEN);
     }
 }

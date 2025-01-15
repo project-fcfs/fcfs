@@ -1,6 +1,7 @@
 package hanghae.user_service.infrastructure.authentication;
 
 import hanghae.user_service.service.common.exception.CustomApiException;
+import hanghae.user_service.service.common.exception.ErrorCode;
 import hanghae.user_service.service.port.AuthCodeHolder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -16,7 +17,7 @@ public class AuthCodeGenerator implements AuthCodeHolder {
     @Override
     public String AuthSixCode() {
 
-        try{
+        try {
             SecureRandom random = SecureRandom.getInstanceStrong();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < 6; i++) {
@@ -24,9 +25,9 @@ public class AuthCodeGenerator implements AuthCodeHolder {
                 sb.append(randInt);
             }
             return sb.toString();
-        }catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             log.warn("auth code exception {}", e.getMessage());
-            throw new CustomApiException(e.getMessage());
+            throw new CustomApiException(ErrorCode.INVALID_REQUEST, e);
         }
     }
 }
