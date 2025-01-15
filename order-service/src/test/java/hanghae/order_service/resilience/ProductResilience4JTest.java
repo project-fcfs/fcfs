@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import hanghae.order_service.service.CartService;
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorMessage;
 import hanghae.order_service.support.IntegrationResilienceTestSupport;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker.State;

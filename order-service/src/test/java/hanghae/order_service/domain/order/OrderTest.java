@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,7 +77,7 @@ class OrderTest {
         // then
         assertThatThrownBy(() -> order.requestRefund(currentDate))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.ERROR_REQUEST_REFUND.getMessage());
+                .hasMessage(ErrorCode.ERROR_REQUEST_REFUND.getMessage());
     }
 
     @Test
@@ -91,7 +91,7 @@ class OrderTest {
         // then
         assertThatThrownBy(() -> order.completedRefund(currentDate))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.ERROR_COMPLETE_REFUND.getMessage());
+                .hasMessage(ErrorCode.ERROR_COMPLETE_REFUND.getMessage());
     }
 
     @Test

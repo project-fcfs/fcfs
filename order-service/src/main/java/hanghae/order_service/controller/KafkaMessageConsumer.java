@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.service.OrderDecideService;
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -38,7 +38,7 @@ public class KafkaMessageConsumer {
 
             return new OrderDecideReqDto(response.code(), orderId);
         } catch (JsonProcessingException e) {
-            throw new CustomApiException(ErrorMessage.ERROR_PARSE_JSON.getMessage());
+            throw new CustomApiException(ErrorCode.ERROR_PARSE_DATA);
         }
     }
 

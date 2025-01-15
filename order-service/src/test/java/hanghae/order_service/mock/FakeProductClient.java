@@ -23,7 +23,7 @@ public class FakeProductClient implements ProductClient {
     }
 
     @Override
-    public ResponseDto<List<Product>> processOrder(Map<Long, Integer> cartProducts) {
+    public List<Product> processOrder(Map<Long, Integer> cartProducts) {
         List<Product> products = data.stream().map(i -> {
             Integer orderCount = cartProducts.get(i.productId());
             return i.convertCart(i.quantity() - orderCount);
@@ -35,8 +35,8 @@ public class FakeProductClient implements ProductClient {
         products.forEach(this::addData);
 
         boolean hasNegativeStock = products.stream().anyMatch(i -> i.quantity() < 0);
-        return hasNegativeStock ? new ResponseDto<>(-1, "fail", null, HttpStatus.BAD_REQUEST)
-                : new ResponseDto<>(1, "success", data, HttpStatus.OK);
+        return hasNegativeStock ? null
+                : data;
     }
 
     @Override

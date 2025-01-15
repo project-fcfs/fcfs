@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -79,7 +79,7 @@ class DeliveryTest {
             // then
             assertThatThrownBy(() -> delivery.cancelIfPossible(localDateTime))
                     .isInstanceOf(CustomApiException.class)
-                    .hasMessage(ErrorMessage.ERROR_CANNOT_CANCEL_SHIPPING.getMessage());
+                    .hasMessage(ErrorCode.ERROR_CANNOT_CANCEL_SHIPPING.getMessage());
         }
     }
 
@@ -115,7 +115,7 @@ class DeliveryTest {
             // then
             assertThatThrownBy(() -> delivery.refundIfEligible(refundDate))
                     .isInstanceOf(CustomApiException.class)
-                    .hasMessage(ErrorMessage.ERROR_CANNOT_RETURN_SHIPPED.getMessage());
+                    .hasMessage(ErrorCode.ERROR_CANNOT_RETURN_SHIPPED.getMessage());
         }
     }
 

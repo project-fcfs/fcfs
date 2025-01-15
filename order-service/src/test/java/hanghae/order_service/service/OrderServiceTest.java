@@ -20,7 +20,7 @@ import hanghae.order_service.mock.FakeProduct;
 import hanghae.order_service.mock.FakeProductClient;
 import hanghae.order_service.mock.FakeUuidRandomHolder;
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.groups.Tuple;
@@ -110,7 +110,7 @@ class OrderServiceTest {
             // then
             assertThatThrownBy(() -> orderService.order(productIds, "address", userId))
                     .isInstanceOf(CustomApiException.class)
-                    .hasMessage(ErrorMessage.OUT_OF_STOCK.getMessage());
+                    .hasMessage(ErrorCode.OUT_OF_STOCK.getMessage());
         }
     }
 
@@ -163,7 +163,7 @@ class OrderServiceTest {
             // when
             assertThatThrownBy(() -> orderService.fcfsOrder(productId1, orderCount1, "addres", userId))
                     .isInstanceOf(CustomApiException.class)
-                    .hasMessage(ErrorMessage.NOT_OPEN_TIME.getMessage());
+                    .hasMessage(ErrorCode.NOT_OPEN_TIME.getMessage());
         }
     }
 
@@ -177,7 +177,7 @@ class OrderServiceTest {
         // then
         assertThatThrownBy(() -> orderService.order(List.of(productId), "address", "userId"))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage());
+                .hasMessage(ErrorCode.NOT_FOUND_CART_PRODUCT.getMessage());
     }
 
     @Test
@@ -223,7 +223,7 @@ class OrderServiceTest {
         // then
         assertThatThrownBy(() -> orderService.processRefund(orderId, productId))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.NOT_FOUND_ORDER.getMessage());
+                .hasMessage(ErrorCode.NOT_FOUND_ORDER.getMessage());
     }
 
     @Test

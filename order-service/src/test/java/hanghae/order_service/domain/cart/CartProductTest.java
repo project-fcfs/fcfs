@@ -3,7 +3,7 @@ package hanghae.order_service.domain.cart;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class CartProductTest {
         // then
         assertThatThrownBy(() -> cartProduct.updateCount(orderCount))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.OUT_OF_STOCK_CART.getMessage());
+                .hasMessage(ErrorCode.OUT_OF_STOCK_CART.getMessage());
     }
 
 }

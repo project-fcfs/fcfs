@@ -1,7 +1,7 @@
 package hanghae.order_service.domain.order;
 
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public record Order(
         if (orderStatus.equals(OrderStatus.PENDING) || orderStatus.equals(OrderStatus.COMPLETED)) {
             return new Order(id, OrderStatus.CANCELLED, userId, orderId, orderProducts, canceledDelivery, createdAt, currentDate);
         }
-        throw new CustomApiException(ErrorMessage.ERROR_CANNOT_CANCEL_SHIPPING.getMessage());
+        throw new CustomApiException(ErrorCode.ERROR_CANNOT_CANCEL_SHIPPING);
     }
 
     /**
@@ -45,7 +45,7 @@ public record Order(
             return new Order(id, OrderStatus.RETURN_REQUESTED, userId, orderId,
                     orderProducts, refundedDelivery, createdAt, currentDate);
         }
-        throw new CustomApiException(ErrorMessage.ERROR_REQUEST_REFUND.getMessage());
+        throw new CustomApiException(ErrorCode.ERROR_REQUEST_REFUND);
     }
 
     /**
@@ -56,7 +56,7 @@ public record Order(
             return new Order(id, OrderStatus.RETURN_COMPLETED, userId, orderId,
                     orderProducts, delivery, createdAt, currentDate);
         }
-        throw new CustomApiException(ErrorMessage.ERROR_COMPLETE_REFUND.getMessage());
+        throw new CustomApiException(ErrorCode.ERROR_COMPLETE_REFUND);
     }
 
     /**

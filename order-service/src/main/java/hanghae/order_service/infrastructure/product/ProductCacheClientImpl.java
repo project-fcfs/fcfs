@@ -3,6 +3,8 @@ package hanghae.order_service.infrastructure.product;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.product.Product;
+import hanghae.order_service.service.common.exception.CustomApiException;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import hanghae.order_service.service.common.util.OrderConstant;
 import hanghae.order_service.service.port.ProductClient;
 import java.nio.charset.StandardCharsets;
@@ -47,7 +49,7 @@ public class ProductCacheClientImpl implements ProductClient {
     }
 
     @Override
-    public ResponseDto<List<Product>> processOrder(Map<Long, Integer> orderProducts) {
+    public List<Product> processOrder(Map<Long, Integer> orderProducts) {
         List<String> productIds = new LinkedList<>();
         List<String> orderCounts = new LinkedList<>();
 
@@ -58,11 +60,10 @@ public class ProductCacheClientImpl implements ProductClient {
 
         Boolean result = redisTemplate.execute(removeStockScript, productIds, orderCounts.toArray());
         if (!result) {
-            return new ResponseDto<>(OrderConstant.ORDER_FAIL, "fail", null, HttpStatus.BAD_REQUEST);
+            return null;
         }
         List<Long> orderProductIds = orderProducts.keySet().stream().toList();
-        List<Product> products = getProducts(orderProductIds);
-        return new ResponseDto<>(OrderConstant.ORDER_SUCCESS, "success", products, HttpStatus.OK);
+        return getProducts(orderProductIds);
     }
 
     @Override

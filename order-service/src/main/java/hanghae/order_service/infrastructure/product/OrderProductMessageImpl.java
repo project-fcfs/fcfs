@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.CustomKafkaException;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import hanghae.order_service.service.port.OrderProductMessage;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -53,7 +54,7 @@ public class OrderProductMessageImpl implements OrderProductMessage {
                     result.getRecordMetadata().offset());
         }).exceptionally(ex -> {
             log.error("Failed to send message to topic {}, message {}", restoreTopic, message);
-            throw new CustomApiException("Failed to send message to topic " + restoreTopic, ex);
+            throw new CustomKafkaException("Failed to send message to topic " + restoreTopic, ex);
         });
     }
 
@@ -61,7 +62,7 @@ public class OrderProductMessageImpl implements OrderProductMessage {
         try{
             return mapper.writeValueAsString(orderMessages);
         }catch (JsonProcessingException e) {
-            throw new CustomApiException(ErrorMessage.ERROR_PARSE_JSON.getMessage());
+            throw new CustomApiException(ErrorCode.ERROR_PARSE_DATA);
         }
     }
 }

@@ -7,7 +7,7 @@ import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.domain.order.OrderProduct;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import hanghae.order_service.service.common.util.OrderConstant;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
@@ -59,7 +59,7 @@ public class OrderService {
                 .stream().collect(Collectors.toMap(CartProduct::productId, CartProduct::quantity));
 
         if (cartProducts.isEmpty()) {
-            throw new CustomApiException(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage());
+            throw new CustomApiException(ErrorCode.NOT_FOUND_CART_PRODUCT);
         }
 
         List<OrderProduct> orderProducts = generateOrderProducts(cartProducts, currentDate);
@@ -80,12 +80,13 @@ public class OrderService {
      */
     private List<OrderProduct> generateOrderProducts(Map<Long, Integer> value, LocalDateTime currentDate) {
 
-        ResponseDto<List<Product>> responseDto = productClient.processOrder(value);
+        List<Product> products = productClient.processOrder(value);
 
-        if (responseDto.code() == OrderConstant.ORDER_FAIL) {
-            throw new CustomApiException(ErrorMessage.OUT_OF_STOCK.getMessage());
+        if (products == null || products.isEmpty()) {
+            throw new CustomApiException(ErrorCode.OUT_OF_STOCK);
         }
-        List<OrderProduct> orderProducts = responseDto.data().stream()
+
+        List<OrderProduct> orderProducts = products.stream()
                 .map(i -> {
                     Integer orderCount = value.get(i.productId());
                     return OrderProduct.create(i.price(), orderCount, i.productId(), currentDate);
@@ -105,7 +106,7 @@ public class OrderService {
         LocalTime currentTime = currentDate.toLocalTime();
 
         if (currentTime.isBefore(OrderConstant.OPEN_TIME)) {
-            throw new CustomApiException(ErrorMessage.NOT_OPEN_TIME.getMessage());
+            throw new CustomApiException(ErrorCode.NOT_OPEN_TIME);
         }
         Map<Long, Integer> orders = new HashMap<>();
         orders.put(productId, orderCount);
@@ -141,7 +142,7 @@ public class OrderService {
      */
     private Order getUserOrder(String userId, String orderId) {
         return orderRepository.findByUserOrderByOrderId(userId, orderId).orElseThrow(() ->
-                new CustomApiException(ErrorMessage.NOT_FOUND_ORDER.getMessage()));
+                new CustomApiException(ErrorCode.NOT_FOUND_ORDER));
     }
 
     /**

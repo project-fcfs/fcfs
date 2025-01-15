@@ -11,7 +11,7 @@ import hanghae.order_service.mock.FakeCartProductRepository;
 import hanghae.order_service.mock.FakeCartRepository;
 import hanghae.order_service.mock.FakeProductClient;
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +60,7 @@ class CartServiceTest {
         // then
         assertThatThrownBy(() -> cartService.add("userId", 3L, 3))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.INVALID_PRODUCT.getMessage());
+                .hasMessage(ErrorCode.INVALID_PRODUCT.getMessage());
     }
 
     @Nested
@@ -101,7 +101,7 @@ class CartServiceTest {
             // then
             assertThatThrownBy(() -> cartService.updateQuantity(userId, productId, updateCount))
                     .isInstanceOf(CustomApiException.class)
-                    .hasMessage(ErrorMessage.OUT_OF_STOCK_CART.getMessage());
+                    .hasMessage(ErrorCode.OUT_OF_STOCK_CART.getMessage());
         }
     }
 

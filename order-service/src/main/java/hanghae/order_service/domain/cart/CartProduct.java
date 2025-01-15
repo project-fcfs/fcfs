@@ -1,7 +1,7 @@
 package hanghae.order_service.domain.cart;
 
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 
 public record CartProduct(
         Long id,
@@ -17,7 +17,7 @@ public record CartProduct(
     public CartProduct updateCount(int count) {
         int remainQuantity = quantity + count;
         if (remainQuantity <= 0) {
-            throw new CustomApiException(ErrorMessage.OUT_OF_STOCK_CART.getMessage());
+            throw new CustomApiException(ErrorCode.OUT_OF_STOCK_CART);
         }
         return new CartProduct(id, remainQuantity, productId, cart);
     }

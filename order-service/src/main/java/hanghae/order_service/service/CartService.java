@@ -1,11 +1,10 @@
 package hanghae.order_service.service;
 
-import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.cart.Cart;
 import hanghae.order_service.domain.cart.CartProduct;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.common.exception.CustomApiException;
-import hanghae.order_service.service.common.util.ErrorMessage;
+import hanghae.order_service.service.common.exception.ErrorCode;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.CartRepository;
 import hanghae.order_service.service.port.ProductClient;
@@ -40,7 +39,7 @@ public class CartService {
             Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> cartRepository.save(Cart.create(userId)));
             cartProductRepository.save(CartProduct.create(productId, count, cart));
         } else {
-            throw new CustomApiException(ErrorMessage.INVALID_PRODUCT.getMessage());
+            throw new CustomApiException(ErrorCode.INVALID_PRODUCT);
         }
     }
 
@@ -67,7 +66,7 @@ public class CartService {
      */
     private CartProduct getCartProducts(String userId, Long productId) {
         return cartProductRepository.findCartProduct(productId, userId)
-                .orElseThrow(() -> new CustomApiException(ErrorMessage.NOT_FOUND_CART_PRODUCT.getMessage()));
+                .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_CART_PRODUCT));
     }
 
     /**
