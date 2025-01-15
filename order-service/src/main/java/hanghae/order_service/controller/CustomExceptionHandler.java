@@ -56,6 +56,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception e){
         log.warn("[Exception] 예상치 못한 오류 {} 가 발생했습니다. \n", e.getClass().getName(), e);
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
-        return new ResponseEntity<>(ErrorResponse.of(errorCode), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ErrorResponse.of(errorCode, e.getClass().getName()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
