@@ -6,3 +6,4 @@ appli*.properties
 /db/
 **/Dockerfile
 redis
+compose*.yml
