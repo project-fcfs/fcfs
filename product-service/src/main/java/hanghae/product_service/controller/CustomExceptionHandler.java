@@ -41,7 +41,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         String message = String.join("\n", errors);
         log.debug("바인딩 에러 {} ", message);
         ErrorCode errorCode = ErrorCode.INVALID_DATA_BINDING;
-        ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), message);
+        ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), errorCode.getMessage(), message);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

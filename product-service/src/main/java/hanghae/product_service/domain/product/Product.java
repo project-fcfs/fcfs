@@ -1,7 +1,5 @@
 package hanghae.product_service.domain.product;
 
-import static hanghae.product_service.service.common.util.ProductConstant.SHOW_PRODUCT_ID;
-
 import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.exception.ErrorCode;
 
@@ -22,7 +20,7 @@ public record Product(
     public Product removeStock(int count) {
         int remainingQuantity = quantity - count;
         if (remainingQuantity < 0) {
-            throw new CustomApiException(ErrorCode.OUT_OF_STOCK, SHOW_PRODUCT_ID + id);
+            throw new CustomApiException(ErrorCode.OUT_OF_STOCK, String.valueOf(id));
         }
         ProductStatus status = (remainingQuantity == 0) ? ProductStatus.SOLD_OUT : ProductStatus.ACTIVE;
         return withUpdatedStock(remainingQuantity, status);

@@ -69,7 +69,7 @@ public class ProductController implements ProductControllerDocs {
         try {
             return FileInfo.create(file);
         } catch (IOException e) {
-            throw new CustomApiException(ErrorCode.ERROR_PARSE_DATA);
+            throw new CustomApiException(ErrorCode.ERROR_PARSE_DATA, file.toString());
         }
     }
 

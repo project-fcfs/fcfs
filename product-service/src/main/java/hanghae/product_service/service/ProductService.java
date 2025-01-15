@@ -1,7 +1,5 @@
 package hanghae.product_service.service;
 
-import static hanghae.product_service.service.common.util.ProductConstant.*;
-
 import hanghae.product_service.controller.req.FileInfo;
 import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.domain.imagefile.ImageFile;
@@ -9,7 +7,6 @@ import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.service.common.exception.CustomApiException;
 import hanghae.product_service.service.common.exception.ErrorCode;
-import hanghae.product_service.service.common.util.ProductConstant;
 import hanghae.product_service.service.port.ProductCacheRepository;
 import hanghae.product_service.service.port.ProductRepository;
 import java.util.List;
@@ -67,7 +64,7 @@ public class ProductService {
      */
     private Product fetchProductById(Long productId) {
         return productRepository.findProductById(productId).orElseThrow(() ->
-                new CustomApiException(ErrorCode.NOT_FOUND_PRODUCT, SHOW_PRODUCT_ID + productId));
+                new CustomApiException(ErrorCode.NOT_FOUND_PRODUCT, String.valueOf(productId)));
     }
 
     /**
