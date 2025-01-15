@@ -13,9 +13,9 @@ public class DummyInit {
     }
 
 
-//    @PostConstruct
+    @PostConstruct
     public void testInit() {
-        initService0.dbInit1();
+        initService0.dbInit2();
     }
 
 }

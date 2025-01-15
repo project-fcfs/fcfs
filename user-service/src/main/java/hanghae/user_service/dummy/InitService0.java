@@ -65,6 +65,21 @@ public class InitService0 {
         executorService.shutdown();
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void dbInit2() {
+        List<User> users = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            users.add(create("name" + i, "password" + i, "address" + i,
+                    String.format("email%d@email.com", i)));
+        }
+        // 남은 데이터 저장
+        if (!users.isEmpty()) {
+            List<UserEntity> entities = users.stream().map(UserEntity::fromModel).toList();
+            jpaRepository.saveAll(entities);
+        }
+    }
+
 
     public User create(String name, String password, String address, String email) {
         String encodePassword = encryptor.encodePassword(password);

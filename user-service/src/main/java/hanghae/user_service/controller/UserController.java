@@ -58,7 +58,6 @@ public class UserController implements UserControllerDocs {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/users")
     public ResponseEntity<?> getUsers() {
         List<User> users = userService.getUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
