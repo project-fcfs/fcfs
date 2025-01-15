@@ -41,14 +41,14 @@ public class KafkaMessageConsumer {
     public void productOrderRestore(String message) {
         log.info("fcfs_order_restore {}", message);
         List<StockUpdateReqDto> orderMessages = convertToRequest(message);
-        redissonLockStockFacade.restoreQuantity(orderMessages);
+        pessimisticLockStockService.restoreQuantity(orderMessages);
     }
 
     @KafkaListener(topics = "fcfs_order_remove", groupId = "product-group")
     public void productOrderProcess(String message) {
         log.info("fcfs_order_remove {}", message);
         List<StockUpdateReqDto> orderMessages = convertToRequest(message);
-        redissonLockStockFacade.processOrder(orderMessages);
+        pessimisticLockStockService.processOrder(orderMessages);
     }
 
     private List<StockUpdateReqDto> convertToRequest(String value) {
