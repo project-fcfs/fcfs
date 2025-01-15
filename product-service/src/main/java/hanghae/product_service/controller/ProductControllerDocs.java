@@ -3,7 +3,6 @@ package hanghae.product_service.controller;
 import hanghae.product_service.controller.req.ProductCreateReqDto;
 import hanghae.product_service.controller.req.StockUpdateReqDto;
 import hanghae.product_service.controller.resp.ProductRespDto;
-import hanghae.product_service.controller.resp.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -26,7 +25,7 @@ public interface ProductControllerDocs {
     @Operation(summary = "상품 생성", description = "새로운 상품을 생성합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "상품이 성공적으로 생성됨",
-            content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ProductRespDto.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
