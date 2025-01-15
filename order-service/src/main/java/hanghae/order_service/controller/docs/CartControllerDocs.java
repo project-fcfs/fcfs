@@ -41,5 +41,5 @@ public interface CartControllerDocs {
             @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = ProductRespDto.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
-    ResponseDto<?> getCartProduct(String userId);
+    ResponseEntity<?> getCartProduct(String userId);
 }

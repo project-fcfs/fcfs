@@ -9,6 +9,7 @@ import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.exception.ErrorCode;
 import hanghae.order_service.service.common.util.OrderConstant;
+import hanghae.order_service.service.common.util.TimeFormatter;
 import hanghae.order_service.service.port.CartProductRepository;
 import hanghae.order_service.service.port.LocalDateTimeHolder;
 import hanghae.order_service.service.port.OrderProductMessage;
@@ -59,7 +60,7 @@ public class OrderService {
                 .stream().collect(Collectors.toMap(CartProduct::productId, CartProduct::quantity));
 
         if (cartProducts.isEmpty()) {
-            throw new CustomApiException(ErrorCode.NOT_FOUND_CART_PRODUCT);
+            throw new CustomApiException(ErrorCode.NOT_FOUND_CART_PRODUCT, TimeFormatter.formatTime(currentDate));
         }
 
         List<OrderProduct> orderProducts = generateOrderProducts(cartProducts, currentDate);
@@ -83,7 +84,7 @@ public class OrderService {
         List<Product> products = productClient.processOrder(value);
 
         if (products == null || products.isEmpty()) {
-            throw new CustomApiException(ErrorCode.OUT_OF_STOCK);
+            throw new CustomApiException(ErrorCode.OUT_OF_STOCK, value.toString());
         }
 
         List<OrderProduct> orderProducts = products.stream()
@@ -106,7 +107,7 @@ public class OrderService {
         LocalTime currentTime = currentDate.toLocalTime();
 
         if (currentTime.isBefore(OrderConstant.OPEN_TIME)) {
-            throw new CustomApiException(ErrorCode.NOT_OPEN_TIME);
+            throw new CustomApiException(ErrorCode.NOT_OPEN_TIME, TimeFormatter.formatTime(currentDate));
         }
         Map<Long, Integer> orders = new HashMap<>();
         orders.put(productId, orderCount);
@@ -142,7 +143,7 @@ public class OrderService {
      */
     private Order getUserOrder(String userId, String orderId) {
         return orderRepository.findByUserOrderByOrderId(userId, orderId).orElseThrow(() ->
-                new CustomApiException(ErrorCode.NOT_FOUND_ORDER));
+                new CustomApiException(ErrorCode.NOT_FOUND_ORDER, orderId));
     }
 
     /**

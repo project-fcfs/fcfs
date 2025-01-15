@@ -38,7 +38,7 @@ public class KafkaMessageConsumer {
 
             return new OrderDecideReqDto(response.code(), orderId);
         } catch (JsonProcessingException e) {
-            throw new CustomApiException(ErrorCode.ERROR_PARSE_DATA);
+            throw new CustomApiException(ErrorCode.ERROR_PARSE_DATA, message);
         }
     }
 

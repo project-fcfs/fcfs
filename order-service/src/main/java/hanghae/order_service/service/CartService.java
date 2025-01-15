@@ -39,7 +39,7 @@ public class CartService {
             Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> cartRepository.save(Cart.create(userId)));
             cartProductRepository.save(CartProduct.create(productId, count, cart));
         } else {
-            throw new CustomApiException(ErrorCode.INVALID_PRODUCT);
+            throw new CustomApiException(ErrorCode.INVALID_PRODUCT, String.valueOf(productId));
         }
     }
 
@@ -66,7 +66,7 @@ public class CartService {
      */
     private CartProduct getCartProducts(String userId, Long productId) {
         return cartProductRepository.findCartProduct(productId, userId)
-                .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_CART_PRODUCT));
+                .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_CART_PRODUCT, String.valueOf(productId)));
     }
 
     /**

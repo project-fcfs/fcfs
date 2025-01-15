@@ -5,7 +5,6 @@ import hanghae.order_service.controller.req.CartCreateReqDto;
 import hanghae.order_service.controller.req.CartDeleteReqDto;
 import hanghae.order_service.controller.req.CartUpdateReqDto;
 import hanghae.order_service.controller.resp.ProductRespDto;
-import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.product.Product;
 import hanghae.order_service.service.CartService;
 import java.util.List;
@@ -53,11 +52,11 @@ public class CartController implements CartControllerDocs {
     }
 
     @GetMapping("/products")
-    public ResponseDto<?> getCartProduct(@RequestHeader("userId") String userId) {
+    public ResponseEntity<?> getCartProduct(@RequestHeader("userId") String userId) {
         List<Product> products = cartService.getCartProducts(userId);
         List<ProductRespDto> response = products.stream().map(ProductRespDto::of)
                 .toList();
 
-        return ResponseDto.success(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

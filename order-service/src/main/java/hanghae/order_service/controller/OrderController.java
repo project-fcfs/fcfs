@@ -4,7 +4,6 @@ import hanghae.order_service.controller.docs.OrderControllerDocs;
 import hanghae.order_service.controller.req.OrderCreateReqDto;
 import hanghae.order_service.controller.req.OrderFcfsCreateReqDto;
 import hanghae.order_service.controller.resp.OrderRespDto;
-import hanghae.order_service.controller.resp.ResponseDto;
 import hanghae.order_service.domain.order.Order;
 import hanghae.order_service.service.OrderService;
 import java.util.List;
@@ -36,7 +35,7 @@ public class OrderController implements OrderControllerDocs {
     public ResponseEntity<?> processOrder(@RequestHeader("userId") String userId,
                                           @RequestBody OrderCreateReqDto createReqDto, @RequestParam String address) {
         Order order = orderService.order(createReqDto.productIds(), address, userId);
-        return new ResponseEntity<>(OrderRespDto.of(order),HttpStatus.CREATED);
+        return new ResponseEntity<>(OrderRespDto.of(order), HttpStatus.CREATED);
     }
 
     /**
@@ -44,9 +43,10 @@ public class OrderController implements OrderControllerDocs {
      */
     @PostMapping("/fcfs")
     public ResponseEntity<?> processFcfsOrder(@RequestHeader("userId") String userId,
-                                              @RequestBody OrderFcfsCreateReqDto createReqDto, @RequestParam String address) {
+                                              @RequestBody OrderFcfsCreateReqDto createReqDto,
+                                              @RequestParam String address) {
         Order order = orderService.fcfsOrder(createReqDto.productId(), createReqDto.orderCount(), address, userId);
-        return new ResponseEntity<>(OrderRespDto.of(order),HttpStatus.CREATED);
+        return new ResponseEntity<>(OrderRespDto.of(order), HttpStatus.CREATED);
     }
 
     /**
@@ -73,11 +73,11 @@ public class OrderController implements OrderControllerDocs {
      * 유저의 주문완료한 상품들을 가져온다
      */
     @GetMapping
-    public ResponseDto<?> fetchAllUserOrders(@RequestHeader("userId") String userId) {
+    public ResponseEntity<?> fetchAllUserOrders(@RequestHeader("userId") String userId) {
         List<Order> orders = orderService.getUserOrderHistory(userId);
 
         List<OrderRespDto> orderResponse = orders.stream().map(OrderRespDto::of).toList();
-        return ResponseDto.success(orderResponse, HttpStatus.OK);
+        return new ResponseEntity<>(orderResponse, HttpStatus.OK);
     }
 
 

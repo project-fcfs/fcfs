@@ -62,7 +62,7 @@ public class OrderProductMessageImpl implements OrderProductMessage {
         try{
             return mapper.writeValueAsString(orderMessages);
         }catch (JsonProcessingException e) {
-            throw new CustomApiException(ErrorCode.ERROR_PARSE_DATA);
+            throw new CustomApiException(ErrorCode.ERROR_PARSE_DATA, String.join(orderMessages.toString()));
         }
     }
 }

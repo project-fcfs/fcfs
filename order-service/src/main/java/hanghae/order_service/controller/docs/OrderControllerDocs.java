@@ -52,6 +52,6 @@ public interface OrderControllerDocs {
             @ApiResponse(responseCode = "200", description = "주문 이력 조회 성공", content = @Content(schema = @Schema(implementation = OrderRespDto.class))),
             @ApiResponse(responseCode = "404", description = "사용자의 주문 내역을 찾을 수 없음")
     })
-    ResponseDto<?> fetchAllUserOrders(String userId);
+    ResponseEntity<?> fetchAllUserOrders(String userId);
 
 }

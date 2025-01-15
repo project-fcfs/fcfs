@@ -4,10 +4,15 @@ import hanghae.order_service.service.common.exception.ErrorCode;
 
 public record ErrorResponse(
         int code,
-        String message
+        String message,
+        String data
 ) {
 
+    public static ErrorResponse of(ErrorCode errorCode, String data) {
+        return new ErrorResponse(errorCode.getCode(), errorCode.getMessage(), data);
+    }
+
     public static ErrorResponse of(ErrorCode errorCode) {
-        return new ErrorResponse(errorCode.getCode(), errorCode.getMessage());
+        return new ErrorResponse(errorCode.getCode(), errorCode.getMessage(), null);
     }
 }

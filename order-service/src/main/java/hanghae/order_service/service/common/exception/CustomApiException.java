@@ -1,19 +1,24 @@
 package hanghae.order_service.service.common.exception;
 
-public class CustomApiException extends RuntimeException {
-    private final ErrorCode errorCode;
+import hanghae.order_service.controller.resp.ErrorResponse;
 
-    public CustomApiException(ErrorCode errorCode) {
+public class CustomApiException extends RuntimeException {
+
+    private final ErrorResponse errorResponse;
+
+    public CustomApiException(ErrorCode errorCode, String value) {
         super(errorCode.getMessage());
-        this.errorCode = errorCode;
+        this.errorResponse = ErrorResponse.of(errorCode, value);
     }
 
     public CustomApiException(ErrorCode errorCode, Throwable cause) {
         super(errorCode.getMessage(), cause);
-        this.errorCode = errorCode;
+        this.errorResponse = ErrorResponse.of(errorCode, null);
     }
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
+    public ErrorResponse getErrorResponse() {
+        return errorResponse;
     }
+
+
 }

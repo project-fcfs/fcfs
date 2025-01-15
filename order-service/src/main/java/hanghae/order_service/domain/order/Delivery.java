@@ -4,6 +4,7 @@ import static hanghae.order_service.service.common.util.OrderConstant.*;
 
 import hanghae.order_service.service.common.exception.CustomApiException;
 import hanghae.order_service.service.common.exception.ErrorCode;
+import hanghae.order_service.service.common.util.TimeFormatter;
 import java.time.LocalDateTime;
 
 public record Delivery(
@@ -28,7 +29,7 @@ public record Delivery(
         if (status.equals(DeliveryStatus.PREPARING)) {
             return new Delivery(id, address, DeliveryStatus.CANCELED, createdAt, currentDate);
         }
-        throw new CustomApiException(ErrorCode.ERROR_CANNOT_CANCEL_SHIPPING);
+        throw new CustomApiException(ErrorCode.ERROR_CANNOT_CANCEL_SHIPPING, TimeFormatter.formatTime(currentDate));
     }
 
     /**
@@ -38,7 +39,7 @@ public record Delivery(
         if (status.equals(DeliveryStatus.COMPLETED) && currentDate.isBefore(updatedAt.plusDays(RETURN_DAY))) {
             return new Delivery(id, address, DeliveryStatus.CANCELED, createdAt, currentDate);
         }
-        throw new CustomApiException(ErrorCode.ERROR_CANNOT_RETURN_SHIPPED);
+        throw new CustomApiException(ErrorCode.ERROR_CANNOT_RETURN_SHIPPED, TimeFormatter.formatTime(currentDate));
     }
 
     /**
