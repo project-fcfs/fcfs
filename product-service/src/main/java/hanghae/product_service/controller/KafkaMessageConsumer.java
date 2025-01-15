@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghae.product_service.controller.req.StockUpdateReqDto;
 import hanghae.product_service.service.common.exception.CustomApiException;
-import hanghae.product_service.service.common.util.ErrorMessage;
+import hanghae.product_service.service.common.exception.ErrorCode;
 import hanghae.product_service.service.lock.LuaStockService;
 import hanghae.product_service.service.lock.NamedLockStockFacade;
 import hanghae.product_service.service.lock.PessimisticLockStockService;
@@ -41,14 +41,14 @@ public class KafkaMessageConsumer {
     public void productOrderRestore(String message) {
         log.info("fcfs_order_restore {}", message);
         List<StockUpdateReqDto> orderMessages = convertToRequest(message);
-        namedLockStockFacade.restoreQuantity(orderMessages);
+        redissonLockStockFacade.restoreQuantity(orderMessages);
     }
 
     @KafkaListener(topics = "fcfs_order_remove", groupId = "product-group")
     public void productOrderProcess(String message) {
         log.info("fcfs_order_remove {}", message);
         List<StockUpdateReqDto> orderMessages = convertToRequest(message);
-        namedLockStockFacade.processOrder(orderMessages);
+        redissonLockStockFacade.processOrder(orderMessages);
     }
 
     private List<StockUpdateReqDto> convertToRequest(String value) {
@@ -56,7 +56,7 @@ public class KafkaMessageConsumer {
             return mapper.readValue(value, new TypeReference<List<StockUpdateReqDto>>() {
             });
         } catch (JsonProcessingException e) {
-            throw new CustomApiException(ErrorMessage.ERROR_PARSE_JSON.getMessage(), e);
+            throw new CustomApiException(ErrorCode.ERROR_PARSE_DATA, e);
         }
     }
 }

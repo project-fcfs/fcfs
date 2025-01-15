@@ -41,7 +41,7 @@ public interface ProductControllerDocs {
             @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    ResponseDto<?> getProduct(Long productId);
+    ResponseEntity<?> getProduct(Long productId);
 
     @Parameters(value = {
             @Parameter(name = "cursor", description = "조회 시작 위치(기본값: 0)", required = false),
@@ -52,7 +52,7 @@ public interface ProductControllerDocs {
             @ApiResponse(responseCode = "200", description = "상품 목록 반환"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
-    ResponseDto<?> getProducts(Long cursor, int size);
+    ResponseEntity<?> getProducts(Long cursor, int size);
 
     @Parameters(value = {
             @Parameter(name = "cursor", description = "조회 시작 위치(기본값: 0)", required = false),
@@ -63,7 +63,7 @@ public interface ProductControllerDocs {
             @ApiResponse(responseCode = "200", description = "선착순 상품 목록 반환"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
-    ResponseDto<?> getFcfsProducts(Long cursor, int size);
+    ResponseEntity<?> getFcfsProducts(Long cursor, int size);
 
     @Parameter(name = "ids", description = "조회할 상품들의 ID 리스트", required = true)
     @Operation(summary = "상품 ID로 상품 조회", description = "주어진 상품 ID 목록을 기반으로 해당 상품들을 조회합니다.")
@@ -71,7 +71,7 @@ public interface ProductControllerDocs {
             @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청: 유효하지 않은 상품 ID"),
     })
-    ResponseDto<?> fetchProductsById(List<Long> ids);
+    ResponseEntity<?> fetchProductsById(List<Long> ids);
 
     @Parameter(name = "dtos", description = "주문할 상품과 수량 정보", required = true)
     @Operation(summary = "주문 처리", description = "주문을 처리하고 상품의 수량을 업데이트합니다.")
@@ -80,5 +80,5 @@ public interface ProductControllerDocs {
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    ResponseDto<?> processOrder(List<StockUpdateReqDto> dtos);
+    ResponseEntity<?> processOrder(List<StockUpdateReqDto> dtos);
 }

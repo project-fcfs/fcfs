@@ -1,12 +1,15 @@
 package hanghae.product_service.service;
 
+import static hanghae.product_service.service.common.util.ProductConstant.*;
+
 import hanghae.product_service.controller.req.FileInfo;
 import hanghae.product_service.controller.resp.ProductRespDto;
 import hanghae.product_service.domain.imagefile.ImageFile;
 import hanghae.product_service.domain.product.Product;
 import hanghae.product_service.domain.product.ProductType;
 import hanghae.product_service.service.common.exception.CustomApiException;
-import hanghae.product_service.service.common.util.ErrorMessage;
+import hanghae.product_service.service.common.exception.ErrorCode;
+import hanghae.product_service.service.common.util.ProductConstant;
 import hanghae.product_service.service.port.ProductCacheRepository;
 import hanghae.product_service.service.port.ProductRepository;
 import java.util.List;
@@ -14,7 +17,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -65,7 +67,7 @@ public class ProductService {
      */
     private Product fetchProductById(Long productId) {
         return productRepository.findProductById(productId).orElseThrow(() ->
-                new CustomApiException(ErrorMessage.NOT_FOUND_PRODUCT.getMessage()));
+                new CustomApiException(ErrorCode.NOT_FOUND_PRODUCT, SHOW_PRODUCT_ID + productId));
     }
 
     /**

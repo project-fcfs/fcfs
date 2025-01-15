@@ -13,7 +13,7 @@ import hanghae.product_service.mock.FakeProductCacheRepository;
 import hanghae.product_service.mock.FakeProductRepository;
 import hanghae.product_service.mock.FakeUuidRandomHolder;
 import hanghae.product_service.service.common.exception.CustomApiException;
-import hanghae.product_service.service.common.util.ErrorMessage;
+import hanghae.product_service.service.common.exception.ErrorCode;
 import java.util.List;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,7 +85,7 @@ class ProductServiceTest {
         // then
         assertThatThrownBy(() -> productService.getProduct(2L))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.NOT_FOUND_PRODUCT.getMessage());
+                .hasMessage(ErrorCode.NOT_FOUND_PRODUCT.getMessage());
     }
 
     @Test

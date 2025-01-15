@@ -35,7 +35,7 @@ public class ProductLockRepository<T> {
         for (String key : keys) {
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, key);
-                stmt.setInt(2, 3000); // 3000초 대기
+                stmt.setInt(2, 30); // 30초 대기
                 stmt.executeQuery();
             } catch (SQLException e) {
                 throw new RuntimeException("락을 획득하는 중에 오류가 발생하였습니다. Key: " + key, e);

@@ -33,7 +33,7 @@ public class RedissonLockStockFacade {
         RedissonMultiLock lock = new RedissonMultiLock(lockArray);
 
         try {
-            boolean available = lock.tryLock(10, 5, TimeUnit.SECONDS);
+            boolean available = lock.tryLock(30, 5, TimeUnit.SECONDS);
             if (!available) {
                 log.info("lock 획득 실패");
                 return null;

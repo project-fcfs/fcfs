@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import hanghae.product_service.service.common.exception.CustomApiException;
-import hanghae.product_service.service.common.util.ErrorMessage;
+import hanghae.product_service.service.common.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +22,7 @@ class ProductTest {
         // then
         assertThatThrownBy(() -> product.removeStock(orderCount))
                 .isInstanceOf(CustomApiException.class)
-                .hasMessage(ErrorMessage.OUT_OF_STOCK.getMessage());
+                .hasMessage(ErrorCode.OUT_OF_STOCK.getMessage());
     }
 
     @Test
