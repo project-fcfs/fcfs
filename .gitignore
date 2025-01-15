@@ -5,3 +5,4 @@ appli*.properties
 **/bootst*.yml
 /db/
 **/Dockerfile
+redis
