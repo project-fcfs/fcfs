@@ -59,3 +59,16 @@ services:
         limits:
           memory: 1G       # 최대 메모리 1GB
           cpus: '2.0'      # 최대 CPU 2개
+
+  cache-server:
+    image: redis/redis-stack-server:6.2.6-v17
+    volumes:
+      - ${REDIS_DATA_PATH}:/data
+      - ${REDIS_CONFIG_PATH}:/usr/local/etc/redis/redis.conf
+    ports:
+      - ${REDIS_BINDING_PORT}:${REIDS_PORT}
+    deploy:
+      resources:
+        limits:
+          memory: 0.5G       # 최대 메모리 0.5GB
+          cpus: '2.0'      # 최대 CPU 2개

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "product-service")
+//@FeignClient(name = "product-service")
 public interface ProductClientImpl extends ProductClient {
 
     Logger log = LoggerFactory.getLogger(ProductClientImpl.class);
