@@ -1,5 +1,7 @@
 package hanghae.gateway_service.service.port;
 
+import reactor.core.publisher.Mono;
+
 public interface TokenStoreRepository {
-    boolean existLoginToken(String key, String value);
+    Mono<Boolean> existLoginToken(String key, String value);
 }

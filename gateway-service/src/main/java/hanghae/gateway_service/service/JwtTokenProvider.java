@@ -19,7 +19,6 @@ public class JwtTokenProvider {
 
     private final SecretKey secretKey;
 
-
     public JwtTokenProvider(@Value("${jwt.secret-key}") String secret,
                             @Value("${jwt.algorithm}") String jwtAlgorithm) {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), jwtAlgorithm);
