@@ -31,6 +31,8 @@ Tools | ![git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=
 <img src="https://github.com/user-attachments/assets/617a1c69-1c2f-46cd-8cbd-da2bdacd1c73" width=800px>
 
 ## ⭐ 성능최적화
+### [Rate Limiter](https://github.com/project-fcfs/fcfs/wiki/Rate-Limiter)
+<img src="https://github.com/user-attachments/assets/b0e983c5-c7a3-4813-a0f9-7df5c475e631" width=500>
 
 ### [조회 성능 개선](https://github.com/project-fcfs/fcfs/wiki/%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0)
 
