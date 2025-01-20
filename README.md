@@ -41,8 +41,7 @@ Tools | ![git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=
 - Google SMTP로 이메일 인증 구현
 
 ### Sequence Diagram
-
-
+<img src="https://github.com/user-attachments/assets/92843000-69f6-4186-b8c1-671c60ee4aa6" width=500>
 
 ## ⭐ 성능최적화
 ### [Rate Limiter](https://github.com/project-fcfs/fcfs/wiki/Rate-Limiter)
