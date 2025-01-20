@@ -46,9 +46,9 @@ Tools | ![git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=
 ## ⭐ 성능최적화
 ### [Rate Limiter](https://github.com/project-fcfs/fcfs/wiki/Rate-Limiter)
 ```
-- 요청이 많을 때 서비스의 성능 저하를 방지하고, 자원을 효율적으로 분배하여 안정성을 높이고자 했다.
 - 평균 응답 시간이 5~6초로 느린 상태를 개선하고, 빠르고 일관된 응답 속도를 제공하기 위해 Rate Limiter를 고려했다.
-- 구글 리서치 자료에 의하면 응답시간이 5초이상 넘어가면 90% 이탈한다고 한다
+- gateway에서 기본제공하기도 하고, 이벤트로 인해 짧은 시간 집중되는 트래픽도 처리 가능할 것이라 생각해 ```token bucket```을 사용했다
+- 전체 요청량에서 단 0.0845%만이 RateLimiter에 걸렸고, 평균 응답속도 3~4초로 줄어들었다
 ```
 <img src="https://github.com/user-attachments/assets/b0e983c5-c7a3-4813-a0f9-7df5c475e631" width=500>
 
