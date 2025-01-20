@@ -30,11 +30,35 @@ Tools | ![git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=
 ## 📁 아키텍처
 <img src="https://github.com/user-attachments/assets/617a1c69-1c2f-46cd-8cbd-da2bdacd1c73" width=800px>
 
+## 🔨 주요 기능
+- MSA기반으로 서비스 독립성과 확장성 향상
+- Eureka 서비스 디스커버리와 API Gateway를 활용한 동적 서비스 등록 및 라우팅 구현
+- OpenFeign을 통한 외부 모듈 통신, Resilience4j Circuit Breaker와 Retry로 회복 탄력성 강화
+- Redis를 이용한 캐싱 처리로 서비스 성능 최적화
+- Redis와 Lua Script를 이용한 재고 감소 설계로 원자적 동시성 처리
+- Kafka를 통한 이벤트 기반 처리로 안정적인 트랜잭션 관리 및 실패 보상(Choreography SAGA)
+- Docker Compose로 컨테이너 기반의 통합 개발/배포 환경 구성
+- Google SMTP로 이메일 인증 구현
+
+### Sequence Diagram
+
+
+
 ## ⭐ 성능최적화
 ### [Rate Limiter](https://github.com/project-fcfs/fcfs/wiki/Rate-Limiter)
+```
+- 요청이 많을 때 서비스의 성능 저하를 방지하고, 자원을 효율적으로 분배하여 안정성을 높이고자 했다.
+- 평균 응답 시간이 5~6초로 느린 상태를 개선하고, 빠르고 일관된 응답 속도를 제공하기 위해 Rate Limiter를 고려했다.
+- 구글 리서치 자료에 의하면 응답시간이 5초이상 넘어가면 90% 이탈한다고 한다
+```
 <img src="https://github.com/user-attachments/assets/b0e983c5-c7a3-4813-a0f9-7df5c475e631" width=500>
 
 ### [조회 성능 개선](https://github.com/project-fcfs/fcfs/wiki/%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0)
+```
+- 기본 키 인덱스를 활용하여 효율적인 조회가 이루어졌지만, 고도화된 성능을 요구하는 환경에서는 여전히 한계가 존재했댜
+- 사용자가 자주 사용하는 메인페이지의 경우, 빈번한 조회로 인해 데이터베이스의 부하가 증가하였고, 캐싱이나 최적화되지 않은 쿼리로 인해 성능 저하가 발생할 수 있었다
+- MSA 특성상 스케일 아웃으로 인한 여러 인스턴스가 존재할 수 있어 하나의 캐시서버가 필요했다
+```
 
 | **항목**                     | **캐시 사용 전** | **캐시 사용 후** | **차이**           | **퍼센트 변화**       |
 |-----------------------------|----------------|-----------------|--------------------|-----------------------|
@@ -46,6 +70,12 @@ Tools | ![git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=
 | **TPS (Transactions per second)** | 703          | 1096            | 393 처리  증가  | 55.92% 증가          |
 
 ### [주문 동시성 비교](https://github.com/project-fcfs/fcfs/wiki/%EC%A3%BC%EB%AC%B8-%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%84%B1%EB%8A%A5-%EB%B9%84%EA%B5%90)
+```
+- 여러 종류의 락 중에서 예상 시나리오에 가장 적합한 락을 검토했다.  
+- 성능 면에서 비관적 락과 LuaScript가 가장 유리하다고 판단했다.  
+- LuaScript를 활용해 원자적 연산을 처리하고, 순차적인 주문이 가능하도록 구현했다.  
+- Redis에서 수정된 재고는 Kafka를 활용한 Write-Through 방식으로 관리했다.  
+```
 <img src="https://github.com/user-attachments/assets/69f23676-013f-4cd8-9959-05c8639977fd" width=1000>
 
 ### [스레드 개수 성능 비교](https://github.com/project-fcfs/fcfs/wiki/%EC%93%B0%EB%A0%88%EB%93%9C-%EA%B0%9C%EC%88%98%EC%97%90-%EB%94%B0%EB%A5%B8-%EC%84%B1%EB%8A%A5-%EB%B3%80%ED%99%94)
@@ -58,10 +88,12 @@ Tools | ![git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=
 | **TPS (Transactions per second)** | 237         | 218            | 250            | 279             | -8.02% 감소     | 14.71% 증가     | 11.60% 증가      
 
 ## 🐞 [Trouble Shooting](https://github.com/project-fcfs/fcfs/wiki/%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85)
-| **상황**                        | **원인**                                                                                                     | **해결책**                                                                                                 |
-|---------------------------------|-------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
-| **JWT 토큰 에러**                | Jwt 예외는 Security 흐름과 별개로 처리되기 때문에 잡지 못함                                                   | 예외가 발생하면 로그인 실패 처리만 하면 됨                                                                  |
-| **분산락 교착상태**              | 락 획득, 해제에 같은 트랜잭션으로 할 경우 리소스 잠금으로 데드락 발생                                           | 트랜잭션과 락을 분리해서 사용. 락을 먼저 처리한 후 트랜잭션 진행                                             |
-| **Cors**                        | 기본적으로 Cors는 모든 헤더를 보여주지 않음                                                                   | 원하는 헤더를 Cors에 추가하여 보여줌                                                                         |
-| **CacheManager**                | `GenericJackson2JsonRedisSerializer()`로 직렬화 시 패키지 이름까지 포함하여 직렬화                                 | `Jackson2JsonRedisSerializer<Object>(Object.class)`를 사용하여 데이터만 직렬화 진행                          |
-| **GateWay Rate Limiter**        | Gateway는 WebFlux 기반이므로 동기적 Redis(Lettuce) 사용 시 예외 발생                                             | ReactiveRedis를 사용. Redis 사용하지 않을 경우에도 `RequestRateLimiterGatewayFilterFactory`가 자동으로 적용 가능 |
+| **상황**            | **해결책**                                                                                                  |
+|---------------------|-------------------------------------------------------------------------------------------------------------|
+| **JWT 토큰 에러**   | 로그인 실패 시 예외 원인을 로깅하여 디버깅에 활용                                                           |
+| **분산락 교착상태** | 트랜잭션과 락을 분리하여 처리. 락을 먼저 처리한 후 트랜잭션 진행                                            |
+| **CORS Header**            | 필요한 헤더를 CORS 설정에 추가하여 요청 허용                                                               |
+| **CacheManager**    | `Jackson2JsonRedisSerializer<Object>(Object.class)`를 사용하여 데이터 직렬화 진행                          |
+| **Gateway Rate Limiter** | ReactiveRedis를 사용하여 Redis 기반 Rate Limiter를 적용. Redis 미사용 시 대체 필터 설정                    |
+
+
